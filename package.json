@@ -1,0 +1,12 @@
+{
+  "name": "warpforge-studio-workspace",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "pnpm@10.0.0",
+  "scripts": {
+    "dev": "pnpm --filter @warpforge/studio dev",
+    "build": "pnpm --filter @warpforge/studio build",
+    "typecheck": "pnpm --filter @warpforge/studio typecheck",
+    "test:e2e": "pnpm --filter @warpforge/studio test:e2e"
+  }
+}

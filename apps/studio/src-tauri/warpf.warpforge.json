@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "project": {
+    "id": "510a1407-a69e-4f02-9e20-01b62818b39c",
+    "app_name": "WarpF",
+    "package_id": "com.warpforge.warpf",
+    "version": "0.1.0",
+    "author": "WarpForge User",
+    "description": "WarpF generated from notes template",
+    "target_type": "desktop_slint",
+    "theme": "auto",
+    "created_at": "2026-03-02T14:57:55.324678Z",
+    "updated_at": "2026-03-02T14:57:55.324678Z"
+  },
+  "workspace_state": {
+    "zoom": 1.0,
+    "pan_x": 0.0,
+    "pan_y": 0.0,
+    "selected_block_ids": [],
+    "blockly_xml": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><block type=\"wf_on_app_start\" id=\"poA#{q6^oM,0(4T33?V`\" x=\"84\" y=\"84\"><next><block type=\"wf_screen\" id=\"Jy5Ja@91K77AP|{5;3R@\"><field name=\"NAME\">Home</field><field name=\"ROUTE\">/</field><next><block type=\"wf_window\" id=\"C2UZFQ7Tq]Naj7J1[`,8\"><field name=\"TITLE\">Main</field><field name=\"WIDTH\">1024</field><field name=\"HEIGHT\">768</field><next><block type=\"wf_ui_text\" id=\"^gzA(43Al6z^MM]dojJg\"><field name=\"TEXT\">Hello</field></block></next></block></next></block></next></block></xml>",
+    "comments": [],
+    "groups": []
+  },
+  "normalized_graph": {
+    "nodes": [
+      {
+        "id": "^gzA(43Al6z^MM]dojJg",
+        "kind": "ui.text",
+        "category": "ui",
+        "props": {
+          "text": "Hello"
+        }
+      },
+      {
+        "id": "C2UZFQ7Tq]Naj7J1[`,8",
+        "kind": "structure.window",
+        "category": "structure",
+        "props": {
+          "height": 768,
+          "title": "Main",
+          "width": 1024
+        }
+      },
+      {
+        "id": "Jy5Ja@91K77AP|{5;3R@",
+        "kind": "structure.screen",
+        "category": "structure",
+        "props": {
+          "name": "Home",
+          "route": "/"
+        }
+      },
+      {
+        "id": "poA#{q6^oM,0(4T33?V`",
+        "kind": "events.on_app_start",
+        "category": "events",
+        "props": {}
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge-C2UZFQ7Tq]Naj7J1[`,8-^gzA(43Al6z^MM]dojJg",
+        "from": "C2UZFQ7Tq]Naj7J1[`,8",
+        "to": "^gzA(43Al6z^MM]dojJg",
+        "edge_type": "flow"
+      },
+      {
+        "id": "edge-Jy5Ja@91K77AP|{5;3R@-C2UZFQ7Tq]Naj7J1[`,8",
+        "from": "Jy5Ja@91K77AP|{5;3R@",
+        "to": "C2UZFQ7Tq]Naj7J1[`,8",
+        "edge_type": "flow"
+      },
+      {
+        "id": "edge-poA#{q6^oM,0(4T33?V`-Jy5Ja@91K77AP|{5;3R@",
+        "from": "poA#{q6^oM,0(4T33?V`",
+        "to": "Jy5Ja@91K77AP|{5;3R@",
+        "edge_type": "flow"
+      }
+    ]
+  },
+  "ir_snapshot": null,
+  "assets": [],
+  "ai_history": [],
+  "settings": {
+    "autosave_interval_secs": 20,
+    "validate_on_change": true,
+    "codegen_deterministic": true,
+    "ai_default_text_provider": "ollama",
+    "ai_default_image_provider": "comfyui"
+  }
+}

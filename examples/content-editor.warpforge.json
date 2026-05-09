@@ -1,0 +1,161 @@
+{
+  "schema_version": 1,
+  "project": {
+    "id": "example-content-editor",
+    "app_name": "Content Editor",
+    "package_id": "com.warpforge.content-editor",
+    "version": "0.1.0",
+    "author": "WarpForge Examples",
+    "description": "Text and content editor — bundled example. Open this file in WarpForge Studio and click ▶ Run.",
+    "target_type": "desktop_slint",
+    "theme": "auto",
+    "created_at": "2026-05-04T00:00:00Z",
+    "updated_at": "2026-05-04T00:00:00Z"
+  },
+  "workspace_state": {
+    "zoom": 1.0,
+    "pan_x": 0.0,
+    "pan_y": 0.0,
+    "selected_block_ids": [],
+    "blockly_xml": null,
+    "comments": [],
+    "groups": []
+  },
+  "normalized_graph": {
+    "nodes": [
+      {
+        "id": "window_main",
+        "kind": "structure.window",
+        "category": "structure",
+        "props": {
+          "height": 768,
+          "title": "Content Editor",
+          "width": 1024
+        }
+      },
+      {
+        "id": "screen_editor",
+        "kind": "structure.screen",
+        "category": "structure",
+        "props": {
+          "name": "Editor",
+          "route": "/"
+        }
+      },
+      {
+        "id": "ui_input_title",
+        "kind": "ui.input",
+        "category": "ui",
+        "props": {
+          "placeholder": "Document title..."
+        }
+      },
+      {
+        "id": "ui_textarea_body",
+        "kind": "ui.textarea",
+        "category": "ui",
+        "props": {
+          "placeholder": "Start writing..."
+        }
+      },
+      {
+        "id": "ui_button_save",
+        "kind": "ui.button",
+        "category": "ui",
+        "props": {
+          "label": "Save"
+        }
+      },
+      {
+        "id": "ui_button_open",
+        "kind": "ui.button",
+        "category": "ui",
+        "props": {
+          "label": "Open"
+        }
+      },
+      {
+        "id": "event_start",
+        "kind": "events.on_app_start",
+        "category": "events",
+        "props": {}
+      },
+      {
+        "id": "io_load_doc",
+        "kind": "io.load_local_data",
+        "category": "io",
+        "props": {
+          "key": "current_doc"
+        }
+      },
+      {
+        "id": "event_click_save",
+        "kind": "events.on_click",
+        "category": "events",
+        "props": {
+          "target": "ui_button_save"
+        }
+      },
+      {
+        "id": "io_write_doc",
+        "kind": "io.write_file",
+        "category": "io",
+        "props": {
+          "source_ref": "ui_textarea_body"
+        }
+      },
+      {
+        "id": "event_click_open",
+        "kind": "events.on_click",
+        "category": "events",
+        "props": {
+          "target": "ui_button_open"
+        }
+      },
+      {
+        "id": "io_read_doc",
+        "kind": "io.read_file",
+        "category": "io",
+        "props": {
+          "target_ref": "ui_textarea_body"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge_window_screen",
+        "from": "window_main",
+        "to": "screen_editor",
+        "edge_type": "child"
+      },
+      {
+        "id": "edge_start_load",
+        "from": "event_start",
+        "to": "io_load_doc",
+        "edge_type": "flow"
+      },
+      {
+        "id": "edge_save_write",
+        "from": "event_click_save",
+        "to": "io_write_doc",
+        "edge_type": "flow"
+      },
+      {
+        "id": "edge_open_read",
+        "from": "event_click_open",
+        "to": "io_read_doc",
+        "edge_type": "flow"
+      }
+    ]
+  },
+  "ir_snapshot": null,
+  "assets": [],
+  "ai_history": [],
+  "settings": {
+    "autosave_interval_secs": 20,
+    "validate_on_change": true,
+    "codegen_deterministic": true,
+    "ai_default_text_provider": "ollama",
+    "ai_default_image_provider": "comfyui"
+  }
+}

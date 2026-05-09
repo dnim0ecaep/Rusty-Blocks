@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "project": {
+    "id": "example-sprite-bouncer",
+    "app_name": "Sprite Bouncer",
+    "package_id": "com.warpforge.sprite-bouncer",
+    "version": "0.1.0",
+    "author": "WarpForge Examples",
+    "description": "In-studio sprite runtime demo. Open this file, then click the ⚑ green flag in the Stage panel. Two sprites: Friend bounces around (space = grow, click = ouch); Counter tracks a score variable (a = +1, b = -1, c = reset).",
+    "target_type": "desktop_slint",
+    "theme": "auto",
+    "created_at": "2026-05-06T00:00:00Z",
+    "updated_at": "2026-05-06T00:00:00Z"
+  },
+  "workspace_state": {
+    "zoom": 1.0,
+    "pan_x": 0.0,
+    "pan_y": 0.0,
+    "selected_block_ids": [],
+    "blockly_xml": null,
+    "comments": [],
+    "groups": []
+  },
+  "normalized_graph": {
+    "nodes": [
+      {
+        "id": "window_main",
+        "kind": "structure.window",
+        "category": "structure",
+        "props": {
+          "height": 360,
+          "title": "Sprite Bouncer",
+          "width": 480
+        }
+      },
+      {
+        "id": "screen_stage",
+        "kind": "structure.screen",
+        "category": "structure",
+        "props": {
+          "name": "Stage",
+          "route": "/"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge_window_screen",
+        "from": "window_main",
+        "to": "screen_stage",
+        "edge_type": "child"
+      }
+    ]
+  },
+  "assets": [],
+  "ai_history": [],
+  "stage_state": {
+    "schema_version": 1,
+    "sprites": [
+      {
+        "id": "sprite_friend",
+        "name": "Friend",
+        "x": 0,
+        "y": 0,
+        "direction": 60,
+        "size": 80,
+        "visible": true,
+        "rotationStyle": "all-around",
+        "costumeIndex": -1,
+        "costumes": [],
+        "sounds": [],
+        "scripts_xml": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><block type=\"scratch_event_when_flag_clicked\" id=\"f_hat_flag\" x=\"40\" y=\"40\"><next><block type=\"scratch_looks_show\" id=\"f_show\"><next><block type=\"scratch_looks_set_size\" id=\"f_setsize\"><field name=\"SIZE\">80</field><next><block type=\"scratch_motion_goto_xy\" id=\"f_goto\"><field name=\"X\">0</field><field name=\"Y\">0</field><next><block type=\"scratch_motion_point_in_direction\" id=\"f_dir\"><field name=\"DIRECTION\">60</field><next><block type=\"scratch_looks_say_for_secs\" id=\"f_hi\"><field name=\"MESSAGE\">Hi! Click me to grow.</field><field name=\"SECS\">2</field><next><block type=\"scratch_control_forever\" id=\"f_for\"><statement name=\"DO\"><block type=\"scratch_motion_move_steps\" id=\"f_move\"><field name=\"STEPS\">5</field><next><block type=\"scratch_motion_if_on_edge_bounce\" id=\"f_bounce\"/></next></block></statement></block></next></block></next></block></next></block></next></block></next></block></next></block><block type=\"scratch_event_when_key_pressed\" id=\"f_hat_space\" x=\"40\" y=\"360\"><field name=\"KEY\">space</field><next><block type=\"scratch_looks_change_size\" id=\"f_grow\"><field name=\"DSIZE\">10</field></block></next></block><block type=\"scratch_event_when_this_sprite_clicked\" id=\"f_hat_click\" x=\"40\" y=\"460\"><next><block type=\"scratch_looks_say_for_secs\" id=\"f_ouch\"><field name=\"MESSAGE\">Ouch!</field><field name=\"SECS\">0.5</field></block></next></block></xml>",
+        "variables": {},
+        "lists": {},
+        "layer": 2
+      },
+      {
+        "id": "sprite_counter",
+        "name": "Counter",
+        "x": -180,
+        "y": 120,
+        "direction": 90,
+        "size": 60,
+        "visible": false,
+        "rotationStyle": "all-around",
+        "costumeIndex": -1,
+        "costumes": [],
+        "sounds": [],
+        "scripts_xml": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><block type=\"scratch_event_when_flag_clicked\" id=\"c_hat_flag\" x=\"40\" y=\"40\"><next><block type=\"scratch_looks_hide\" id=\"c_hide\"><next><block type=\"scratch_data_set_variable\" id=\"c_init\"><field name=\"VARIABLE\">score</field><field name=\"VALUE\">0</field><next><block type=\"scratch_data_show_variable\" id=\"c_show\"><field name=\"VARIABLE\">score</field></block></next></block></next></block></next></block><block type=\"scratch_event_when_key_pressed\" id=\"c_hat_a\" x=\"40\" y=\"260\"><field name=\"KEY\">a</field><next><block type=\"scratch_data_change_variable\" id=\"c_inc\"><field name=\"VARIABLE\">score</field><field name=\"VALUE\">1</field></block></next></block><block type=\"scratch_event_when_key_pressed\" id=\"c_hat_b\" x=\"40\" y=\"360\"><field name=\"KEY\">b</field><next><block type=\"scratch_data_change_variable\" id=\"c_dec\"><field name=\"VARIABLE\">score</field><field name=\"VALUE\">-1</field></block></next></block><block type=\"scratch_event_when_key_pressed\" id=\"c_hat_c\" x=\"40\" y=\"460\"><field name=\"KEY\">c</field><next><block type=\"scratch_data_set_variable\" id=\"c_clear\"><field name=\"VARIABLE\">score</field><field name=\"VALUE\">0</field></block></next></block></xml>",
+        "variables": {},
+        "lists": {},
+        "layer": 1
+      }
+    ],
+    "selectedSpriteId": "sprite_friend",
+    "backdropIndex": -1,
+    "backdrops": [],
+    "globalVariables": {
+      "score": 0
+    },
+    "globalLists": {}
+  },
+  "settings": {
+    "autosave_interval_secs": 30,
+    "validate_on_change": false,
+    "codegen_deterministic": true,
+    "ai_default_text_provider": "ollama",
+    "ai_default_image_provider": "comfyui"
+  }
+}

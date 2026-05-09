@@ -1,0 +1,17 @@
+[package]
+name = "wf-ir"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true
+schemars.workspace = true
+thiserror.workspace = true
+wf-graph = { path = "../wf-graph" }
+wf-schema = { path = "../wf-schema" }
+
+[dev-dependencies]
+wf-template = { path = "../wf-template" }

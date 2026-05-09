@@ -1,0 +1,145 @@
+{
+  "schema_version": 1,
+  "project": {
+    "id": "example-recipe-card",
+    "app_name": "Recipe Card",
+    "package_id": "com.warpforge.recipe-card",
+    "version": "0.1.0",
+    "author": "WarpForge Examples",
+    "description": "Single-page recipe layout with ingredients and steps — bundled example. Open this file in WarpForge Studio and click ▶ Run.",
+    "target_type": "desktop_slint",
+    "theme": "auto",
+    "created_at": "2026-05-04T00:00:00Z",
+    "updated_at": "2026-05-04T00:00:00Z"
+  },
+  "workspace_state": {
+    "zoom": 1.0,
+    "pan_x": 0.0,
+    "pan_y": 0.0,
+    "selected_block_ids": [],
+    "blockly_xml": null,
+    "comments": [],
+    "groups": []
+  },
+  "normalized_graph": {
+    "nodes": [
+      {
+        "id": "window_main",
+        "kind": "structure.window",
+        "category": "structure",
+        "props": {
+          "height": 720,
+          "title": "Recipe Card",
+          "width": 640
+        }
+      },
+      {
+        "id": "screen_home",
+        "kind": "structure.screen",
+        "category": "structure",
+        "props": {
+          "name": "Recipe",
+          "route": "/"
+        }
+      },
+      {
+        "id": "ui_header",
+        "kind": "ui.header",
+        "category": "ui",
+        "props": {
+          "title": "Pasta al Pomodoro"
+        }
+      },
+      {
+        "id": "ui_summary",
+        "kind": "ui.text",
+        "category": "ui",
+        "props": {
+          "text": "Serves 4 · 25 minutes · Easy"
+        }
+      },
+      {
+        "id": "ui_ingredients_title",
+        "kind": "ui.text",
+        "category": "ui",
+        "props": {
+          "text": "Ingredients"
+        }
+      },
+      {
+        "id": "ui_ingredients",
+        "kind": "ui.textarea",
+        "category": "ui",
+        "props": {
+          "placeholder": "400g spaghetti\n800g canned tomatoes\n4 garlic cloves\nfresh basil\nolive oil, salt",
+          "rows": 6
+        }
+      },
+      {
+        "id": "ui_steps_title",
+        "kind": "ui.text",
+        "category": "ui",
+        "props": {
+          "text": "Steps"
+        }
+      },
+      {
+        "id": "ui_steps",
+        "kind": "ui.textarea",
+        "category": "ui",
+        "props": {
+          "placeholder": "1. Boil salted water and cook spaghetti al dente.\n2. Sauté sliced garlic in olive oil until fragrant.\n3. Add tomatoes, simmer 10 minutes, season.\n4. Toss pasta with sauce, finish with basil.",
+          "rows": 8
+        }
+      },
+      {
+        "id": "ui_save_btn",
+        "kind": "ui.button",
+        "category": "ui",
+        "props": {
+          "label": "Save Recipe"
+        }
+      },
+      {
+        "id": "event_save_click",
+        "kind": "events.on_click",
+        "category": "events",
+        "props": {
+          "target": "ui_save_btn"
+        }
+      },
+      {
+        "id": "io_save_recipe",
+        "kind": "io.save_local_data",
+        "category": "io",
+        "props": {
+          "key": "recipe"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge_window_screen",
+        "from": "window_main",
+        "to": "screen_home",
+        "edge_type": "child"
+      },
+      {
+        "id": "edge_save_click_io",
+        "from": "event_save_click",
+        "to": "io_save_recipe",
+        "edge_type": "flow"
+      }
+    ]
+  },
+  "ir_snapshot": null,
+  "assets": [],
+  "ai_history": [],
+  "settings": {
+    "autosave_interval_secs": 20,
+    "validate_on_change": true,
+    "codegen_deterministic": true,
+    "ai_default_text_provider": "ollama",
+    "ai_default_image_provider": "comfyui"
+  }
+}

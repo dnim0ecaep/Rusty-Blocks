@@ -1,0 +1,19 @@
+[package]
+name = "wf-template"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+anyhow.workspace = true
+chrono.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+uuid.workspace = true
+wf-schema = { path = "../wf-schema" }
+wf-graph = { path = "../wf-graph" }
+wf-ir = { path = "../wf-ir" }
+wf-validate = { path = "../wf-validate" }
+wf-codegen-slint = { path = "../wf-codegen-slint" }
+wf-assemble = { path = "../wf-assemble" }

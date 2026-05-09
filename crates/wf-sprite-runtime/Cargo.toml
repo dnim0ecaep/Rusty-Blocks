@@ -1,0 +1,35 @@
+[package]
+name = "wf-sprite-runtime"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "Native sprite runtime — interpreter, scheduler, and macroquad render loop for compiled WarpForge sprite projects."
+
+[lib]
+name = "wf_sprite_runtime"
+path = "src/lib.rs"
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+anyhow = { workspace = true }
+base64 = "0.22"
+# macroquad is the rendering/input/audio surface for the standalone
+# player binary. Made optional so consumers that just need the headless
+# engine (codegen pipeline, IR builder, tests) don't pull in macroquad +
+# miniquad + audrey + image at all.
+macroquad = { version = "0.4", default-features = false, optional = true }
+
+[features]
+# By default the standalone-app surface is enabled (existing behavior).
+# Codegen consumers turn it off via `default-features = false`.
+default = ["macroquad-app"]
+# Compile the macroquad-based render loop + entry point.
+macroquad-app = ["dep:macroquad"]
+# Backwards-compat alias: turning on `headless` no-ops the macroquad
+# surface (same effect as not enabling `macroquad-app`).
+headless = []
+
+[dev-dependencies]
+wf-sprite-codegen = { path = "../wf-sprite-codegen" }

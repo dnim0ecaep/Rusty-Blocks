@@ -1,0 +1,15 @@
+import { Button, LineEdit } from "std-widgets.slint";
+
+export component MainWindow inherits Window {
+    width: 1024px;
+    height: 768px;
+    title: "ExportCommand";
+
+    in-out property <string> status_text: "";
+    callback evt_event_add_click();
+
+    VerticalLayout {
+        Button { text: "Add"; clicked => { root.evt_event_add_click(); } }
+        Text { text: root.status_text; color: gray; font-size: 12px; }
+    }
+}

@@ -1,0 +1,42 @@
+[workspace]
+resolver = "2"
+members = [
+  "apps/studio/src-tauri",
+  "crates/wf-schema",
+  "crates/wf-graph",
+  "crates/wf-ir",
+  "crates/wf-validate",
+  "crates/wf-codegen-slint",
+  "crates/wf-assemble",
+  "crates/wf-export",
+  "crates/wf-ai",
+  "crates/wf-template",
+  "crates/wf-rust-import",
+  "crates/wf-sprite-runtime",
+  "crates/wf-sprite-codegen",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+authors = ["WarpForge Team"]
+license = "MIT"
+
+[workspace.dependencies]
+anyhow = "1"
+async-trait = "0.1"
+chrono = { version = "0.4", features = ["serde"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+schemars = { version = "0.8", features = ["chrono"] }
+thiserror = "1"
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "process", "fs"] }
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls"] }
+regex = "1"
+indexmap = { version = "2", features = ["serde"] }
+parking_lot = "0.12"
+uuid = { version = "1", features = ["serde", "v4"] }
+walkdir = "2"
+syn = { version = "2", features = ["full", "extra-traits", "visit"] }
+proc-macro2 = "1"
+quote = "1"

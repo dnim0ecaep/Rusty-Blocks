@@ -1,0 +1,36 @@
+import { Button, LineEdit, TextEdit, CheckBox } from "std-widgets.slint";
+
+export component MainWindow inherits Window {
+    width: 1024px;
+    height: 768px;
+    title: "PipelineTest";
+
+    in-out property <string> status_text: "";
+    in-out property <[string]> items: [];
+    in-out property <string> input_note_input: "";
+    callback evt_event_add_click();
+
+    VerticalLayout {
+        padding: 8px;
+        spacing: 6px;
+        LineEdit { placeholder-text: "Type a note…"; text <=> root.input_note_input; }
+        Button { text: "Add"; clicked => { root.evt_event_add_click(); } }
+        Rectangle {
+            background: #f5f7fb;
+            border-color: #cdd6e2;
+            border-width: 1px;
+            border-radius: 4px;
+            min-height: 80px;
+            VerticalLayout {
+                padding: 6px;
+                spacing: 4px;
+                for item[i] in root.items: Text {
+                    text: "• " + item;
+                    font-size: 13px;
+                    color: #1a2333;
+                }
+            }
+        }
+        Text { text: root.status_text; color: gray; font-size: 12px; }
+    }
+}

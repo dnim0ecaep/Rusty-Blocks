@@ -1,0 +1,146 @@
+{
+  "schema_version": 1,
+  "project": {
+    "id": "example-checklist",
+    "app_name": "Checklist App",
+    "package_id": "com.warpforge.checklist-app",
+    "version": "0.1.0",
+    "author": "WarpForge Examples",
+    "description": "Task checklist manager — bundled example. Open this file in WarpForge Studio and click ▶ Run.",
+    "target_type": "desktop_slint",
+    "theme": "auto",
+    "created_at": "2026-05-04T00:00:00Z",
+    "updated_at": "2026-05-04T00:00:00Z"
+  },
+  "workspace_state": {
+    "zoom": 1.0,
+    "pan_x": 0.0,
+    "pan_y": 0.0,
+    "selected_block_ids": [],
+    "blockly_xml": null,
+    "comments": [],
+    "groups": []
+  },
+  "normalized_graph": {
+    "nodes": [
+      {
+        "id": "window_main",
+        "kind": "structure.window",
+        "category": "structure",
+        "props": {
+          "height": 600,
+          "title": "Checklist",
+          "width": 800
+        }
+      },
+      {
+        "id": "screen_home",
+        "kind": "structure.screen",
+        "category": "structure",
+        "props": {
+          "name": "Home",
+          "route": "/"
+        }
+      },
+      {
+        "id": "ui_input_task",
+        "kind": "ui.input",
+        "category": "ui",
+        "props": {
+          "placeholder": "New task..."
+        }
+      },
+      {
+        "id": "ui_button_add",
+        "kind": "ui.button",
+        "category": "ui",
+        "props": {
+          "label": "Add Task"
+        }
+      },
+      {
+        "id": "ui_list_tasks",
+        "kind": "ui.list",
+        "category": "ui",
+        "props": {
+          "collection": "tasks"
+        }
+      },
+      {
+        "id": "event_start",
+        "kind": "events.on_app_start",
+        "category": "events",
+        "props": {}
+      },
+      {
+        "id": "io_load_tasks",
+        "kind": "io.load_local_data",
+        "category": "io",
+        "props": {
+          "key": "checklist"
+        }
+      },
+      {
+        "id": "event_click_add",
+        "kind": "events.on_click",
+        "category": "events",
+        "props": {
+          "target": "ui_button_add"
+        }
+      },
+      {
+        "id": "state_add_task",
+        "kind": "state.add_item",
+        "category": "state",
+        "props": {
+          "collection": "tasks",
+          "value_ref": "ui_input_task"
+        }
+      },
+      {
+        "id": "io_save_tasks",
+        "kind": "io.save_local_data",
+        "category": "io",
+        "props": {
+          "key": "checklist"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge_window_screen",
+        "from": "window_main",
+        "to": "screen_home",
+        "edge_type": "child"
+      },
+      {
+        "id": "edge_start_load",
+        "from": "event_start",
+        "to": "io_load_tasks",
+        "edge_type": "flow"
+      },
+      {
+        "id": "edge_click_add_state",
+        "from": "event_click_add",
+        "to": "state_add_task",
+        "edge_type": "flow"
+      },
+      {
+        "id": "edge_click_add_save",
+        "from": "event_click_add",
+        "to": "io_save_tasks",
+        "edge_type": "flow"
+      }
+    ]
+  },
+  "ir_snapshot": null,
+  "assets": [],
+  "ai_history": [],
+  "settings": {
+    "autosave_interval_secs": 20,
+    "validate_on_change": true,
+    "codegen_deterministic": true,
+    "ai_default_text_provider": "ollama",
+    "ai_default_image_provider": "comfyui"
+  }
+}

@@ -1,0 +1,175 @@
+{
+  "schema_version": 1,
+  "project": {
+    "id": "example-form-entry",
+    "app_name": "Form Data Entry",
+    "package_id": "com.warpforge.form-data-entry",
+    "version": "0.1.0",
+    "author": "WarpForge Examples",
+    "description": "Structured form capture app — bundled example. Open this file in WarpForge Studio and click ▶ Run.",
+    "target_type": "desktop_slint",
+    "theme": "auto",
+    "created_at": "2026-05-04T00:00:00Z",
+    "updated_at": "2026-05-04T00:00:00Z"
+  },
+  "workspace_state": {
+    "zoom": 1.0,
+    "pan_x": 0.0,
+    "pan_y": 0.0,
+    "selected_block_ids": [],
+    "blockly_xml": null,
+    "comments": [],
+    "groups": []
+  },
+  "normalized_graph": {
+    "nodes": [
+      {
+        "id": "window_main",
+        "kind": "structure.window",
+        "category": "structure",
+        "props": {
+          "height": 700,
+          "title": "Form Entry",
+          "width": 800
+        }
+      },
+      {
+        "id": "screen_form",
+        "kind": "structure.screen",
+        "category": "structure",
+        "props": {
+          "name": "Form",
+          "route": "/"
+        }
+      },
+      {
+        "id": "ui_input_name",
+        "kind": "ui.input",
+        "category": "ui",
+        "props": {
+          "placeholder": "Full name"
+        }
+      },
+      {
+        "id": "ui_input_email",
+        "kind": "ui.input",
+        "category": "ui",
+        "props": {
+          "placeholder": "Email address"
+        }
+      },
+      {
+        "id": "ui_select_category",
+        "kind": "ui.select",
+        "category": "ui",
+        "props": {
+          "label": "Category",
+          "options": [
+            "Option A",
+            "Option B",
+            "Option C"
+          ]
+        }
+      },
+      {
+        "id": "ui_textarea_notes",
+        "kind": "ui.textarea",
+        "category": "ui",
+        "props": {
+          "placeholder": "Additional notes..."
+        }
+      },
+      {
+        "id": "ui_button_submit",
+        "kind": "ui.button",
+        "category": "ui",
+        "props": {
+          "label": "Submit"
+        }
+      },
+      {
+        "id": "ui_list_entries",
+        "kind": "ui.list",
+        "category": "ui",
+        "props": {
+          "collection": "entries"
+        }
+      },
+      {
+        "id": "event_start",
+        "kind": "events.on_app_start",
+        "category": "events",
+        "props": {}
+      },
+      {
+        "id": "io_load_entries",
+        "kind": "io.load_local_data",
+        "category": "io",
+        "props": {
+          "key": "form_entries"
+        }
+      },
+      {
+        "id": "event_submit",
+        "kind": "events.on_submit",
+        "category": "events",
+        "props": {
+          "target": "ui_button_submit"
+        }
+      },
+      {
+        "id": "state_add_entry",
+        "kind": "state.add_item",
+        "category": "state",
+        "props": {
+          "collection": "entries",
+          "value_ref": "form_data"
+        }
+      },
+      {
+        "id": "io_save_entries",
+        "kind": "io.save_local_data",
+        "category": "io",
+        "props": {
+          "key": "form_entries"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge_window_screen",
+        "from": "window_main",
+        "to": "screen_form",
+        "edge_type": "child"
+      },
+      {
+        "id": "edge_start_load",
+        "from": "event_start",
+        "to": "io_load_entries",
+        "edge_type": "flow"
+      },
+      {
+        "id": "edge_submit_add",
+        "from": "event_submit",
+        "to": "state_add_entry",
+        "edge_type": "flow"
+      },
+      {
+        "id": "edge_submit_save",
+        "from": "event_submit",
+        "to": "io_save_entries",
+        "edge_type": "flow"
+      }
+    ]
+  },
+  "ir_snapshot": null,
+  "assets": [],
+  "ai_history": [],
+  "settings": {
+    "autosave_interval_secs": 20,
+    "validate_on_change": true,
+    "codegen_deterministic": true,
+    "ai_default_text_provider": "ollama",
+    "ai_default_image_provider": "comfyui"
+  }
+}

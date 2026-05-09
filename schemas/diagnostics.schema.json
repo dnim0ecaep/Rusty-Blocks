@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://warpforge.dev/schemas/diagnostics.schema.json",
+  "title": "WarpForge Diagnostics",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["code", "severity", "message"],
+    "properties": {
+      "code": { "type": "string" },
+      "severity": { "type": "string", "enum": ["info", "warning", "error"] },
+      "message": { "type": "string" },
+      "node_id": { "type": ["string", "null"] },
+      "location": { "type": ["object", "null"] },
+      "hint": { "type": ["string", "null"] }
+    }
+  }
+}

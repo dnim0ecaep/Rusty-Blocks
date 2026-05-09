@@ -1,0 +1,24 @@
+.blocklyToolboxDiv {
+  border-right: 1px solid #dce6f5;
+}
+
+.blocklyFlyout {
+  box-shadow: inset -1px 0 0 #dce6f5;
+}
+
+.blocklyMainBackground {
+  stroke: none;
+}
+
+.blocklyTreeRow {
+  border-radius: 6px;
+  margin: 2px 4px;
+}
+
+.blocklyTreeSelected {
+  background-color: #e4f0ff !important;
+}
+
+.blocklyScrollbarHandle {
+  fill: #9ab4d5;
+}

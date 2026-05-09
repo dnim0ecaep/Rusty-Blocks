@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "project": {
+    "id": "84447430-945e-4954-8a04-6663941f7688",
+    "app_name": "WarpForge",
+    "package_id": "com.warpforge.warpforge",
+    "version": "0.1.0",
+    "author": "WarpForge User",
+    "description": "WarpForge generated from notes template",
+    "target_type": "desktop_slint",
+    "theme": "auto",
+    "created_at": "2026-03-02T14:35:33.980445Z",
+    "updated_at": "2026-03-02T14:35:33.980445Z"
+  },
+  "workspace_state": {
+    "zoom": 1.0,
+    "pan_x": 0.0,
+    "pan_y": 0.0,
+    "selected_block_ids": [],
+    "blockly_xml": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><block type=\"wf_on_app_start\" id=\"a-I!;HaR-y}5EJIWHQQp\" x=\"132\" y=\"-12\"><next><block type=\"wf_screen\" id=\"Q!Ah.aK5u}*4_mstm3/~\"><field name=\"NAME\">Home</field><field name=\"ROUTE\">/</field><next><block type=\"wf_window\" id=\"wuO)s!MV!I{C.Ggaon7!\"><field name=\"TITLE\">Main</field><field name=\"WIDTH\">1024</field><field name=\"HEIGHT\">768</field><next><block type=\"wf_ui_text\" id=\",Y)3vy$04v[Yh!MKACH7\"><field name=\"TEXT\">Hello</field></block></next></block></next></block></next></block></xml>",
+    "comments": [],
+    "groups": []
+  },
+  "normalized_graph": {
+    "nodes": [
+      {
+        "id": ",Y)3vy$04v[Yh!MKACH7",
+        "kind": "ui.text",
+        "category": "ui",
+        "props": {
+          "text": "Hello"
+        }
+      },
+      {
+        "id": "a-I!;HaR-y}5EJIWHQQp",
+        "kind": "events.on_app_start",
+        "category": "events",
+        "props": {}
+      },
+      {
+        "id": "Q!Ah.aK5u}*4_mstm3/~",
+        "kind": "structure.screen",
+        "category": "structure",
+        "props": {
+          "name": "Home",
+          "route": "/"
+        }
+      },
+      {
+        "id": "wuO)s!MV!I{C.Ggaon7!",
+        "kind": "structure.window",
+        "category": "structure",
+        "props": {
+          "height": 768,
+          "title": "Main",
+          "width": 1024
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge-a-I!;HaR-y}5EJIWHQQp-Q!Ah.aK5u}*4_mstm3/~",
+        "from": "a-I!;HaR-y}5EJIWHQQp",
+        "to": "Q!Ah.aK5u}*4_mstm3/~",
+        "edge_type": "flow"
+      },
+      {
+        "id": "edge-Q!Ah.aK5u}*4_mstm3/~-wuO)s!MV!I{C.Ggaon7!",
+        "from": "Q!Ah.aK5u}*4_mstm3/~",
+        "to": "wuO)s!MV!I{C.Ggaon7!",
+        "edge_type": "flow"
+      },
+      {
+        "id": "edge-wuO)s!MV!I{C.Ggaon7!-,Y)3vy$04v[Yh!MKACH7",
+        "from": "wuO)s!MV!I{C.Ggaon7!",
+        "to": ",Y)3vy$04v[Yh!MKACH7",
+        "edge_type": "flow"
+      }
+    ]
+  },
+  "ir_snapshot": null,
+  "assets": [],
+  "ai_history": [],
+  "settings": {
+    "autosave_interval_secs": 20,
+    "validate_on_change": true,
+    "codegen_deterministic": true,
+    "ai_default_text_provider": "ollama",
+    "ai_default_image_provider": "comfyui"
+  }
+}

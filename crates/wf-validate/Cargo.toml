@@ -1,0 +1,17 @@
+[package]
+name = "wf-validate"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+regex.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+wf-ir = { path = "../wf-ir" }
+
+[dev-dependencies]
+wf-graph = { path = "../wf-graph" }
+wf-template = { path = "../wf-template" }

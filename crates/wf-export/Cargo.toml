@@ -1,0 +1,22 @@
+[package]
+name = "wf-export"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+anyhow.workspace = true
+chrono.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+tokio.workspace = true
+wf-assemble = { path = "../wf-assemble" }
+wf-codegen-slint = { path = "../wf-codegen-slint" }
+wf-ir = { path = "../wf-ir" }
+wf-schema = { path = "../wf-schema" }
+
+[dev-dependencies]
+walkdir.workspace = true
+wf-graph = { path = "../wf-graph" }
+wf-template = { path = "../wf-template" }

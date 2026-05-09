@@ -1,0 +1,24 @@
+{
+  "project_id": "c9899a07-d4da-4f06-b61f-34ece93d129f",
+  "project_name": "ExportCommand",
+  "source_dir": "target/test-generated/export-command/2026-05-05T11-27-44Z/exportcommand/source",
+  "bundle_path": null,
+  "generated_files": [
+    "Cargo.toml",
+    "README.md",
+    "build.rs",
+    "src/app/events.rs",
+    "src/app/mod.rs",
+    "src/app/state.rs",
+    "src/app/storage.rs",
+    "src/features/mod.rs",
+    "src/features/notes/handlers.rs",
+    "src/features/notes/mod.rs",
+    "src/features/notes/model.rs",
+    "src/main.rs",
+    "ui/main.slint",
+    "ui/screens/home.slint"
+  ],
+  "created_at": "2026-05-05T11:27:44.680243437Z",
+  "generator_version": "0.1.0"
+}

@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "project": {
+    "id": "example-star-burst",
+    "app_name": "Star Burst",
+    "package_id": "com.warpforge.star-burst",
+    "version": "0.1.0",
+    "author": "WarpForge Examples",
+    "description": "Sprite runtime demo. Click the star to spawn 12 clones in a radial burst. A second sprite tracks the burst count via broadcasts. Demonstrates cloning, broadcasts, multi-sprite coordination.",
+    "target_type": "desktop_slint",
+    "theme": "auto",
+    "created_at": "2026-05-06T00:00:00Z",
+    "updated_at": "2026-05-06T23:26:01.488065347Z"
+  },
+  "workspace_state": {
+    "zoom": 1.0,
+    "pan_x": 0.0,
+    "pan_y": 0.0,
+    "selected_block_ids": [],
+    "blockly_xml": "<xml xmlns=\"https://developers.google.com/blockly/xml\">\n<block type=\"wf_window\" id=\"window_main\" x=\"24\" y=\"24\"><field name=\"HEIGHT\">360</field><field name=\"TITLE\">Star Burst</field><field name=\"WIDTH\">480</field><next><block type=\"wf_screen\" id=\"screen_stage\"><field name=\"NAME\">Stage</field><field name=\"ROUTE\">/</field></block></next></block>\n</xml>",
+    "comments": [],
+    "groups": []
+  },
+  "normalized_graph": {
+    "nodes": [
+      {
+        "id": "window_main",
+        "kind": "structure.window",
+        "category": "structure",
+        "props": {
+          "height": 360,
+          "title": "Star Burst",
+          "width": 480
+        }
+      },
+      {
+        "id": "screen_stage",
+        "kind": "structure.screen",
+        "category": "structure",
+        "props": {
+          "name": "Stage",
+          "route": "/"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge_window_screen",
+        "from": "window_main",
+        "to": "screen_stage",
+        "edge_type": "child"
+      }
+    ]
+  },
+  "ir_snapshot": null,
+  "assets": [],
+  "ai_history": [],
+  "stage_state": {
+    "backdropIndex": -1,
+    "backdrops": [],
+    "globalLists": {},
+    "globalVariables": {
+      "bursts": 3
+    },
+    "schema_version": 1,
+    "selectedSpriteId": "sprite_star",
+    "sprites": [
+      {
+        "costumeIndex": -1,
+        "costumes": [],
+        "direction": 90,
+        "id": "sprite_star",
+        "layer": 2,
+        "lists": {},
+        "name": "Star",
+        "rotationStyle": "all-around",
+        "scripts_xml": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><block type=\"scratch_event_when_flag_clicked\" id=\"sf_hat\" x=\"40\" y=\"40\"><next><block type=\"scratch_looks_show\" id=\"sf_show\"><next><block type=\"scratch_motion_goto_xy\" id=\"sf_goto\"><field name=\"X\">0</field><field name=\"Y\">0</field><next><block type=\"scratch_motion_point_in_direction\" id=\"sf_dir\"><field name=\"DIRECTION\">90</field><next><block type=\"scratch_looks_set_size\" id=\"sf_size\"><field name=\"SIZE\">50</field><next><block type=\"scratch_looks_say_for_secs\" id=\"sf_say\"><field name=\"MESSAGE\">Click me to burst!</field><field name=\"SECS\">2</field></block></next></block></next></block></next></block></next></block></next></block><block type=\"scratch_event_when_this_sprite_clicked\" id=\"sc_hat\" x=\"40\" y=\"320\"><next><block type=\"scratch_looks_say\" id=\"sc_clear\"><field name=\"MESSAGE\"></field><next><block type=\"scratch_control_repeat\" id=\"sc_rep\"><field name=\"TIMES\">12</field><statement name=\"DO\"><block type=\"scratch_motion_turn_right\" id=\"sc_turn\"><field name=\"DEGREES\">30</field><next><block type=\"scratch_control_create_clone_of\" id=\"sc_clone\"><field name=\"TARGET\">myself</field></block></next></block></statement><next><block type=\"scratch_event_broadcast\" id=\"sc_bcast\"><field name=\"BROADCAST\">burst</field></block></next></block></next></block></next></block><block type=\"scratch_control_when_i_start_as_clone\" id=\"sk_hat\" x=\"40\" y=\"560\"><next><block type=\"scratch_control_repeat\" id=\"sk_rep\"><field name=\"TIMES\">25</field><statement name=\"DO\"><block type=\"scratch_motion_move_steps\" id=\"sk_move\"><field name=\"STEPS\">5</field></block></statement><next><block type=\"scratch_control_delete_this_clone\" id=\"sk_del\"/></next></block></next></block></xml>",
+        "size": 50,
+        "sounds": [],
+        "variables": {},
+        "visible": true,
+        "x": 0,
+        "y": 0
+      },
+      {
+        "costumeIndex": -1,
+        "costumes": [],
+        "direction": 90,
+        "id": "sprite_score",
+        "layer": 1,
+        "lists": {},
+        "name": "Scorekeeper",
+        "rotationStyle": "all-around",
+        "scripts_xml": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><block type=\"scratch_event_when_flag_clicked\" id=\"kf_hat\" x=\"40\" y=\"40\"><next><block type=\"scratch_looks_hide\" id=\"kf_hide\"><next><block type=\"scratch_data_set_variable\" id=\"kf_init\"><field name=\"VARIABLE\">bursts</field><field name=\"VALUE\">0</field><next><block type=\"scratch_data_show_variable\" id=\"kf_show\"><field name=\"VARIABLE\">bursts</field></block></next></block></next></block></next></block><block type=\"scratch_event_when_i_receive\" id=\"kr_hat\" x=\"40\" y=\"260\"><field name=\"BROADCAST\">burst</field><next><block type=\"scratch_data_change_variable\" id=\"kr_inc\"><field name=\"VARIABLE\">bursts</field><field name=\"VALUE\">1</field></block></next></block></xml>",
+        "size": 60,
+        "sounds": [],
+        "variables": {},
+        "visible": false,
+        "x": -180,
+        "y": 140
+      }
+    ]
+  },
+  "settings": {
+    "autosave_interval_secs": 30,
+    "validate_on_change": false,
+    "codegen_deterministic": true,
+    "ai_default_text_provider": "ollama",
+    "ai_default_image_provider": "comfyui"
+  }
+}

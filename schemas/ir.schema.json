@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://warpforge.dev/schemas/ir.schema.json",
+  "title": "WarpForge Typed IR",
+  "type": "object",
+  "required": ["ir_version", "meta", "target", "windows", "screens", "components", "event_handlers"],
+  "properties": {
+    "ir_version": { "type": "integer", "minimum": 1 },
+    "meta": { "type": "object" },
+    "target": { "type": "object" },
+    "windows": { "type": "array", "items": { "type": "object" } },
+    "routes": { "type": "array", "items": { "type": "string" } },
+    "screens": { "type": "array", "items": { "type": "object" } },
+    "components": { "type": "array", "items": { "type": "object" } },
+    "event_handlers": { "type": "array", "items": { "type": "object" } },
+    "resources": { "type": "array", "items": { "type": "object" } }
+  }
+}

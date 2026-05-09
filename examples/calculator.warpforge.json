@@ -1,0 +1,653 @@
+{
+  "schema_version": 1,
+  "project": {
+    "id": "example-calculator",
+    "app_name": "Calculator",
+    "package_id": "com.warpforge.calculator",
+    "version": "0.1.0",
+    "author": "WarpForge Examples",
+    "description": "Classic calculator with a 4×5 button grid — bundled example. Open this file in WarpForge Studio and click ▶ Run.",
+    "target_type": "desktop_slint",
+    "theme": "auto",
+    "created_at": "2026-05-04T00:00:00Z",
+    "updated_at": "2026-05-04T00:00:00Z"
+  },
+  "workspace_state": {
+    "zoom": 1.0,
+    "pan_x": 0.0,
+    "pan_y": 0.0,
+    "selected_block_ids": [],
+    "blockly_xml": null,
+    "comments": [],
+    "groups": []
+  },
+  "normalized_graph": {
+    "nodes": [
+      {
+        "id": "window_main",
+        "kind": "structure.window",
+        "category": "structure",
+        "props": {
+          "height": 520,
+          "title": "Calculator",
+          "width": 360
+        }
+      },
+      {
+        "id": "screen_home",
+        "kind": "structure.screen",
+        "category": "structure",
+        "props": {
+          "name": "Home",
+          "route": "/"
+        }
+      },
+      {
+        "id": "ui_display",
+        "kind": "ui.text",
+        "category": "ui",
+        "props": {
+          "text": "0",
+          "text_ref": "display"
+        }
+      },
+      {
+        "id": "event_start",
+        "kind": "events.on_app_start",
+        "category": "events",
+        "props": {}
+      },
+      {
+        "id": "state_init_display",
+        "kind": "state.set_variable",
+        "category": "state",
+        "props": {
+          "name": "display",
+          "value": "0"
+        }
+      },
+      {
+        "id": "btn_clear",
+        "kind": "ui.button",
+        "category": "ui",
+        "props": {
+          "label": "C"
+        }
+      },
+      {
+        "id": "event_click_btn_clear",
+        "kind": "events.on_click",
+        "category": "events",
+        "props": {
+          "target": "btn_clear"
+        }
+      },
+      {
+        "id": "state_press_btn_clear",
+        "kind": "state.calc_press",
+        "category": "state",
+        "props": {
+          "value": "C",
+          "variable": "display"
+        }
+      },
+      {
+        "id": "btn_div",
+        "kind": "ui.button",
+        "category": "ui",
+        "props": {
+          "label": "÷"
+        }
+      },
+      {
+        "id": "event_click_btn_div",
+        "kind": "events.on_click",
+        "category": "events",
+        "props": {
+          "target": "btn_div"
+        }
+      },
+      {
+        "id": "state_press_btn_div",
+        "kind": "state.calc_press",
+        "category": "state",
+        "props": {
+          "value": "÷",
+          "variable": "display"
+        }
+      },
+      {
+        "id": "btn_mul",
+        "kind": "ui.button",
+        "category": "ui",
+        "props": {
+          "label": "×"
+        }
+      },
+      {
+        "id": "event_click_btn_mul",
+        "kind": "events.on_click",
+        "category": "events",
+        "props": {
+          "target": "btn_mul"
+        }
+      },
+      {
+        "id": "state_press_btn_mul",
+        "kind": "state.calc_press",
+        "category": "state",
+        "props": {
+          "value": "×",
+          "variable": "display"
+        }
+      },
+      {
+        "id": "btn_back",
+        "kind": "ui.button",
+        "category": "ui",
+        "props": {
+          "label": "⌫"
+        }
+      },
+      {
+        "id": "event_click_btn_back",
+        "kind": "events.on_click",
+        "category": "events",
+        "props": {
+          "target": "btn_back"
+        }
+      },
+      {
+        "id": "state_press_btn_back",
+        "kind": "state.calc_press",
+        "category": "state",
+        "props": {
+          "value": "⌫",
+          "variable": "display"
+        }
+      },
+      {
+        "id": "btn_7",
+        "kind": "ui.button",
+        "category": "ui",
+        "props": {
+          "label": "7"
+        }
+      },
+      {
+        "id": "event_click_btn_7",
+        "kind": "events.on_click",
+        "category": "events",
+        "props": {
+          "target": "btn_7"
+        }
+      },
+      {
+        "id": "state_press_btn_7",
+        "kind": "state.calc_press",
+        "category": "state",
+        "props": {
+          "value": "7",
+          "variable": "display"
+        }
+      },
+      {
+        "id": "btn_8",
+        "kind": "ui.button",
+        "category": "ui",
+        "props": {
+          "label": "8"
+        }
+      },
+      {
+        "id": "event_click_btn_8",
+        "kind": "events.on_click",
+        "category": "events",
+        "props": {
+          "target": "btn_8"
+        }
+      },
+      {
+        "id": "state_press_btn_8",
+        "kind": "state.calc_press",
+        "category": "state",
+        "props": {
+          "value": "8",
+          "variable": "display"
+        }
+      },
+      {
+        "id": "btn_9",
+        "kind": "ui.button",
+        "category": "ui",
+        "props": {
+          "label": "9"
+        }
+      },
+      {
+        "id": "event_click_btn_9",
+        "kind": "events.on_click",
+        "category": "events",
+        "props": {
+          "target": "btn_9"
+        }
+      },
+      {
+        "id": "state_press_btn_9",
+        "kind": "state.calc_press",
+        "category": "state",
+        "props": {
+          "value": "9",
+          "variable": "display"
+        }
+      },
+      {
+        "id": "btn_sub",
+        "kind": "ui.button",
+        "category": "ui",
+        "props": {
+          "label": "−"
+        }
+      },
+      {
+        "id": "event_click_btn_sub",
+        "kind": "events.on_click",
+        "category": "events",
+        "props": {
+          "target": "btn_sub"
+        }
+      },
+      {
+        "id": "state_press_btn_sub",
+        "kind": "state.calc_press",
+        "category": "state",
+        "props": {
+          "value": "−",
+          "variable": "display"
+        }
+      },
+      {
+        "id": "btn_4",
+        "kind": "ui.button",
+        "category": "ui",
+        "props": {
+          "label": "4"
+        }
+      },
+      {
+        "id": "event_click_btn_4",
+        "kind": "events.on_click",
+        "category": "events",
+        "props": {
+          "target": "btn_4"
+        }
+      },
+      {
+        "id": "state_press_btn_4",
+        "kind": "state.calc_press",
+        "category": "state",
+        "props": {
+          "value": "4",
+          "variable": "display"
+        }
+      },
+      {
+        "id": "btn_5",
+        "kind": "ui.button",
+        "category": "ui",
+        "props": {
+          "label": "5"
+        }
+      },
+      {
+        "id": "event_click_btn_5",
+        "kind": "events.on_click",
+        "category": "events",
+        "props": {
+          "target": "btn_5"
+        }
+      },
+      {
+        "id": "state_press_btn_5",
+        "kind": "state.calc_press",
+        "category": "state",
+        "props": {
+          "value": "5",
+          "variable": "display"
+        }
+      },
+      {
+        "id": "btn_6",
+        "kind": "ui.button",
+        "category": "ui",
+        "props": {
+          "label": "6"
+        }
+      },
+      {
+        "id": "event_click_btn_6",
+        "kind": "events.on_click",
+        "category": "events",
+        "props": {
+          "target": "btn_6"
+        }
+      },
+      {
+        "id": "state_press_btn_6",
+        "kind": "state.calc_press",
+        "category": "state",
+        "props": {
+          "value": "6",
+          "variable": "display"
+        }
+      },
+      {
+        "id": "btn_add",
+        "kind": "ui.button",
+        "category": "ui",
+        "props": {
+          "label": "+"
+        }
+      },
+      {
+        "id": "event_click_btn_add",
+        "kind": "events.on_click",
+        "category": "events",
+        "props": {
+          "target": "btn_add"
+        }
+      },
+      {
+        "id": "state_press_btn_add",
+        "kind": "state.calc_press",
+        "category": "state",
+        "props": {
+          "value": "+",
+          "variable": "display"
+        }
+      },
+      {
+        "id": "btn_1",
+        "kind": "ui.button",
+        "category": "ui",
+        "props": {
+          "label": "1"
+        }
+      },
+      {
+        "id": "event_click_btn_1",
+        "kind": "events.on_click",
+        "category": "events",
+        "props": {
+          "target": "btn_1"
+        }
+      },
+      {
+        "id": "state_press_btn_1",
+        "kind": "state.calc_press",
+        "category": "state",
+        "props": {
+          "value": "1",
+          "variable": "display"
+        }
+      },
+      {
+        "id": "btn_2",
+        "kind": "ui.button",
+        "category": "ui",
+        "props": {
+          "label": "2"
+        }
+      },
+      {
+        "id": "event_click_btn_2",
+        "kind": "events.on_click",
+        "category": "events",
+        "props": {
+          "target": "btn_2"
+        }
+      },
+      {
+        "id": "state_press_btn_2",
+        "kind": "state.calc_press",
+        "category": "state",
+        "props": {
+          "value": "2",
+          "variable": "display"
+        }
+      },
+      {
+        "id": "btn_3",
+        "kind": "ui.button",
+        "category": "ui",
+        "props": {
+          "label": "3"
+        }
+      },
+      {
+        "id": "event_click_btn_3",
+        "kind": "events.on_click",
+        "category": "events",
+        "props": {
+          "target": "btn_3"
+        }
+      },
+      {
+        "id": "state_press_btn_3",
+        "kind": "state.calc_press",
+        "category": "state",
+        "props": {
+          "value": "3",
+          "variable": "display"
+        }
+      },
+      {
+        "id": "btn_eq",
+        "kind": "ui.button",
+        "category": "ui",
+        "props": {
+          "label": "="
+        }
+      },
+      {
+        "id": "event_click_btn_eq",
+        "kind": "events.on_click",
+        "category": "events",
+        "props": {
+          "target": "btn_eq"
+        }
+      },
+      {
+        "id": "state_press_btn_eq",
+        "kind": "state.calc_press",
+        "category": "state",
+        "props": {
+          "value": "=",
+          "variable": "display"
+        }
+      },
+      {
+        "id": "btn_0",
+        "kind": "ui.button",
+        "category": "ui",
+        "props": {
+          "label": "0"
+        }
+      },
+      {
+        "id": "event_click_btn_0",
+        "kind": "events.on_click",
+        "category": "events",
+        "props": {
+          "target": "btn_0"
+        }
+      },
+      {
+        "id": "state_press_btn_0",
+        "kind": "state.calc_press",
+        "category": "state",
+        "props": {
+          "value": "0",
+          "variable": "display"
+        }
+      },
+      {
+        "id": "btn_dot",
+        "kind": "ui.button",
+        "category": "ui",
+        "props": {
+          "label": "."
+        }
+      },
+      {
+        "id": "event_click_btn_dot",
+        "kind": "events.on_click",
+        "category": "events",
+        "props": {
+          "target": "btn_dot"
+        }
+      },
+      {
+        "id": "state_press_btn_dot",
+        "kind": "state.calc_press",
+        "category": "state",
+        "props": {
+          "value": ".",
+          "variable": "display"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge_window_screen",
+        "from": "window_main",
+        "to": "screen_home",
+        "edge_type": "child"
+      },
+      {
+        "id": "edge_start_init",
+        "from": "event_start",
+        "to": "state_init_display",
+        "edge_type": "flow"
+      },
+      {
+        "id": "edge_click_btn_clear_state",
+        "from": "event_click_btn_clear",
+        "to": "state_press_btn_clear",
+        "edge_type": "flow"
+      },
+      {
+        "id": "edge_click_btn_div_state",
+        "from": "event_click_btn_div",
+        "to": "state_press_btn_div",
+        "edge_type": "flow"
+      },
+      {
+        "id": "edge_click_btn_mul_state",
+        "from": "event_click_btn_mul",
+        "to": "state_press_btn_mul",
+        "edge_type": "flow"
+      },
+      {
+        "id": "edge_click_btn_back_state",
+        "from": "event_click_btn_back",
+        "to": "state_press_btn_back",
+        "edge_type": "flow"
+      },
+      {
+        "id": "edge_click_btn_7_state",
+        "from": "event_click_btn_7",
+        "to": "state_press_btn_7",
+        "edge_type": "flow"
+      },
+      {
+        "id": "edge_click_btn_8_state",
+        "from": "event_click_btn_8",
+        "to": "state_press_btn_8",
+        "edge_type": "flow"
+      },
+      {
+        "id": "edge_click_btn_9_state",
+        "from": "event_click_btn_9",
+        "to": "state_press_btn_9",
+        "edge_type": "flow"
+      },
+      {
+        "id": "edge_click_btn_sub_state",
+        "from": "event_click_btn_sub",
+        "to": "state_press_btn_sub",
+        "edge_type": "flow"
+      },
+      {
+        "id": "edge_click_btn_4_state",
+        "from": "event_click_btn_4",
+        "to": "state_press_btn_4",
+        "edge_type": "flow"
+      },
+      {
+        "id": "edge_click_btn_5_state",
+        "from": "event_click_btn_5",
+        "to": "state_press_btn_5",
+        "edge_type": "flow"
+      },
+      {
+        "id": "edge_click_btn_6_state",
+        "from": "event_click_btn_6",
+        "to": "state_press_btn_6",
+        "edge_type": "flow"
+      },
+      {
+        "id": "edge_click_btn_add_state",
+        "from": "event_click_btn_add",
+        "to": "state_press_btn_add",
+        "edge_type": "flow"
+      },
+      {
+        "id": "edge_click_btn_1_state",
+        "from": "event_click_btn_1",
+        "to": "state_press_btn_1",
+        "edge_type": "flow"
+      },
+      {
+        "id": "edge_click_btn_2_state",
+        "from": "event_click_btn_2",
+        "to": "state_press_btn_2",
+        "edge_type": "flow"
+      },
+      {
+        "id": "edge_click_btn_3_state",
+        "from": "event_click_btn_3",
+        "to": "state_press_btn_3",
+        "edge_type": "flow"
+      },
+      {
+        "id": "edge_click_btn_eq_state",
+        "from": "event_click_btn_eq",
+        "to": "state_press_btn_eq",
+        "edge_type": "flow"
+      },
+      {
+        "id": "edge_click_btn_0_state",
+        "from": "event_click_btn_0",
+        "to": "state_press_btn_0",
+        "edge_type": "flow"
+      },
+      {
+        "id": "edge_click_btn_dot_state",
+        "from": "event_click_btn_dot",
+        "to": "state_press_btn_dot",
+        "edge_type": "flow"
+      }
+    ]
+  },
+  "ir_snapshot": null,
+  "assets": [],
+  "ai_history": [],
+  "settings": {
+    "autosave_interval_secs": 20,
+    "validate_on_change": true,
+    "codegen_deterministic": true,
+    "ai_default_text_provider": "ollama",
+    "ai_default_image_provider": "comfyui"
+  }
+}

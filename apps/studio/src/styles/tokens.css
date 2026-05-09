@@ -1,0 +1,99 @@
+:root {
+  --bg: #e9f1ff;
+  --bg-elevated: #ffffff;
+  --panel: #f7fbff;
+  --border: #c7d8ed;
+  --text: #16324a;
+  --muted: #5c7892;
+  --accent: #ff7f50;
+  --accent-2: #4a90e2;
+  --accent-3: #3dbb7c;
+  --danger: #d54860;
+  --warning: #cc8a23;
+  --radius: 12px;
+  --shadow: 0 10px 24px rgba(34, 71, 107, 0.16);
+  --btn-bg: linear-gradient(135deg, #ffffff, #f0f7ff);
+  --btn-shadow: 0 2px 6px rgba(28, 70, 108, 0.12);
+  --input-bg: #ffffff;
+  --body-bg: radial-gradient(circle at 15% 15%, #fff5eb 0%, #e9f1ff 42%, #dff4f4 100%);
+  --blockly-bg: #ffffff;
+  --blockly-toolbox-bg: #ffffff;
+  --blockly-flyout-bg: #f8fbff;
+  --blockly-grid: #d7e2f3;
+  --blockly-scrollbar: #88a2c7;
+}
+
+[data-theme="dark"] {
+  --bg: #1a1f2e;
+  --bg-elevated: #242938;
+  --panel: #1e2335;
+  --border: #3a4460;
+  --text: #dce6f4;
+  --muted: #7a90b0;
+  --accent: #ff8c60;
+  --accent-2: #5ba3f5;
+  --accent-3: #4dd68a;
+  --danger: #f05c74;
+  --warning: #e0a030;
+  --shadow: 0 10px 24px rgba(0, 0, 0, 0.4);
+  --btn-bg: linear-gradient(135deg, #2e3650, #252d45);
+  --btn-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  --input-bg: #1e2335;
+  --body-bg: radial-gradient(circle at 15% 15%, #1f1a2e 0%, #1a1f2e 42%, #151e2e 100%);
+  --blockly-bg: #1e2335;
+  --blockly-toolbox-bg: #242938;
+  --blockly-flyout-bg: #1e2a40;
+  --blockly-grid: #2e3a52;
+  --blockly-scrollbar: #3a4d6a;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Avenir Next", "Segoe UI", sans-serif;
+  color: var(--text);
+  background: var(--body-bg);
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  border: 0;
+  border-radius: 10px;
+  padding: 8px 12px;
+  cursor: pointer;
+  background: var(--btn-bg);
+  color: var(--text);
+  box-shadow: var(--btn-shadow);
+}
+
+button:hover {
+  filter: brightness(0.98);
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+input,
+textarea,
+select {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px;
+  background: var(--input-bg);
+  color: var(--text);
+}
+
+.muted {
+  color: var(--muted);
+}

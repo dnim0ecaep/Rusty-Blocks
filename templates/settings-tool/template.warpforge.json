@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "project": {
+    "id": "template-settings-tool",
+    "app_name": "Settings Tool",
+    "package_id": "com.warpforge.settings_tool",
+    "version": "0.1.0",
+    "author": "WarpForge",
+    "description": "Template: settings tool",
+    "target_type": "desktop_slint",
+    "theme": "auto",
+    "created_at": "2026-03-01T00:00:00Z",
+    "updated_at": "2026-03-01T00:00:00Z"
+  },
+  "workspace_state": {
+    "zoom": 1,
+    "pan_x": 0,
+    "pan_y": 0,
+    "selected_block_ids": [],
+    "comments": [],
+    "groups": []
+  },
+  "normalized_graph": {
+    "nodes": [
+      { "id": "window_main", "kind": "structure.window", "category": "structure", "props": { "title": "Settings Tool", "width": 1024, "height": 768 } },
+      { "id": "screen_home", "kind": "structure.screen", "category": "structure", "props": { "name": "Home", "route": "/" } }
+    ],
+    "edges": [
+      { "id": "edge_window_home", "from": "window_main", "to": "screen_home", "edge_type": "child" }
+    ]
+  },
+  "ir_snapshot": null,
+  "assets": [],
+  "ai_history": [],
+  "settings": {
+    "autosave_interval_secs": 20,
+    "validate_on_change": true,
+    "codegen_deterministic": true,
+    "ai_default_text_provider": "ollama",
+    "ai_default_image_provider": "comfyui"
+  }
+}

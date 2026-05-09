@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://warpforge.dev/schemas/ai-results.schema.json",
+  "title": "WarpForge AI Result",
+  "type": "object",
+  "required": ["mode", "provider", "output", "created_at"],
+  "properties": {
+    "mode": { "type": "string", "enum": ["text", "image", "recommendation", "explanation"] },
+    "provider": { "type": "string" },
+    "output": { "type": "object" },
+    "created_at": { "type": "string", "format": "date-time" }
+  }
+}

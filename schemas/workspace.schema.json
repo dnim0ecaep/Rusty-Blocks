@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://warpforge.dev/schemas/workspace.schema.json",
+  "title": "WarpForge Workspace State",
+  "type": "object",
+  "required": ["zoom", "pan_x", "pan_y", "selected_block_ids", "comments", "groups"],
+  "properties": {
+    "zoom": { "type": "number" },
+    "pan_x": { "type": "number" },
+    "pan_y": { "type": "number" },
+    "selected_block_ids": { "type": "array", "items": { "type": "string" } },
+    "blockly_xml": { "type": ["string", "null"] },
+    "comments": { "type": "array", "items": { "type": "object" } },
+    "groups": { "type": "array", "items": { "type": "object" } }
+  }
+}

@@ -1,0 +1,39 @@
+[package]
+name = "warpforge-studio"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[lib]
+name = "warpforge_studio_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+anyhow.workspace = true
+chrono.workspace = true
+parking_lot.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+tauri = { version = "2", features = [] }
+tauri-plugin-dialog = "2"
+tokio.workspace = true
+uuid.workspace = true
+
+wf-ai = { path = "../../../crates/wf-ai" }
+wf-assemble = { path = "../../../crates/wf-assemble" }
+wf-codegen-slint = { path = "../../../crates/wf-codegen-slint" }
+wf-export = { path = "../../../crates/wf-export" }
+wf-graph = { path = "../../../crates/wf-graph" }
+wf-ir = { path = "../../../crates/wf-ir" }
+wf-schema = { path = "../../../crates/wf-schema" }
+wf-rust-import = { path = "../../../crates/wf-rust-import" }
+wf-template = { path = "../../../crates/wf-template" }
+wf-validate = { path = "../../../crates/wf-validate" }
+wf-sprite-codegen = { path = "../../../crates/wf-sprite-codegen" }
+
+[dev-dependencies]
+wf-template = { path = "../../../crates/wf-template" }

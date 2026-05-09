@@ -1,0 +1,70 @@
+ 
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash  
+nvm install 22 
+npm install -g pnpm@10 
+  
+cd /home/mdbeyhl/Code/Rustyblocks/apps/studio                                         
+node_modules/.bin/tauri dev     
+ 
+ 
+ 
+ Bash(which cargo-tauri 2>/dev/null; ls /home/mdbeyhl/Code/Rustyblocks/apps/studio/node_modules/.bin/tauri; rustup show 2>&1 | head -5)               
+  ⎿  /home/mdbeyhl/Code/Rustyblocks/apps/studio/node_modules/.bin/tauri                                                                                
+     Default host: x86_64-unknown-linux-gnu                                                                                                            
+     rustup home:  /home/mdbeyhl/.rustup                                                                                                               
+     … +3 lines (ctrl+o to expand)        
+                                                                                                                                                       
+  Read 1 file, listed 1 directory (ctrl+o to expand)                                                                                                   
+                                                                                                                         
+● Node.js isn't installed on this system, which is required to run the frontend. Here's what you need:                             
+                                                                                                                                                       
+  1. Install Node.js (pick one):                                                                                                                       
+  # via nvm (recommended)                                                                                                                              
+  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash                                                                      
+  # then restart your shell, then:                                                                                                                     
+  nvm install 22                                                                                                                                       
+  Or via your system package manager:                                                                                                                  
+  sudo apt install nodejs npm                                                                                                                          
+                                                                                                                                                       
+  2. Install pnpm (the workspace package manager):                                                                                                     
+  npm install -g pnpm@10                                                                                                                               
+     rustup home:  /home/mdbeyhl/.rustup
+     … +3 lines (ctrl+o to expand)
+
+  Read 1 file, listed 1 directory (ctrl+o to expand)
+
+● Node.js isn't installed on this system, which is required to run the frontend. Here's
+  what you need:
+
+  1. Install Node.js (pick one):
+  # via nvm (recommended)
+  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+  # then restart your shell, then:
+  nvm install 22
+  Or via your system package manager:
+  sudo apt install nodejs npm
+
+  2. Install pnpm (the workspace package manager):
+  npm install -g pnpm@10
+
+  3. Install frontend dependencies:
+  cd /home/mdbeyhl/Code/Rustyblocks/apps/studio
+  pnpm install
+
+  4. Run the app:
+  cd /home/mdbeyhl/Code/Rustyblocks/apps/studio/src-tauri
+  cargo tauri dev
+
+  Or from the workspace root:
+  cd /home/mdbeyhl/Code/Rustyblocks
+  pnpm dev
+
+  That last command spins up the Vite dev server on port 5173 and launches the Tauri
+  window against it. The tauri CLI is already present in node_modules/.bin/ and
+  Rust/Cargo are already installed, so once Node is there you should be good to go.
+
+✻ Cooked for 31s
+
+※ recap: Fixed a Rust compile error blocking all tests. Node.js needs to be installed
+  before the app can run — install it via nvm or apt, then pnpm, then run pnpm dev from
+  the project root. (disable recaps in /config)

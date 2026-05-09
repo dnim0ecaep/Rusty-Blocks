@@ -1,0 +1,16 @@
+[package]
+name = "wf-rust-import"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+anyhow.workspace = true
+chrono.workspace = true
+proc-macro2.workspace = true
+quote.workspace = true
+serde_json.workspace = true
+syn = { workspace = true, features = ["full", "extra-traits", "visit"] }
+uuid.workspace = true
+wf-schema = { path = "../wf-schema" }

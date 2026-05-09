@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "project": {
+    "id": "1ad9b15a-2844-421f-a323-40298e0c3e63",
+    "app_name": "Hello-Mrfart",
+    "package_id": "com.war.hellofart",
+    "version": "0.1.0",
+    "author": "WarpForge User",
+    "description": "Hello fart generated from notes template",
+    "target_type": "desktop_slint",
+    "theme": "auto",
+    "created_at": "2026-03-01T19:14:37.280861Z",
+    "updated_at": "2026-03-01T19:15:24.288Z"
+  },
+  "workspace_state": {
+    "zoom": 1.0,
+    "pan_x": 0.0,
+    "pan_y": 0.0,
+    "selected_block_ids": [],
+    "blockly_xml": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><block type=\"wf_on_app_start\" id=\"+4][`w5!opE*|*adekT,\" x=\"84\" y=\"36\"><next><block type=\"wf_screen\" id=\"){%ks7.yx.,Dp/$j#T0~\"><field name=\"NAME\">Home</field><field name=\"ROUTE\">/</field><next><block type=\"wf_window\" id=\"XjiR6pq+|EW9Ia{X{*(:\"><field name=\"TITLE\">Main</field><field name=\"WIDTH\">1024</field><field name=\"HEIGHT\">768</field><next><block type=\"wf_ui_button\" id=\"c!QF[Klcag/Xa[]Ej3Id\"><field name=\"LABEL\">Mr fart</field><next><block type=\"wf_ui_text\" id=\"t6@a+K)4k0p?5BR}9f?v\"><field name=\"TEXT\">Hi Tex</field></block></next></block></next></block></next></block></next></block></xml>",
+    "comments": [],
+    "groups": []
+  },
+  "normalized_graph": {
+    "nodes": [
+      {
+        "id": "){%ks7.yx.,Dp/$j#T0~",
+        "kind": "structure.screen",
+        "category": "structure",
+        "props": {
+          "name": "Home",
+          "route": "/"
+        }
+      },
+      {
+        "id": "+4][`w5!opE*|*adekT,",
+        "kind": "events.on_app_start",
+        "category": "events",
+        "props": {}
+      },
+      {
+        "id": "c!QF[Klcag/Xa[]Ej3Id",
+        "kind": "ui.button",
+        "category": "ui",
+        "props": {
+          "label": "Mr fart"
+        }
+      },
+      {
+        "id": "t6@a+K)4k0p?5BR}9f?v",
+        "kind": "ui.text",
+        "category": "ui",
+        "props": {
+          "text": "Hi Tex"
+        }
+      },
+      {
+        "id": "XjiR6pq+|EW9Ia{X{*(:",
+        "kind": "structure.window",
+        "category": "structure",
+        "props": {
+          "height": 768,
+          "title": "Main",
+          "width": 1024
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge-){%ks7.yx.,Dp/$j#T0~-XjiR6pq+|EW9Ia{X{*(:",
+        "from": "){%ks7.yx.,Dp/$j#T0~",
+        "to": "XjiR6pq+|EW9Ia{X{*(:",
+        "edge_type": "flow"
+      },
+      {
+        "id": "edge-+4][`w5!opE*|*adekT,-){%ks7.yx.,Dp/$j#T0~",
+        "from": "+4][`w5!opE*|*adekT,",
+        "to": "){%ks7.yx.,Dp/$j#T0~",
+        "edge_type": "flow"
+      },
+      {
+        "id": "edge-c!QF[Klcag/Xa[]Ej3Id-t6@a+K)4k0p?5BR}9f?v",
+        "from": "c!QF[Klcag/Xa[]Ej3Id",
+        "to": "t6@a+K)4k0p?5BR}9f?v",
+        "edge_type": "flow"
+      },
+      {
+        "id": "edge-XjiR6pq+|EW9Ia{X{*(:-c!QF[Klcag/Xa[]Ej3Id",
+        "from": "XjiR6pq+|EW9Ia{X{*(:",
+        "to": "c!QF[Klcag/Xa[]Ej3Id",
+        "edge_type": "flow"
+      }
+    ]
+  },
+  "ir_snapshot": null,
+  "assets": [],
+  "ai_history": [],
+  "settings": {
+    "autosave_interval_secs": 20,
+    "validate_on_change": true,
+    "codegen_deterministic": true,
+    "ai_default_text_provider": "ollama",
+    "ai_default_image_provider": "comfyui"
+  }
+}

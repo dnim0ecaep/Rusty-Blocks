@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://warpforge.dev/schemas/project.warpforge.schema.json",
+  "title": "WarpForge Project",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "project",
+    "workspace_state",
+    "normalized_graph",
+    "assets",
+    "ai_history",
+    "settings"
+  ],
+  "properties": {
+    "schema_version": { "type": "integer", "minimum": 1 },
+    "project": {
+      "type": "object",
+      "required": ["id", "app_name", "package_id", "version", "target_type"],
+      "properties": {
+        "id": { "type": "string" },
+        "app_name": { "type": "string" },
+        "package_id": { "type": "string" },
+        "version": { "type": "string" },
+        "target_type": { "type": "string" }
+      }
+    },
+    "workspace_state": { "$ref": "./workspace.schema.json" },
+    "normalized_graph": {
+      "type": "object",
+      "required": ["nodes", "edges"],
+      "properties": {
+        "nodes": { "type": "array", "items": { "type": "object" } },
+        "edges": { "type": "array", "items": { "type": "object" } }
+      }
+    },
+    "assets": { "type": "array", "items": { "type": "object" } },
+    "ai_history": { "type": "array", "items": { "type": "object" } },
+    "settings": { "type": "object" }
+  }
+}

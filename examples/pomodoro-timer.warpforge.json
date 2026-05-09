@@ -1,0 +1,226 @@
+{
+  "schema_version": 1,
+  "project": {
+    "id": "example-pomodoro-timer",
+    "app_name": "Pomodoro Timer",
+    "package_id": "com.warpforge.pomodoro-timer",
+    "version": "0.1.0",
+    "author": "WarpForge Examples",
+    "description": "Focus timer with start/pause/reset and tick handler — bundled example. Open this file in WarpForge Studio and click ▶ Run.",
+    "target_type": "desktop_slint",
+    "theme": "auto",
+    "created_at": "2026-05-04T00:00:00Z",
+    "updated_at": "2026-05-04T00:00:00Z"
+  },
+  "workspace_state": {
+    "zoom": 1.0,
+    "pan_x": 0.0,
+    "pan_y": 0.0,
+    "selected_block_ids": [],
+    "blockly_xml": null,
+    "comments": [],
+    "groups": []
+  },
+  "normalized_graph": {
+    "nodes": [
+      {
+        "id": "window_main",
+        "kind": "structure.window",
+        "category": "structure",
+        "props": {
+          "height": 360,
+          "title": "Pomodoro Timer",
+          "width": 420
+        }
+      },
+      {
+        "id": "screen_home",
+        "kind": "structure.screen",
+        "category": "structure",
+        "props": {
+          "name": "Focus",
+          "route": "/"
+        }
+      },
+      {
+        "id": "ui_header",
+        "kind": "ui.header",
+        "category": "ui",
+        "props": {
+          "title": "Pomodoro"
+        }
+      },
+      {
+        "id": "ui_time_display",
+        "kind": "ui.text",
+        "category": "ui",
+        "props": {
+          "text": "25:00"
+        }
+      },
+      {
+        "id": "ui_phase_label",
+        "kind": "ui.text",
+        "category": "ui",
+        "props": {
+          "text": "Focus session"
+        }
+      },
+      {
+        "id": "ui_start_btn",
+        "kind": "ui.button",
+        "category": "ui",
+        "props": {
+          "label": "Start"
+        }
+      },
+      {
+        "id": "ui_pause_btn",
+        "kind": "ui.button",
+        "category": "ui",
+        "props": {
+          "label": "Pause"
+        }
+      },
+      {
+        "id": "ui_reset_btn",
+        "kind": "ui.button",
+        "category": "ui",
+        "props": {
+          "label": "Reset"
+        }
+      },
+      {
+        "id": "event_start",
+        "kind": "events.on_app_start",
+        "category": "events",
+        "props": {}
+      },
+      {
+        "id": "state_init_seconds",
+        "kind": "state.set_variable",
+        "category": "state",
+        "props": {
+          "name": "seconds_remaining",
+          "value": 1500
+        }
+      },
+      {
+        "id": "event_tick",
+        "kind": "events.on_timer",
+        "category": "events",
+        "props": {
+          "interval": 1000
+        }
+      },
+      {
+        "id": "state_decrement_tick",
+        "kind": "state.set_variable",
+        "category": "state",
+        "props": {
+          "expression": "seconds_remaining - 1",
+          "name": "seconds_remaining"
+        }
+      },
+      {
+        "id": "event_click_start",
+        "kind": "events.on_click",
+        "category": "events",
+        "props": {
+          "target": "ui_start_btn"
+        }
+      },
+      {
+        "id": "state_set_running",
+        "kind": "state.set_variable",
+        "category": "state",
+        "props": {
+          "name": "running",
+          "value": true
+        }
+      },
+      {
+        "id": "event_click_pause",
+        "kind": "events.on_click",
+        "category": "events",
+        "props": {
+          "target": "ui_pause_btn"
+        }
+      },
+      {
+        "id": "state_clear_running",
+        "kind": "state.set_variable",
+        "category": "state",
+        "props": {
+          "name": "running",
+          "value": false
+        }
+      },
+      {
+        "id": "event_click_reset",
+        "kind": "events.on_click",
+        "category": "events",
+        "props": {
+          "target": "ui_reset_btn"
+        }
+      },
+      {
+        "id": "state_reset_seconds",
+        "kind": "state.set_variable",
+        "category": "state",
+        "props": {
+          "name": "seconds_remaining",
+          "value": 1500
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge_window_screen",
+        "from": "window_main",
+        "to": "screen_home",
+        "edge_type": "child"
+      },
+      {
+        "id": "edge_start_init",
+        "from": "event_start",
+        "to": "state_init_seconds",
+        "edge_type": "flow"
+      },
+      {
+        "id": "edge_tick_decrement",
+        "from": "event_tick",
+        "to": "state_decrement_tick",
+        "edge_type": "flow"
+      },
+      {
+        "id": "edge_click_start_run",
+        "from": "event_click_start",
+        "to": "state_set_running",
+        "edge_type": "flow"
+      },
+      {
+        "id": "edge_click_pause_clear",
+        "from": "event_click_pause",
+        "to": "state_clear_running",
+        "edge_type": "flow"
+      },
+      {
+        "id": "edge_click_reset_secs",
+        "from": "event_click_reset",
+        "to": "state_reset_seconds",
+        "edge_type": "flow"
+      }
+    ]
+  },
+  "ir_snapshot": null,
+  "assets": [],
+  "ai_history": [],
+  "settings": {
+    "autosave_interval_secs": 20,
+    "validate_on_change": true,
+    "codegen_deterministic": true,
+    "ai_default_text_provider": "ollama",
+    "ai_default_image_provider": "comfyui"
+  }
+}

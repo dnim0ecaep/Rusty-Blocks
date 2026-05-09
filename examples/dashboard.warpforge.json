@@ -1,0 +1,169 @@
+{
+  "schema_version": 1,
+  "project": {
+    "id": "example-dashboard",
+    "app_name": "Local Dashboard",
+    "package_id": "com.warpforge.local-dashboard",
+    "version": "0.1.0",
+    "author": "WarpForge Examples",
+    "description": "Status dashboard — bundled example. Open this file in WarpForge Studio and click ▶ Run.",
+    "target_type": "desktop_slint",
+    "theme": "auto",
+    "created_at": "2026-05-04T00:00:00Z",
+    "updated_at": "2026-05-04T00:00:00Z"
+  },
+  "workspace_state": {
+    "zoom": 1.0,
+    "pan_x": 0.0,
+    "pan_y": 0.0,
+    "selected_block_ids": [],
+    "blockly_xml": null,
+    "comments": [],
+    "groups": []
+  },
+  "normalized_graph": {
+    "nodes": [
+      {
+        "id": "window_main",
+        "kind": "structure.window",
+        "category": "structure",
+        "props": {
+          "height": 800,
+          "title": "Dashboard",
+          "width": 1200
+        }
+      },
+      {
+        "id": "screen_dashboard",
+        "kind": "structure.screen",
+        "category": "structure",
+        "props": {
+          "name": "Dashboard",
+          "route": "/"
+        }
+      },
+      {
+        "id": "ui_header",
+        "kind": "ui.header",
+        "category": "ui",
+        "props": {
+          "label": "Status Dashboard"
+        }
+      },
+      {
+        "id": "ui_card_status",
+        "kind": "ui.card",
+        "category": "ui",
+        "props": {
+          "label": "System Status"
+        }
+      },
+      {
+        "id": "ui_text_status",
+        "kind": "ui.text",
+        "category": "ui",
+        "props": {
+          "text": "Loading..."
+        }
+      },
+      {
+        "id": "ui_button_refresh",
+        "kind": "ui.button",
+        "category": "ui",
+        "props": {
+          "label": "Refresh"
+        }
+      },
+      {
+        "id": "ui_list_items",
+        "kind": "ui.list",
+        "category": "ui",
+        "props": {
+          "collection": "entries"
+        }
+      },
+      {
+        "id": "event_start",
+        "kind": "events.on_app_start",
+        "category": "events",
+        "props": {}
+      },
+      {
+        "id": "io_load_data",
+        "kind": "io.load_local_data",
+        "category": "io",
+        "props": {
+          "key": "dashboard_data"
+        }
+      },
+      {
+        "id": "event_timer",
+        "kind": "events.on_timer",
+        "category": "events",
+        "props": {
+          "interval_ms": 30000
+        }
+      },
+      {
+        "id": "io_refresh_data",
+        "kind": "io.load_local_data",
+        "category": "io",
+        "props": {
+          "key": "dashboard_data"
+        }
+      },
+      {
+        "id": "event_click_refresh",
+        "kind": "events.on_click",
+        "category": "events",
+        "props": {
+          "target": "ui_button_refresh"
+        }
+      },
+      {
+        "id": "io_manual_refresh",
+        "kind": "io.load_local_data",
+        "category": "io",
+        "props": {
+          "key": "dashboard_data"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge_window_screen",
+        "from": "window_main",
+        "to": "screen_dashboard",
+        "edge_type": "child"
+      },
+      {
+        "id": "edge_start_load",
+        "from": "event_start",
+        "to": "io_load_data",
+        "edge_type": "flow"
+      },
+      {
+        "id": "edge_timer_refresh",
+        "from": "event_timer",
+        "to": "io_refresh_data",
+        "edge_type": "flow"
+      },
+      {
+        "id": "edge_click_refresh",
+        "from": "event_click_refresh",
+        "to": "io_manual_refresh",
+        "edge_type": "flow"
+      }
+    ]
+  },
+  "ir_snapshot": null,
+  "assets": [],
+  "ai_history": [],
+  "settings": {
+    "autosave_interval_secs": 20,
+    "validate_on_change": true,
+    "codegen_deterministic": true,
+    "ai_default_text_provider": "ollama",
+    "ai_default_image_provider": "comfyui"
+  }
+}

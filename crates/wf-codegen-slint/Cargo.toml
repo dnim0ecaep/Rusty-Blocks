@@ -1,0 +1,20 @@
+[package]
+name = "wf-codegen-slint"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+anyhow.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+wf-ir = { path = "../wf-ir" }
+# For compiling sprite scripts_xml into ScriptNode JSON when emitting
+# project.json. Headless dep — does not pull macroquad into the codegen.
+wf-sprite-codegen = { path = "../wf-sprite-codegen" }
+
+[dev-dependencies]
+wf-graph = { path = "../wf-graph" }
+wf-template = { path = "../wf-template" }
+wf-schema = { path = "../wf-schema" }

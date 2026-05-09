@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "project": {
+    "id": "09a6bc5f-7c0f-4490-ac06-f1f237762118",
+    "app_name": "Fart_App",
+    "package_id": "com.warpforge.fart",
+    "version": "0.1.0",
+    "author": "WarpForge User",
+    "description": "Fart_App generated from notes template",
+    "target_type": "desktop_slint",
+    "theme": "auto",
+    "created_at": "2026-03-02T14:35:12.693260Z",
+    "updated_at": "2026-03-02T14:35:18.574Z"
+  },
+  "workspace_state": {
+    "zoom": 1.0,
+    "pan_x": 0.0,
+    "pan_y": 0.0,
+    "selected_block_ids": [],
+    "blockly_xml": null,
+    "comments": [],
+    "groups": []
+  },
+  "normalized_graph": {
+    "nodes": [
+      {
+        "id": "window_main",
+        "kind": "structure.window",
+        "category": "structure",
+        "props": {
+          "height": 768,
+          "title": "QuickNotes",
+          "width": 1024
+        }
+      },
+      {
+        "id": "screen_home",
+        "kind": "structure.screen",
+        "category": "structure",
+        "props": {
+          "name": "Home",
+          "route": "/"
+        }
+      },
+      {
+        "id": "event_start",
+        "kind": "events.on_app_start",
+        "category": "events",
+        "props": {}
+      },
+      {
+        "id": "io_load_notes",
+        "kind": "io.load_local_data",
+        "category": "io",
+        "props": {
+          "key": "notes"
+        }
+      },
+      {
+        "id": "ui_add_button",
+        "kind": "ui.button",
+        "category": "ui",
+        "props": {
+          "label": "Add"
+        }
+      },
+      {
+        "id": "event_add_click",
+        "kind": "events.on_click",
+        "category": "events",
+        "props": {
+          "target": "ui_add_button"
+        }
+      },
+      {
+        "id": "state_add_item",
+        "kind": "state.add_item",
+        "category": "state",
+        "props": {
+          "collection": "notes",
+          "value_ref": "note_input"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge_window_screen",
+        "from": "window_main",
+        "to": "screen_home",
+        "edge_type": "child"
+      },
+      {
+        "id": "edge_start_load",
+        "from": "event_start",
+        "to": "io_load_notes",
+        "edge_type": "flow"
+      },
+      {
+        "id": "edge_click_add",
+        "from": "event_add_click",
+        "to": "state_add_item",
+        "edge_type": "flow"
+      }
+    ]
+  },
+  "ir_snapshot": null,
+  "assets": [],
+  "ai_history": [],
+  "settings": {
+    "autosave_interval_secs": 20,
+    "validate_on_change": true,
+    "codegen_deterministic": true,
+    "ai_default_text_provider": "ollama",
+    "ai_default_image_provider": "comfyui"
+  }
+}
