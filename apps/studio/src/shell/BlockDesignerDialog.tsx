@@ -1,11 +1,16 @@
 import { FormEvent, useMemo, useState } from "react";
 
 import {
-  CUSTOM_BLOCK_TYPE_PREFIX,
   CustomBlockDef,
   CustomBlockField,
-  CustomFieldType
+  CustomFieldType,
 } from "../blocks/customBlockTypes";
+import {
+  defaultDef,
+  defaultDefFromCode,
+  typeFromLabel,
+  validateAndNormalize,
+} from "../blocks/customBlockValidation";
 import { BLOCK_REGISTRY } from "../blocks/blockRegistry";
 import { MY_BLOCKS_CATEGORY, useBlockOrgStore } from "../store/blockOrgStore";
 import { useCustomBlocksStore } from "../store/customBlocksStore";
@@ -40,46 +45,9 @@ const STYLE_OPTIONS = [
   "tw_modules_blocks"
 ];
 
-function slugify(text: string): string {
-  return text
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "_")
-    .replace(/^_+|_+$/g, "");
-}
-
-function defaultDef(): CustomBlockDef {
-  const now = new Date().toISOString();
-  return {
-    type: `${CUSTOM_BLOCK_TYPE_PREFIX}new_block`,
-    kindKind: "designed",
-    label: "my block",
-    tooltip: "",
-    category: MY_BLOCKS_CATEGORY,
-    color: "my_blocks",
-    fields: [],
-    hasPrevious: true,
-    hasNext: true,
-    createdAt: now,
-    updatedAt: now
-  };
-}
-
-function defaultDefFromCode(): CustomBlockDef {
-  const base = defaultDef();
-  return {
-    ...base,
-    kindKind: "code_import",
-    label: "rust snippet",
-    fields: [
-      {
-        type: "field_multilinetext",
-        name: "SOURCE",
-        label: "source",
-        defaultValue: "// paste Rust code here"
-      }
-    ]
-  };
-}
+// Helpers (`slugify`, `defaultDef`, `defaultDefFromCode`,
+// `validateAndNormalize`) live in `../blocks/customBlockValidation` so
+// the rules are unit-tested without mounting this dialog.
 
 export function BlockDesignerDialog({ initial, onClose }: Props) {
   const [def, setDef] = useState<CustomBlockDef>(() => initial ?? defaultDef());
@@ -123,12 +91,13 @@ export function BlockDesignerDialog({ initial, onClose }: Props) {
   };
 
   const setLabel = (label: string) => {
-    const slug = slugify(label) || "block";
-    const newType = `${CUSTOM_BLOCK_TYPE_PREFIX}${slug}`;
     setDef({
       ...def,
       label,
-      type: initial ? def.type : newType
+      // Editing locks the type so existing references keep working.
+      // For new blocks the type tracks the label so the saved record
+      // never disagrees with what the user sees.
+      type: initial ? def.type : typeFromLabel(label),
     });
   };
 
@@ -163,31 +132,15 @@ export function BlockDesignerDialog({ initial, onClose }: Props) {
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
     setError("");
-
-    if (!def.label.trim()) {
-      setError("Label is required.");
+    const result = validateAndNormalize(def, {
+      existingTypes,
+      isEditing: !!initial,
+    });
+    if (!result.ok) {
+      setError(result.error);
       return;
     }
-    if (!def.type.startsWith(CUSTOM_BLOCK_TYPE_PREFIX)) {
-      setError(`Block type must start with "${CUSTOM_BLOCK_TYPE_PREFIX}".`);
-      return;
-    }
-    if (existingTypes.has(def.type)) {
-      setError(`A block with type "${def.type}" already exists. Change the label.`);
-      return;
-    }
-    for (const field of def.fields) {
-      if (!/^[A-Z][A-Z0-9_]*$/.test(field.name)) {
-        setError(`Field name "${field.name}" must be UPPERCASE with underscores.`);
-        return;
-      }
-      if (field.type === "field_dropdown" && (!field.options || field.options.length === 0)) {
-        setError(`Dropdown field "${field.name}" needs at least one option.`);
-        return;
-      }
-    }
-
-    upsertBlock({ ...def, updatedAt: new Date().toISOString() });
+    upsertBlock({ ...result.def, updatedAt: new Date().toISOString() });
     onClose();
   };
 

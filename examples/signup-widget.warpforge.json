@@ -1,0 +1,143 @@
+{
+  "schema_version": 1,
+  "project": {
+    "id": "example-signup-widget",
+    "app_name": "Signup Widget",
+    "package_id": "com.warpforge.signup-widget",
+    "version": "0.1.0",
+    "author": "WarpForge Examples",
+    "description": "A minimal newsletter-signup form designed to be converted to a single reusable Composite Block. Open the project, right-click the wf_window block \u2192 \"Save as Composite Block\u2026\" \u2014 the whole wf_window \u2192 wf_screen \u2192 header \u2192 input \u2192 button \u2192 footer tower becomes one custom block named e.g. `wf_custom_signup_widget` that you can drop into any project. To inline it back, right-click the composite \u2192 \"Expand here\". The on-click handler is a separate top-level stack you can wrap independently as `wf_custom_save_email_handler`.\n\nWhy this shape: every wf_ui_* widget has prev/next connectors and the whole UI lives in one chained tower, so a single block is all the wrapper needs. Sprite-stage projects can't do this because their click hats are separate stacks.",
+    "target_type": "desktop_slint",
+    "theme": "auto",
+    "created_at": "2026-05-13T00:00:00Z",
+    "updated_at": "2026-05-13T00:00:00Z"
+  },
+  "workspace_state": {
+    "zoom": 1.0,
+    "pan_x": 0.0,
+    "pan_y": 0.0,
+    "selected_block_ids": [],
+    "blockly_xml": "<xml xmlns=\"https://developers.google.com/blockly/xml\">\n<block type=\"wf_window\" id=\"window_main\" x=\"40\" y=\"40\"><field name=\"TITLE\">Newsletter Signup</field><field name=\"WIDTH\">420</field><field name=\"HEIGHT\">320</field><next><block type=\"wf_screen\" id=\"screen_home\"><field name=\"NAME\">Home</field><field name=\"ROUTE\">/</field><next><block type=\"wf_ui_header\" id=\"ui_header\"><field name=\"TITLE\">Stay in the loop</field><next><block type=\"wf_ui_input\" id=\"ui_email_in\"><field name=\"PLACEHOLDER\">your@email.com</field><next><block type=\"wf_ui_button\" id=\"ui_subscribe_btn\"><field name=\"LABEL\">Subscribe</field><next><block type=\"wf_ui_footer\" id=\"ui_footer\"><field name=\"TEXT\">We send one short email a week.</field></block></next></block></next></block></next></block></next></block></next></block>\n<block type=\"wf_on_click\" id=\"evt_subscribe\" x=\"40\" y=\"320\"><field name=\"TARGET\">ui_subscribe_btn</field><next><block type=\"wf_save_local\" id=\"io_save_email\"><field name=\"KEY\">subscribed_email</field><field name=\"VALUE\">ui_email_in</field></block></next></block>\n</xml>",
+    "comments": [],
+    "groups": []
+  },
+  "normalized_graph": {
+    "nodes": [
+      {
+        "id": "window_main",
+        "kind": "structure.window",
+        "category": "structure",
+        "props": {
+          "height": 320,
+          "title": "Newsletter Signup",
+          "width": 420
+        }
+      },
+      {
+        "id": "screen_home",
+        "kind": "structure.screen",
+        "category": "structure",
+        "props": {
+          "name": "Home",
+          "route": "/"
+        }
+      },
+      {
+        "id": "ui_header",
+        "kind": "ui.header",
+        "category": "ui",
+        "props": {
+          "title": "Stay in the loop"
+        }
+      },
+      {
+        "id": "ui_email_in",
+        "kind": "ui.input",
+        "category": "ui",
+        "props": {
+          "placeholder": "your@email.com"
+        }
+      },
+      {
+        "id": "ui_subscribe_btn",
+        "kind": "ui.button",
+        "category": "ui",
+        "props": {
+          "label": "Subscribe"
+        }
+      },
+      {
+        "id": "ui_footer",
+        "kind": "ui.footer",
+        "category": "ui",
+        "props": {
+          "text": "We send one short email a week."
+        }
+      },
+      {
+        "id": "evt_subscribe",
+        "kind": "events.on_click",
+        "category": "events",
+        "props": {
+          "target": "ui_subscribe_btn"
+        }
+      },
+      {
+        "id": "io_save_email",
+        "kind": "io.save_local_data",
+        "category": "io",
+        "props": {
+          "key": "subscribed_email"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge_window_screen",
+        "from": "window_main",
+        "to": "screen_home",
+        "edge_type": "child"
+      },
+      {
+        "id": "edge_screen_header",
+        "from": "screen_home",
+        "to": "ui_header",
+        "edge_type": "child"
+      },
+      {
+        "id": "edge_screen_input",
+        "from": "screen_home",
+        "to": "ui_email_in",
+        "edge_type": "child"
+      },
+      {
+        "id": "edge_screen_button",
+        "from": "screen_home",
+        "to": "ui_subscribe_btn",
+        "edge_type": "child"
+      },
+      {
+        "id": "edge_screen_footer",
+        "from": "screen_home",
+        "to": "ui_footer",
+        "edge_type": "child"
+      },
+      {
+        "id": "edge_click_save",
+        "from": "evt_subscribe",
+        "to": "io_save_email",
+        "edge_type": "flow"
+      }
+    ]
+  },
+  "ir_snapshot": null,
+  "assets": [],
+  "ai_history": [],
+  "settings": {
+    "autosave_interval_secs": 30,
+    "validate_on_change": false,
+    "codegen_deterministic": true,
+    "ai_default_text_provider": "ollama",
+    "ai_default_image_provider": "comfyui"
+  }
+}

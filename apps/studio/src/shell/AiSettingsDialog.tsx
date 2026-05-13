@@ -56,6 +56,31 @@ export function AiSettingsDialog() {
         </header>
 
         <div className="ai-settings-content">
+          {/* Developer instructions — prepended to every text-mode
+              prompt as a system-style preamble so all providers share
+              the same persona / rules. */}
+          <section className="provider-section">
+            <h3>Developer Instructions</h3>
+            <label>
+              System prompt
+              <textarea
+                value={localConfig.developerInstructions}
+                onChange={(e) =>
+                  setLocalConfig({
+                    ...localConfig,
+                    developerInstructions: e.target.value
+                  })
+                }
+                placeholder="e.g. You are a helpful assistant for a Scratch-style block editor. Keep replies short and code-friendly."
+                rows={6}
+                style={{ width: "100%", resize: "vertical", fontFamily: "inherit" }}
+              />
+              <small className="hint">
+                Prepended to every text, recommendation, and explanation prompt. Leave blank to disable.
+              </small>
+            </label>
+          </section>
+
           {/* Ollama Settings */}
           <section className="provider-section">
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>

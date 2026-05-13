@@ -104,7 +104,11 @@ pub fn ui_main_slint(stage: &SpriteStageIr) -> String {
     id: string,
     x: length,
     y: length,
-    size: length,
+    // Width / height of the rendered sprite. When a costume is loaded
+    // these reflect its natural dimensions × sprite.size%; otherwise
+    // they fall back to a 40-unit placeholder × sprite.size%.
+    width: length,
+    height: length,
     color: color,
     visible: bool,
     bubble-text: string,
@@ -117,6 +121,49 @@ pub fn ui_main_slint(stage: &SpriteStageIr) -> String {
     // Rotation applied to the costume image. Computed in Rust to honor
     // Scratch's `rotationStyle` modes (all-around / left-right / dont-rotate).
     rotation: angle,
+    // Effects. `opacity` derives from the ghost effect (0..100 → 1..0).
+    // `brightness-tint-alpha` is the alpha of a white/black overlay used
+    // to fake the brightness effect under Slint's declarative renderer
+    // (Slint can't apply a colour matrix directly). Positive brightness
+    // tints toward white, negative toward black; both routed through
+    // `tint-color`.
+    opacity: float,
+    tint-color: color,
+    tint-alpha: float,
+    // True when this sprite should draw a small line from its center
+    // out toward `direction` — i.e. when rotationStyle is all-around
+    // and no costume image is loaded (so the user has a hint of where
+    // the sprite is "pointing"). With a costume the rotation transform
+    // visualizes orientation already.
+    show-direction-tick: bool,
+    direction-deg: angle,
+    // Dynamic-text overlay set by `scratch_looks_set_text_to`. Drawn
+    // upright (no rotation, no effects) on top of the sprite when
+    // `has-text` is true. Empty string + has-text false hide the
+    // overlay so a sprite with no `set text to` block looks identical
+    // to before this property landed.
+    text-value: string,
+    has-text: bool,
+    // Font family for the text overlay, set by
+    // `scratch_looks_set_text_with_font`. Empty string falls back to
+    // the Slint default font.
+    font-family: string,
+    // Explicit font size in pixels for the text overlay, set by
+    // `scratch_looks_set_text_size_to`. 0 means "no override" — the
+    // template falls back to the auto-derive (~32% of sprite height).
+    text-size: length,
+}}
+
+export struct MonitorEntry {{
+    // Display name (variable / list name).
+    name: string,
+    // Pre-formatted body. For variables: "= 42". For lists: a multi-
+    // line breakdown like "1. GitHub\\n2. Mail" — Rust formats this so
+    // the .slint side stays simple.
+    body: string,
+    // True when `body` represents a list — the chip widens & gets a
+    // tighter line spacing for the numbered rows.
+    is-list: bool,
 }}
 
 export component MainWindow inherits Window {{
@@ -126,21 +173,38 @@ export component MainWindow inherits Window {{
     forward-focus: input-scope;
 
     in property <[SpriteData]> sprites: [];
-    in property <string> monitor-text: "";
+    in property <[MonitorEntry]> monitors: [];
     // Active stage backdrop (TurboWarp-style). When `has-backdrop` is
     // false the renderer falls back to a plain white background; when
     // true it stretches `backdrop` to fill the stage.
     in property <image> backdrop;
     in property <bool> has-backdrop: false;
 
+    // Ask overlay. The Rust side mirrors `stage.pending_question()` here
+    // each frame; non-empty means show the prompt. When the user clicks
+    // OK or hits Enter, we forward `submit-answer(answer-text)` to Rust
+    // and clear the local input, which will hide the overlay on the next
+    // frame after Rust calls `stage.submit_answer()`.
+    in property <string> ask-question: "";
+
     // Routed to Rust: a discrete key press (no auto-repeat).
     callback key-pressed(string);
     // Routed to Rust: the user released a key — needed so `key pressed?`
     // reporters stop returning true once the user stops holding.
     callback key-released(string);
-    // Routed to Rust: a stage click. (x, y) are in screen pixels
-    // relative to the window — Rust converts to stage coords.
-    callback stage-clicked(float, float);
+    // Routed to Rust: a mouse-down on the stage. (x, y) are in screen
+    // pixels. Rust converts to stage coords, hit-tests, and arms drag
+    // bookkeeping.
+    callback stage-pressed(float, float);
+    // Routed to Rust: a mouse-move while the button is held — drives
+    // sprite drag. Fires every move event between press and release.
+    callback stage-moved(float, float);
+    // Routed to Rust: a mouse-up on the stage. Rust uses press → release
+    // delta to decide whether to fire `when this sprite clicked` hats
+    // (no drag detected) or just clear drag state (drag completed).
+    callback stage-released(float, float);
+    // Routed to Rust: the user submitted an answer to the ask overlay.
+    callback submit-answer(string);
 
     Rectangle {{
         background: white;
@@ -176,12 +240,18 @@ export component MainWindow inherits Window {{
         // Sprite body: real costume image if loaded, else placeholder
         // colored square. Both share the same hit-test bounds so click
         // logic stays consistent.
+        //
+        // The wrapper Rectangle's `opacity` carries the ghost effect.
+        // `tint-color` + `tint-alpha` paint a translucent overlay on
+        // top of the image to simulate the brightness effect under
+        // Slint's declarative renderer (no colour-matrix shaders).
         for sprite in sprites: Rectangle {{
             x: sprite.x;
             y: sprite.y;
-            width: sprite.size;
-            height: sprite.size;
+            width: sprite.width;
+            height: sprite.height;
             visible: sprite.visible;
+            opacity: sprite.opacity;
             // Placeholder square — visible only when no costume.
             Rectangle {{
                 visible: !sprite.has-costume;
@@ -201,6 +271,57 @@ export component MainWindow inherits Window {{
                 image-fit: contain;
                 transform-rotation: sprite.rotation;
             }}
+            // Brightness overlay. Drawn on top of the costume / placeholder.
+            Rectangle {{
+                visible: sprite.tint-alpha > 0;
+                width: parent.width;
+                height: parent.height;
+                background: sprite.tint-color;
+                opacity: sprite.tint-alpha;
+            }}
+            // Direction tick (placeholder-only). Slint Rectangles in
+            // this version don't expose rotation, so we approximate by
+            // drawing a small fixed marker on the right edge — the
+            // direction the sprite "faces" by Scratch convention. For
+            // sprites with costumes, the costume's transform-rotation
+            // already visualizes orientation. A future revision could
+            // swap this for a Path that renders an arbitrary angle.
+            Rectangle {{
+                visible: sprite.show-direction-tick;
+                x: parent.width / 2 + 2px;
+                y: parent.height / 2 - 1px;
+                width: parent.width / 4;
+                height: 2px;
+                background: #1a2333;
+            }}
+        }}
+
+        // Dynamic-text overlay (set by `scratch_looks_set_text_to`).
+        // Drawn outside the per-sprite Rectangle so it doesn't inherit
+        // ghost / brightness / rotation. Sized at ~32% of the sprite's
+        // height so a bigger sprite shows bigger text without manual
+        // tuning.
+        for sprite in sprites: Rectangle {{
+            visible: sprite.has-text && sprite.visible;
+            x: sprite.x;
+            y: sprite.y;
+            width: sprite.width;
+            height: sprite.height;
+            Text {{
+                width: parent.width;
+                height: parent.height;
+                text: sprite.text-value;
+                // Explicit size wins; 0 means "no override" → auto.
+                font-size: sprite.text-size > 0px
+                    ? sprite.text-size
+                    : max(12px, parent.height * 0.32);
+                font-weight: 700;
+                font-family: sprite.font-family;
+                color: #1a2333;
+                horizontal-alignment: center;
+                vertical-alignment: center;
+                wrap: word-wrap;
+            }}
         }}
 
         // Speech / thought bubble overlay. Explicit width + height so
@@ -209,7 +330,7 @@ export component MainWindow inherits Window {{
         // covered the sprites).
         for sprite in sprites: Rectangle {{
             visible: sprite.bubble-visible && sprite.visible;
-            x: min(parent.width - 220px, max(8px, sprite.x + sprite.size + 6px));
+            x: min(parent.width - 220px, max(8px, sprite.x + sprite.width + 6px));
             y: max(8px, sprite.y - 36px);
             width: 220px;
             height: 28px;
@@ -229,37 +350,145 @@ export component MainWindow inherits Window {{
             }}
         }}
 
-        // Variable monitors overlay (top-left). Explicit dimensions —
-        // no Layout wrapper — so the background Rectangle stays small
-        // and the sprites underneath remain visible.
-        Rectangle {{
-            visible: root.monitor-text != "";
+        // Variable + list monitors overlay (top-left). One rounded chip
+        // per entry, stacked vertically. List bodies are multiline; var
+        // bodies are single-line `= value`. Mirrors the studio's chip
+        // strip so the same project looks the same in both runtimes.
+        VerticalLayout {{
             x: 8px;
             y: 8px;
-            width: 220px;
-            height: 26px;
-            background: #f3f6fb;
-            border-color: #cdd6e2;
-            border-width: 1px;
-            border-radius: 4px;
-            Text {{
-                x: 8px;
-                y: 0;
-                width: parent.width - 16px;
-                height: parent.height;
-                text: root.monitor-text;
-                font-size: 13px;
-                color: #1a2333;
-                vertical-alignment: center;
+            spacing: 4px;
+            for entry in root.monitors: Rectangle {{
+                width: entry.is-list ? 240px : 200px;
+                height: entry.is-list ? 28px + 18px * (entry.body == "(empty)" ? 1 : 4) : 26px;
+                background: #f3f6fb;
+                border-color: #cdd6e2;
+                border-width: 1px;
+                border-radius: 4px;
+                VerticalLayout {{
+                    x: 8px;
+                    y: 4px;
+                    width: parent.width - 16px;
+                    height: parent.height - 8px;
+                    spacing: 2px;
+                    Text {{
+                        text: entry.name;
+                        font-size: 12px;
+                        font-weight: 700;
+                        color: #1a2333;
+                        height: 14px;
+                    }}
+                    Text {{
+                        text: entry.body;
+                        font-size: 12px;
+                        color: #1a2333;
+                        wrap: word-wrap;
+                    }}
+                }}
             }}
         }}
 
-        // Captures clicks anywhere on the stage. Sits below the sprite
-        // overlay so clicks reach the user; we read absolute mouse pos
-        // and let Rust hit-test against sprite bounds.
+        // Captures stage interactions. We forward press / move / release
+        // separately so Rust can implement drag semantics (mouse-down on
+        // sprite + drag → reposition; mouse-down on sprite + release in
+        // place → fire `when this sprite clicked`).
         TouchArea {{
-            clicked => {{
-                root.stage-clicked(self.mouse-x / 1px, self.mouse-y / 1px);
+            pointer-event(event) => {{
+                if (event.kind == PointerEventKind.down) {{
+                    root.stage-pressed(self.mouse-x / 1px, self.mouse-y / 1px);
+                }}
+                if (event.kind == PointerEventKind.up) {{
+                    root.stage-released(self.mouse-x / 1px, self.mouse-y / 1px);
+                }}
+            }}
+            moved => {{
+                if (self.pressed) {{
+                    root.stage-moved(self.mouse-x / 1px, self.mouse-y / 1px);
+                }}
+            }}
+        }}
+
+        // Ask overlay. Drawn last (on top) so it intercepts clicks while
+        // visible. When `ask-question` is the empty string the overlay
+        // hides; Rust mirrors `stage.pending_question()` into this prop
+        // each frame, so it appears whenever a script parks on
+        // AwaitAnswer and disappears when Rust calls `submit_answer`.
+        Rectangle {{
+            visible: root.ask-question != "";
+            width: parent.width;
+            height: parent.height;
+            // Dim the stage so the prompt reads as modal.
+            background: #00000080;
+            // The overlay's own TouchArea swallows any clicks that
+            // miss the panel — without this, clicks would fall through
+            // to the stage-clicked hit-test below.
+            TouchArea {{ }}
+            // Modal panel.
+            panel := Rectangle {{
+                width: 360px;
+                height: 140px;
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                background: #ffffff;
+                border-color: #1a2333;
+                border-width: 2px;
+                border-radius: 8px;
+                forward-focus: answer-input;
+                Text {{
+                    x: 14px;
+                    y: 12px;
+                    width: parent.width - 28px;
+                    height: 36px;
+                    text: root.ask-question;
+                    font-size: 14px;
+                    color: #1a2333;
+                    wrap: word-wrap;
+                }}
+                answer-input := TextInput {{
+                    x: 14px;
+                    y: 56px;
+                    width: parent.width - 28px;
+                    height: 28px;
+                    font-size: 14px;
+                    color: #1a2333;
+                    single-line: true;
+                    accepted => {{
+                        root.submit-answer(self.text);
+                        self.text = "";
+                    }}
+                }}
+                // Underline the input for visibility.
+                Rectangle {{
+                    x: 14px;
+                    y: 84px;
+                    width: parent.width - 28px;
+                    height: 1px;
+                    background: #1a2333;
+                }}
+                // OK button.
+                Rectangle {{
+                    width: 70px;
+                    height: 28px;
+                    x: parent.width - self.width - 14px;
+                    y: parent.height - self.height - 12px;
+                    background: #3a7fd5;
+                    border-radius: 4px;
+                    Text {{
+                        text: "OK";
+                        color: #ffffff;
+                        font-size: 13px;
+                        width: parent.width;
+                        height: parent.height;
+                        horizontal-alignment: center;
+                        vertical-alignment: center;
+                    }}
+                    TouchArea {{
+                        clicked => {{
+                            root.submit-answer(answer-input.text);
+                            answer-input.text = "";
+                        }}
+                    }}
+                }}
             }}
         }}
     }}
@@ -318,8 +547,9 @@ use std::rc::Rc;
 use std::time::Instant;
 
 use base64::Engine as _;
+use resvg::tiny_skia::{{IntSize, Pixmap, PixmapPaint, Transform}};
 use slint::{{Color, ComponentHandle, Image, ModelRc, SharedPixelBuffer, SharedString, VecModel}};
-use wf_sprite_runtime::{{model::RotationStyle, Project, Scheduler, Stage}};
+use wf_sprite_runtime::{{model::{{RotationStyle, Sprite, STAGE_HEIGHT as SR_STAGE_H, STAGE_WIDTH as SR_STAGE_W}}, Project, Scheduler, Stage}};
 
 slint::include_modules!();
 
@@ -337,26 +567,27 @@ fn main() -> Result<(), slint::PlatformError> {{
     // Decode every costume asset once up front. Cache by assetId so the
     // per-frame model sync just clones a slint::Image (cheap — internally
     // a refcounted handle).
+    // Two parallel caches per costume:
+    //   - `costume_cache` → slint::Image for the on-screen renderer
+    //   - `pixmap_cache`  → tiny_skia::Pixmap for the per-tick CPU
+    //     rasterization that feeds `scratch_sensing_touching_color`
     let mut costume_cache: HashMap<String, Image> = HashMap::new();
+    let mut pixmap_cache: HashMap<String, Pixmap> = HashMap::new();
     for asset in &project.assets {{
         if !matches!(asset.kind, wf_sprite_runtime::model::AssetKind::Costume) {{
             continue;
         }}
-        if let Some(img) = decode_costume(&asset.path) {{
+        if let Some((img, pm)) = decode_costume_pair(&asset.path) {{
+            costume_cache.insert(asset.id.clone(), img);
+            pixmap_cache.insert(asset.id.clone(), pm);
+        }} else if let Some(img) = decode_costume(&asset.path) {{
+            // Image decoded but pixmap didn't — still keep the image so
+            // the sprite renders, just won't sample for touching_color.
             costume_cache.insert(asset.id.clone(), img);
         }}
     }}
     let costume_cache = Rc::new(costume_cache);
-
-    // Resolve the active backdrop image once at startup. (Backdrop
-    // switching at runtime would re-set this property — not yet wired,
-    // since no block changes backdropIndex through the runtime.)
-    let active_backdrop: Option<Image> = stage_state
-        .backdrops
-        .get(stage_state.backdrop_index.max(0) as usize)
-        .filter(|_| stage_state.backdrop_index >= 0)
-        .and_then(|b| b.asset_id.as_deref())
-        .and_then(|id| costume_cache.get(id).cloned());
+    let pixmap_cache = Rc::new(pixmap_cache);
 
     let stage = Rc::new(RefCell::new(Stage::from_state(stage_state)));
     let scheduler = Rc::new(RefCell::new(Scheduler::new()));
@@ -365,12 +596,11 @@ fn main() -> Result<(), slint::PlatformError> {{
     let model: Rc<VecModel<SpriteData>> = Rc::new(VecModel::default());
     ui.set_sprites(ModelRc::from(model.clone()));
 
-    // Apply the resolved backdrop. The Slint UI auto-falls-back to a
-    // plain white background when has-backdrop is false.
-    if let Some(img) = active_backdrop {{
-        ui.set_backdrop(img);
-        ui.set_has_backdrop(true);
-    }}
+    // Backdrop is resolved each tick from `stage.backdrop_index` so
+    // `scratch_looks_switch_backdrop` updates render live. We track the
+    // last-applied index to skip redundant `set_backdrop` calls when
+    // the index hasn't changed.
+    let last_backdrop_idx: Rc<RefCell<i32>> = Rc::new(RefCell::new(i32::MIN));
 
     // Auto-fire green flag on startup so the binary is immediately fun.
     scheduler.borrow_mut().fire_green_flag(&stage.borrow());
@@ -401,20 +631,95 @@ fn main() -> Result<(), slint::PlatformError> {{
         }});
     }}
 
-    // Click input: `mouse_x` / `mouse_y` are window-pixel coords. Convert
-    // to stage coords (centered, +y up), hit-test top-most sprite, fire.
+    // Stage interaction: press / move / release tracking. Drag state
+    // is the sprite under the cursor at press time + the offset between
+    // press point and sprite center. While the mouse moves with the
+    // button held, the sprite tracks the cursor. On release, if the
+    // mouse hadn't moved beyond `DRAG_SLOP_PX` pixels we treat it as a
+    // click and fire `when this sprite clicked` hats; otherwise we
+    // just clear the drag without firing.
+    struct DragState {{
+        sprite_id: String,
+        offset_x: f32,
+        offset_y: f32,
+        press_stage_x: f32,
+        press_stage_y: f32,
+        moved_far: bool,
+    }}
+    const DRAG_SLOP_PX: f32 = 4.0;
+    let drag: Rc<RefCell<Option<DragState>>> = Rc::new(RefCell::new(None));
+
     {{
-        let stage_for_click = stage.clone();
-        let scheduler_for_click = scheduler.clone();
-        ui.on_stage_clicked(move |x, y| {{
+        let stage_for_press = stage.clone();
+        let drag_for_press = drag.clone();
+        ui.on_stage_pressed(move |x, y| {{
             let stage_x = (x as f32 / RENDER_SCALE) - STAGE_W / 2.0;
             let stage_y = STAGE_H / 2.0 - (y as f32 / RENDER_SCALE);
-            let s = stage_for_click.borrow();
-            if let Some(id) = hit_test_sprite(&s, stage_x, stage_y) {{
-                scheduler_for_click
-                    .borrow_mut()
-                    .fire_sprite_click(&s, &id);
+            let s = stage_for_press.borrow();
+            let hit = hit_test_sprite(&s, stage_x, stage_y);
+            *drag_for_press.borrow_mut() = hit.and_then(|id| {{
+                s.sprite(&id).map(|sp| DragState {{
+                    sprite_id: id.clone(),
+                    offset_x: sp.x - stage_x,
+                    offset_y: sp.y - stage_y,
+                    press_stage_x: stage_x,
+                    press_stage_y: stage_y,
+                    moved_far: false,
+                }})
+            }});
+        }});
+    }}
+
+    {{
+        let stage_for_move = stage.clone();
+        let drag_for_move = drag.clone();
+        ui.on_stage_moved(move |x, y| {{
+            let stage_x = (x as f32 / RENDER_SCALE) - STAGE_W / 2.0;
+            let stage_y = STAGE_H / 2.0 - (y as f32 / RENDER_SCALE);
+            let mut drag_ref = drag_for_move.borrow_mut();
+            if let Some(d) = drag_ref.as_mut() {{
+                let dx = stage_x - d.press_stage_x;
+                let dy = stage_y - d.press_stage_y;
+                if dx.abs() > DRAG_SLOP_PX || dy.abs() > DRAG_SLOP_PX {{
+                    d.moved_far = true;
+                }}
+                if d.moved_far {{
+                    let mut s = stage_for_move.borrow_mut();
+                    if let Some(sp) = s.sprite_mut(&d.sprite_id) {{
+                        sp.x = stage_x + d.offset_x;
+                        sp.y = stage_y + d.offset_y;
+                    }}
+                }}
             }}
+        }});
+    }}
+
+    {{
+        let stage_for_release = stage.clone();
+        let scheduler_for_release = scheduler.clone();
+        let drag_for_release = drag.clone();
+        ui.on_stage_released(move |_x, _y| {{
+            let taken = drag_for_release.borrow_mut().take();
+            if let Some(d) = taken {{
+                if !d.moved_far {{
+                    let s = stage_for_release.borrow();
+                    scheduler_for_release
+                        .borrow_mut()
+                        .fire_sprite_click(&s, &d.sprite_id);
+                }}
+            }}
+        }});
+    }}
+
+    // Ask answer: the user typed a reply and hit Enter / OK. Hand it to
+    // the runtime, which clears `pending_question` and lets the parked
+    // script resume on its next AwaitAnswer poll.
+    {{
+        let stage_for_answer = stage.clone();
+        ui.on_submit_answer(move |answer| {{
+            stage_for_answer
+                .borrow_mut()
+                .submit_answer(answer.to_string());
         }});
     }}
 
@@ -424,6 +729,8 @@ fn main() -> Result<(), slint::PlatformError> {{
     let model_for_tick = model.clone();
     let ui_weak = ui.as_weak();
     let costume_cache_for_tick = costume_cache.clone();
+    let last_backdrop_idx_for_tick = last_backdrop_idx.clone();
+    let pixmap_cache_for_tick = pixmap_cache.clone();
     let start = Instant::now();
     timer.start(
         slint::TimerMode::Repeated,
@@ -445,6 +752,36 @@ fn main() -> Result<(), slint::PlatformError> {{
                     eprintln!("[sprite-app] open url '{{}}' failed: {{e}}", url);
                 }}
             }}
+            // Re-resolve the active backdrop if the index has changed since
+            // last tick (`scratch_looks_switch_backdrop` updates it).
+            {{
+                let stage_ref = stage_for_tick.borrow();
+                let cur_idx = stage_ref.backdrop_index;
+                let mut last = last_backdrop_idx_for_tick.borrow_mut();
+                if *last != cur_idx {{
+                    *last = cur_idx;
+                    let resolved: Option<Image> = if cur_idx >= 0 {{
+                        stage_ref
+                            .backdrops
+                            .get(cur_idx as usize)
+                            .and_then(|b| b.asset_id.as_deref())
+                            .and_then(|id| costume_cache_for_tick.get(id).cloned())
+                    }} else {{
+                        None
+                    }};
+                    if let Some(ui) = ui_weak.upgrade() {{
+                        match resolved {{
+                            Some(img) => {{
+                                ui.set_backdrop(img);
+                                ui.set_has_backdrop(true);
+                            }}
+                            None => {{
+                                ui.set_has_backdrop(false);
+                            }}
+                        }}
+                    }}
+                }}
+            }}
             // Sync engine state into the Slint model.
             let stage_ref = stage_for_tick.borrow();
             let mut sprites_out: Vec<SpriteData> = Vec::with_capacity(stage_ref.sprites.len());
@@ -453,7 +790,7 @@ fn main() -> Result<(), slint::PlatformError> {{
             indices.sort_by_key(|&i| stage_ref.sprites[i].layer);
             for i in indices {{
                 let s = &stage_ref.sprites[i];
-                let size_px = (PLACEHOLDER_SIZE * s.size / 100.0) * RENDER_SCALE;
+                let scale = s.size / 100.0;
                 let cx = (STAGE_W / 2.0 + s.x) * RENDER_SCALE;
                 let cy = (STAGE_H / 2.0 - s.y) * RENDER_SCALE;
                 let (bubble_text, bubble_visible) = match &s.bubble {{
@@ -462,18 +799,24 @@ fn main() -> Result<(), slint::PlatformError> {{
                 }};
                 // Resolve the active costume's image from the decoded
                 // cache, if any. Falls back to placeholder square.
-                let (costume, has_costume) = {{
+                // Width/height come from the costume's natural size when
+                // loaded, so non-square sprites render at their true
+                // aspect ratio (matches the studio Stage panel).
+                let (costume, has_costume, base_w, base_h) = {{
                     let idx = s.costume_index;
                     if idx >= 0 && (idx as usize) < s.costumes.len() {{
-                        let asset_id = s.costumes[idx as usize].asset_id.as_deref();
+                        let cos = &s.costumes[idx as usize];
+                        let asset_id = cos.asset_id.as_deref();
                         match asset_id.and_then(|id| costume_cache_for_tick.get(id)) {{
-                            Some(img) => (img.clone(), true),
-                            None => (Image::default(), false),
+                            Some(img) => (img.clone(), true, cos.width, cos.height),
+                            None => (Image::default(), false, PLACEHOLDER_SIZE, PLACEHOLDER_SIZE),
                         }}
                     }} else {{
-                        (Image::default(), false)
+                        (Image::default(), false, PLACEHOLDER_SIZE, PLACEHOLDER_SIZE)
                     }}
                 }};
+                let w_px = base_w * scale * RENDER_SCALE;
+                let h_px = base_h * scale * RENDER_SCALE;
                 // Honor Scratch's rotationStyle. Costumes are drawn
                 // facing right by convention, so a sprite with direction=90
                 // (right) needs zero rotation; direction=0 (up) rotates -90°.
@@ -484,11 +827,33 @@ fn main() -> Result<(), slint::PlatformError> {{
                     // transform, so left-right falls back to no-op.)
                     _ => 0.0,
                 }};
+                // Brightness + ghost — Slint can't do colour matrices
+                // declaratively, so brightness becomes a translucent
+                // white/black tint overlay (positive → white, negative
+                // → black). Ghost becomes wrapper opacity. Mirrors the
+                // macroquad host's approximation.
+                let (opacity, tint_color, tint_alpha) = compute_effects(s);
+                let show_direction_tick = !has_costume
+                    && matches!(s.rotation_style, RotationStyle::AllAround);
+                let (text_value, has_text) = match &s.text_value {{
+                    Some(v) if !v.is_empty() => (SharedString::from(v.as_str()), true),
+                    _ => (SharedString::default(), false),
+                }};
+                let font_family = match &s.font_family {{
+                    Some(f) if !f.is_empty() => SharedString::from(f.as_str()),
+                    _ => SharedString::default(),
+                }};
+                // Multiply by RENDER_SCALE so a value the user picks
+                // (in stage-coord pixels) lands at the right window-px
+                // size, matching the auto-derive path which operates
+                // in window-px via parent.height.
+                let text_size_px = s.text_size.unwrap_or(0.0) * RENDER_SCALE;
                 sprites_out.push(SpriteData {{
                     id: SharedString::from(&*s.id),
-                    x: cx - size_px / 2.0,
-                    y: cy - size_px / 2.0,
-                    size: size_px,
+                    x: cx - w_px / 2.0,
+                    y: cy - h_px / 2.0,
+                    width: w_px,
+                    height: h_px,
                     color: placeholder_color(&s.id),
                     visible: s.visible,
                     bubble_text,
@@ -496,32 +861,98 @@ fn main() -> Result<(), slint::PlatformError> {{
                     costume,
                     has_costume,
                     rotation: rotation_deg,
+                    opacity,
+                    tint_color,
+                    tint_alpha,
+                    show_direction_tick,
+                    direction_deg: s.direction - 90.0,
+                    text_value,
+                    has_text,
+                    font_family,
+                    text_size: text_size_px,
                 }});
             }}
             model_for_tick.set_vec(sprites_out);
 
-            // Refresh monitor text.
-            let mut monitor = String::new();
-            let names: Vec<&String> = stage_ref.visible_monitors.iter().collect();
-            let mut sorted_names = names.clone();
+            // Build one MonitorEntry per visible name. Variables show as
+            // "= value"; lists render as a numbered breakdown. Per-sprite
+            // names fall back through every sprite — first match wins,
+            // matching the in-studio MonitorOverlay.
+            let mut entries: Vec<MonitorEntry> = Vec::new();
+            let mut sorted_names: Vec<&String> = stage_ref.visible_monitors.iter().collect();
             sorted_names.sort();
             for name in sorted_names {{
-                let value = stage_ref
-                    .global_variables
-                    .get(name)
-                    .map(|v| v.as_value().as_string())
-                    .or_else(|| {{
-                        stage_ref
-                            .sprites
-                            .iter()
-                            .find_map(|sp| sp.variables.get(name).map(|v| v.as_value().as_string()))
-                    }})
-                    .unwrap_or_default();
-                monitor.push_str(&format!("{{}} = {{}}\n", name, value));
+                if let Some(v) = stage_ref.global_variables.get(name) {{
+                    entries.push(MonitorEntry {{
+                        name: SharedString::from(name.as_str()),
+                        body: SharedString::from(format!("= {{}}", v.as_value().as_string())),
+                        is_list: false,
+                    }});
+                }} else if let Some(list) = stage_ref.global_lists.get(name) {{
+                    entries.push(MonitorEntry {{
+                        name: SharedString::from(name.as_str()),
+                        body: SharedString::from(format_list(list)),
+                        is_list: true,
+                    }});
+                }} else {{
+                    let scalar = stage_ref
+                        .sprites
+                        .iter()
+                        .find_map(|sp| sp.variables.get(name).map(|v| v.as_value().as_string()));
+                    if let Some(value) = scalar {{
+                        entries.push(MonitorEntry {{
+                            name: SharedString::from(name.as_str()),
+                            body: SharedString::from(format!("= {{}}", value)),
+                            is_list: false,
+                        }});
+                    }} else if let Some(list) = stage_ref
+                        .sprites
+                        .iter()
+                        .find_map(|sp| sp.lists.get(name).cloned())
+                    {{
+                        entries.push(MonitorEntry {{
+                            name: SharedString::from(name.as_str()),
+                            body: SharedString::from(format_list(&list)),
+                            is_list: true,
+                        }});
+                    }}
+                }}
             }}
+            // Mirror any pending ask question into the overlay. Empty
+            // string hides the overlay (see Slint template).
+            let pending = stage_ref
+                .pending_question()
+                .map(SharedString::from)
+                .unwrap_or_default();
             if let Some(ui) = ui_weak.upgrade() {{
-                ui.set_monitor_text(SharedString::from(monitor));
+                ui.set_monitors(ModelRc::from(Rc::new(VecModel::from(entries))));
+                ui.set_ask_question(pending);
             }}
+            // Rasterize the just-rendered stage into a CPU buffer so
+            // next tick's `scratch_sensing_touching_color` queries see
+            // what the user sees. We resolve the active backdrop's
+            // pixmap (if any) and composite sprites on top.
+            let backdrop_idx = stage_ref.backdrop_index;
+            let backdrop_pixmap = if backdrop_idx >= 0 {{
+                stage_ref
+                    .backdrops
+                    .get(backdrop_idx as usize)
+                    .and_then(|b| b.asset_id.as_deref())
+                    .and_then(|id| pixmap_cache_for_tick.get(id))
+            }} else {{
+                None
+            }};
+            let rendered = rasterize_stage(
+                &stage_ref,
+                &pixmap_cache_for_tick,
+                backdrop_pixmap,
+                STAGE_W as u32,
+                STAGE_H as u32,
+            );
+            drop(stage_ref);
+            stage_for_tick
+                .borrow_mut()
+                .set_pixel_buffer(rendered.width(), rendered.height(), rendered.data().to_vec());
         }},
     );
 
@@ -590,6 +1021,117 @@ fn decode_raster(bytes: &[u8]) -> Option<Image> {{
     let (w, h) = rgba.dimensions();
     let buffer = SharedPixelBuffer::clone_from_slice(rgba.as_raw(), w, h);
     Some(Image::from_rgba8(buffer))
+}}
+
+/// Decode a costume into both display + sampling representations in a
+/// single pass. Mirrors `decode_costume` but also produces a tiny_skia
+/// Pixmap so the touching_color rasterizer can sample pixels without
+/// re-decoding every frame.
+fn decode_costume_pair(blob: &str) -> Option<(Image, Pixmap)> {{
+    let (mime, encoding, payload) = if let Some(rest) = blob.strip_prefix("data:") {{
+        let comma = rest.find(',')?;
+        let header = &rest[..comma];
+        let payload = &rest[comma + 1..];
+        let (mime, encoding) = match header.split_once(';') {{
+            Some((m, e)) => (m, e),
+            None => (header, ""),
+        }};
+        (mime, encoding, payload)
+    }} else {{
+        ("", "base64", blob)
+    }};
+    let bytes: Vec<u8> = if encoding.eq_ignore_ascii_case("base64") {{
+        base64::engine::general_purpose::STANDARD.decode(payload).ok()?
+    }} else if encoding.is_empty() || encoding.eq_ignore_ascii_case("utf8") {{
+        url_decode(payload)
+    }} else {{
+        base64::engine::general_purpose::STANDARD
+            .decode(payload)
+            .unwrap_or_else(|_| payload.as_bytes().to_vec())
+    }};
+    let is_svg = mime.eq_ignore_ascii_case("image/svg+xml")
+        || mime.eq_ignore_ascii_case("image/svg")
+        || sniff_svg(&bytes);
+    if is_svg {{
+        let opt = resvg::usvg::Options::default();
+        let tree = resvg::usvg::Tree::from_data(&bytes, &opt).ok()?;
+        let size = tree.size();
+        let max_dim: f32 = 1024.0;
+        let scale = (max_dim / size.width().max(size.height())).min(1.0);
+        let pw = (size.width() * scale).ceil().max(1.0) as u32;
+        let ph = (size.height() * scale).ceil().max(1.0) as u32;
+        let mut pixmap = Pixmap::new(pw, ph)?;
+        let transform = Transform::from_scale(scale, scale);
+        resvg::render(&tree, transform, &mut pixmap.as_mut());
+        let buffer = SharedPixelBuffer::clone_from_slice(pixmap.data(), pw, ph);
+        Some((Image::from_rgba8(buffer), pixmap))
+    }} else {{
+        let dyn_img = image::load_from_memory(&bytes).ok()?;
+        let rgba = dyn_img.to_rgba8();
+        let (w, h) = rgba.dimensions();
+        let buffer = SharedPixelBuffer::clone_from_slice(rgba.as_raw(), w, h);
+        let pixmap = Pixmap::from_vec(rgba.into_raw(), IntSize::from_wh(w, h)?)?;
+        Some((Image::from_rgba8(buffer), pixmap))
+    }}
+}}
+
+/// Rasterize backdrop + visible sprites into a CPU Pixmap so the
+/// runtime can sample what `touching_color` would see. Cheap enough at
+/// 480×360 to run every tick (~170k pixels). Skips rotation + effects
+/// for now — those add fidelity but the simple positioned blit covers
+/// every common touching_color use case.
+fn rasterize_stage(
+    stage: &Stage,
+    pixmap_cache: &HashMap<String, Pixmap>,
+    backdrop_pixmap: Option<&Pixmap>,
+    width: u32,
+    height: u32,
+) -> Pixmap {{
+    let mut pm = Pixmap::new(width, height).expect("nonzero stage pixmap");
+    pm.fill(resvg::tiny_skia::Color::WHITE);
+    let paint = PixmapPaint::default();
+    // Backdrop: stretched to fill the whole stage.
+    if let Some(bp) = backdrop_pixmap {{
+        let scale_x = width as f32 / bp.width() as f32;
+        let scale_y = height as f32 / bp.height() as f32;
+        pm.draw_pixmap(0, 0, bp.as_ref(), &paint, Transform::from_scale(scale_x, scale_y), None);
+    }}
+    // Sprites: layer order, lower first.
+    let mut sorted: Vec<&Sprite> = stage.sprites.iter().filter(|s| s.visible).collect();
+    sorted.sort_by_key(|s| s.layer);
+    for s in sorted {{
+        let costume = match s.costumes.get(s.costume_index.max(0) as usize) {{
+            Some(c) => c,
+            None => continue,
+        }};
+        let asset_id = match &costume.asset_id {{
+            Some(id) => id,
+            None => continue,
+        }};
+        let pixmap = match pixmap_cache.get(asset_id) {{
+            Some(p) => p,
+            None => continue,
+        }};
+        // Stage→buffer pixel scale (buffer is at logical stage size, so
+        // 1:1 here, but kept explicit so a future high-res buffer works).
+        let buf_per_stage_x = width as f32 / SR_STAGE_W;
+        let buf_per_stage_y = height as f32 / SR_STAGE_H;
+        // Costume natural dimensions × sprite.size%.
+        let sprite_scale = s.size / 100.0;
+        let scaled_w = costume.width * sprite_scale;
+        let scaled_h = costume.height * sprite_scale;
+        // Sprite center in buffer pixel coords (origin top-left).
+        let cx_px = (SR_STAGE_W / 2.0 + s.x) * buf_per_stage_x;
+        let cy_px = (SR_STAGE_H / 2.0 - s.y) * buf_per_stage_y;
+        let top_left_x = cx_px - scaled_w * buf_per_stage_x / 2.0;
+        let top_left_y = cy_px - scaled_h * buf_per_stage_y / 2.0;
+        let total_scale_x = sprite_scale * buf_per_stage_x;
+        let total_scale_y = sprite_scale * buf_per_stage_y;
+        let transform = Transform::from_scale(total_scale_x, total_scale_y)
+            .post_translate(top_left_x, top_left_y);
+        pm.draw_pixmap(0, 0, pixmap.as_ref(), &paint, transform, None);
+    }}
+    pm
 }}
 
 /// Rasterize an SVG document into a slint::Image. resvg picks the size
@@ -670,9 +1212,51 @@ fn scratch_key_from_text(text: &str) -> Option<String> {{
     }}
 }}
 
+/// Map a sprite's brightness/ghost effects into the (opacity, tint
+/// color, tint alpha) triple the Slint template consumes. Brightness
+/// becomes a white overlay (positive) or black overlay (negative) at
+/// alpha = |b|/100; ghost becomes wrapper opacity. Other effects are
+/// stored on the sprite but not rendered until the offscreen-raster
+/// pipeline (P3.12) lands.
+fn compute_effects(s: &wf_sprite_runtime::model::Sprite) -> (f32, Color, f32) {{
+    let Some(eff) = &s.effects else {{
+        return (1.0, Color::from_argb_u8(0, 0, 0, 0), 0.0);
+    }};
+    let ghost = eff.ghost.unwrap_or(0.0).clamp(0.0, 100.0);
+    let opacity = 1.0 - ghost / 100.0;
+    let brightness = eff.brightness.unwrap_or(0.0).clamp(-100.0, 100.0);
+    let (tint_color, tint_alpha) = if brightness > 0.0 {{
+        (Color::from_argb_u8(255, 255, 255, 255), brightness / 100.0)
+    }} else if brightness < 0.0 {{
+        (Color::from_argb_u8(255, 0, 0, 0), -brightness / 100.0)
+    }} else {{
+        (Color::from_argb_u8(0, 0, 0, 0), 0.0)
+    }};
+    (opacity, tint_color, tint_alpha)
+}}
+
+/// Pretty-print a list value into the multi-line body shown in the
+/// monitor chip. Empty lists render as "(empty)" so the user has visible
+/// feedback even before the first add.
+fn format_list(list: &[wf_sprite_runtime::model::ScalarJson]) -> String {{
+    if list.is_empty() {{
+        return "(empty)".to_string();
+    }}
+    let mut out = String::new();
+    for (i, item) in list.iter().enumerate() {{
+        if i > 0 {{
+            out.push('\n');
+        }}
+        out.push_str(&format!("{{}}. {{}}", i + 1, item.as_value().as_string()));
+    }}
+    out
+}}
+
 /// Top-most sprite (highest layer) under the given stage coords, or None.
-/// Uses placeholder bounds (40px × size%) — same hit-test the macroquad
-/// player uses, ensures click semantics match across both runtimes.
+/// Uses the rendered sprite's actual costume dimensions (or the 40-unit
+/// placeholder when the sprite has no costume) so the click area matches
+/// what the user sees — no more 40×40 hit-box swallowed inside a much
+/// larger costume.
 fn hit_test_sprite(stage: &Stage, sx: f32, sy: f32) -> Option<String> {{
     let mut indices: Vec<usize> = (0..stage.sprites.len()).collect();
     indices.sort_by(|&a, &b| stage.sprites[b].layer.cmp(&stage.sprites[a].layer));
@@ -681,8 +1265,19 @@ fn hit_test_sprite(stage: &Stage, sx: f32, sy: f32) -> Option<String> {{
         if !s.visible {{
             continue;
         }}
-        let half = (PLACEHOLDER_SIZE * s.size) / 200.0;
-        if (sx - s.x).abs() <= half && (sy - s.y).abs() <= half {{
+        let scale = s.size / 100.0;
+        let (base_w, base_h) = {{
+            let idx = s.costume_index;
+            if idx >= 0 && (idx as usize) < s.costumes.len() {{
+                let cos = &s.costumes[idx as usize];
+                (cos.width, cos.height)
+            }} else {{
+                (PLACEHOLDER_SIZE, PLACEHOLDER_SIZE)
+            }}
+        }};
+        let half_w = (base_w * scale) / 2.0;
+        let half_h = (base_h * scale) / 2.0;
+        if (sx - s.x).abs() <= half_w && (sy - s.y).abs() <= half_h {{
             return Some(s.id.clone());
         }}
     }}

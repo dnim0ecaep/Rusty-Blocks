@@ -41,6 +41,11 @@ pub enum Frame {
     WaitUntil { cond: Arc<ScriptNode> },
     /// Yield until clock >= resume_at_ms.
     Wait { resume_at_ms: f64 },
+    /// Yield until `stage.pending_question` clears (host submitted the
+    /// answer). The next-block frame for the chain continuation was
+    /// pushed before this one, so popping AwaitAnswer falls through to
+    /// the rest of the script.
+    AwaitAnswer,
     /// Interpolate sprite from start to target between start_ms and end_ms.
     /// `start_ms` is captured when the glide begins so the lerp is a true
     /// linear function of elapsed time, not an approximation.
@@ -178,6 +183,17 @@ impl Script {
                     StepResult::YieldUntil(resume_at_ms)
                 }
             }
+            Frame::AwaitAnswer => {
+                if stage.pending_question().is_none() {
+                    // Answer arrived; fall through to the next-block
+                    // frame that was pushed before this one.
+                    StepResult::Continue
+                } else {
+                    // Still waiting on the user — re-park and yield.
+                    self.frames.push(Frame::AwaitAnswer);
+                    StepResult::YieldFrame
+                }
+            }
             Frame::Glide { start_x, start_y, target_x, target_y, start_ms, end_ms } => {
                 let now = stage.clock_ms();
                 if now >= end_ms || end_ms <= start_ms {
@@ -306,6 +322,26 @@ impl Script {
                 }
                 StepResult::Continue
             }
+            // Worked-example block — see docs/manual.md §12. Mirror of
+            // the TS handler in apps/studio/src/runtime/scriptInterpreter.ts.
+            // Half-extent inset uses the placeholder 40-unit heuristic
+            // so the result matches the TS runtime exactly (parity is
+            // important — the headless test in tests/smoke.rs pins
+            // identical bounds).
+            "scratch_motion_teleport_random" => {
+                if let Some(s) = stage.sprite_mut(&sprite_id) {
+                    let half = (40.0 * s.size) / 200.0;
+                    let min_x = -STAGE_WIDTH / 2.0 + half;
+                    let max_x = STAGE_WIDTH / 2.0 - half;
+                    let min_y = -STAGE_HEIGHT / 2.0 + half;
+                    let max_y = STAGE_HEIGHT / 2.0 - half;
+                    let r1 = pseudo_random() as f32;
+                    let r2 = pseudo_random() as f32;
+                    s.x = r1 * (max_x - min_x) + min_x;
+                    s.y = r2 * (max_y - min_y) + min_y;
+                }
+                StepResult::Continue
+            }
             "scratch_motion_set_rotation_style" => {
                 let style = node.field_string("STYLE", "all-around");
                 let rs = match style.as_str() {
@@ -367,6 +403,47 @@ impl Script {
                 if let Some(s) = stage.sprite_mut(&sprite_id) { s.visible = false; }
                 StepResult::Continue
             }
+            "scratch_looks_set_text_to" => {
+                // Read whatever's plugged in (variable getter, list
+                // item, op_join, literal text shadow…) and store it on
+                // the sprite. Empty string clears.
+                let value = read_arg(&node, "TEXT", stage, &sprite_id).as_string();
+                if let Some(s) = stage.sprite_mut(&sprite_id) {
+                    s.text_value = if value.is_empty() { None } else { Some(value) };
+                }
+                StepResult::Continue
+            }
+            "scratch_looks_set_text_with_font" => {
+                // Combined block — set the text and the font family in
+                // one shot. Either input can be a reporter (typically
+                // a variable getter) so both are live-bindable. Empty
+                // FONT clears the override; empty TEXT clears the
+                // overlay entirely.
+                let text = read_arg(&node, "TEXT", stage, &sprite_id).as_string();
+                let font = read_arg(&node, "FONT", stage, &sprite_id).as_string();
+                if let Some(s) = stage.sprite_mut(&sprite_id) {
+                    s.text_value = if text.is_empty() { None } else { Some(text) };
+                    s.font_family = if font.trim().is_empty() { None } else { Some(font) };
+                }
+                StepResult::Continue
+            }
+            "scratch_looks_set_text_size_to" => {
+                // Pixel size for the dynamic-text overlay. NaN, ≤0, or
+                // infinity clear the override and let the renderer fall
+                // back to its auto-derive. Valid values clamp to
+                // [8, 200] so out-of-range drift from a bound variable
+                // still renders legibly.
+                let raw = read_arg(&node, "SIZE", stage, &sprite_id).as_number() as f32;
+                let cleaned = if raw.is_finite() && raw > 0.0 {
+                    Some(raw.clamp(8.0, 200.0))
+                } else {
+                    None
+                };
+                if let Some(s) = stage.sprite_mut(&sprite_id) {
+                    s.text_size = cleaned;
+                }
+                StepResult::Continue
+            }
             "scratch_looks_change_size" => {
                 let d = read_arg(&node, "DSIZE", stage, &sprite_id).as_number() as f32;
                 if let Some(s) = stage.sprite_mut(&sprite_id) {
@@ -401,6 +478,45 @@ impl Script {
             }
             "scratch_looks_clear_effects" => {
                 if let Some(s) = stage.sprite_mut(&sprite_id) { s.effects = None; }
+                StepResult::Continue
+            }
+            "scratch_looks_change_effect_by" => {
+                let name = node.field_string("EFFECT", "").to_lowercase();
+                let delta = read_arg(&node, "VALUE", stage, &sprite_id).as_number() as f32;
+                if let Some(s) = stage.sprite_mut(&sprite_id) {
+                    let eff = s.effects.get_or_insert(Default::default());
+                    let cur = effect_get(eff, &name).unwrap_or(0.0);
+                    effect_set(eff, &name, clamp_effect(&name, cur + delta));
+                }
+                StepResult::Continue
+            }
+            "scratch_looks_set_effect_to" => {
+                let name = node.field_string("EFFECT", "").to_lowercase();
+                let value = read_arg(&node, "VALUE", stage, &sprite_id).as_number() as f32;
+                if let Some(s) = stage.sprite_mut(&sprite_id) {
+                    let eff = s.effects.get_or_insert(Default::default());
+                    effect_set(eff, &name, clamp_effect(&name, value));
+                }
+                StepResult::Continue
+            }
+            "scratch_looks_switch_backdrop" => {
+                // Accepts either a backdrop *name* or a 1-indexed *number*
+                // — matches Scratch semantics. Out-of-range values leave
+                // the current backdrop unchanged.
+                let target = read_arg(&node, "BACKDROP", stage, &sprite_id).as_string();
+                let resolved = if let Ok(n) = target.trim().parse::<i64>() {
+                    let idx = (n - 1) as i32;
+                    if idx >= 0 && (idx as usize) < stage.backdrops.len() { Some(idx) } else { None }
+                } else {
+                    let lower = target.to_lowercase();
+                    stage.backdrops
+                        .iter()
+                        .position(|b| b.name.to_lowercase() == lower)
+                        .map(|p| p as i32)
+                };
+                if let Some(idx) = resolved {
+                    stage.backdrop_index = idx;
+                }
                 StepResult::Continue
             }
             "scratch_looks_go_to_layer" => {
@@ -596,6 +712,17 @@ impl Script {
                     StepResult::OpenUrl(trimmed.to_string())
                 }
             }
+            // ── Sensing (statement) ───────────────────────────────────
+            // Show the prompt and park this script on AwaitAnswer until
+            // the host calls `stage.submit_answer(...)`. The next-block
+            // frame for the chain continuation was already pushed at the
+            // top of step_block, so it'll execute after AwaitAnswer pops.
+            "scratch_sensing_ask_and_wait" => {
+                let question = read_arg(&node, "QUESTION", stage, &sprite_id).as_string();
+                stage.set_pending_question(question);
+                self.frames.push(Frame::AwaitAnswer);
+                StepResult::Continue
+            }
             "scratch_sound_set_volume" => {
                 let v = read_arg(&node, "VOLUME", stage, &sprite_id).as_number() as f32;
                 if let Some(s) = stage.sprite_mut(&sprite_id) {
@@ -636,6 +763,90 @@ pub fn normalize_direction(d: f32) -> f32 {
     r
 }
 
+/// Clamp / wrap an effect value the way Scratch does. Mirrors the TS
+/// `clampEffect` (color wraps mod 200; ghost is 0..100; brightness is
+/// -100..100; the others pass through unchanged so the data round-trips).
+fn clamp_effect(name: &str, value: f32) -> f32 {
+    if !value.is_finite() { return 0.0; }
+    match name {
+        "color" => ((value % 200.0) + 200.0) % 200.0,
+        "ghost" => value.clamp(0.0, 100.0),
+        "brightness" => value.clamp(-100.0, 100.0),
+        _ => value,
+    }
+}
+
+fn effect_get(eff: &crate::model::Effects, name: &str) -> Option<f32> {
+    match name {
+        "color" => eff.color,
+        "fisheye" => eff.fisheye,
+        "whirl" => eff.whirl,
+        "pixelate" => eff.pixelate,
+        "mosaic" => eff.mosaic,
+        "brightness" => eff.brightness,
+        "ghost" => eff.ghost,
+        _ => None,
+    }
+}
+
+fn effect_set(eff: &mut crate::model::Effects, name: &str, value: f32) {
+    match name {
+        "color" => eff.color = Some(value),
+        "fisheye" => eff.fisheye = Some(value),
+        "whirl" => eff.whirl = Some(value),
+        "pixelate" => eff.pixelate = Some(value),
+        "mosaic" => eff.mosaic = Some(value),
+        "brightness" => eff.brightness = Some(value),
+        "ghost" => eff.ghost = Some(value),
+        _ => {}
+    }
+}
+
+/// Parse a `#rrggbb` or `#rgb` color string into RGB bytes. Tolerates
+/// a missing leading `#`. Returns None on malformed input so callers
+/// can fall back to a "no match" answer rather than crashing.
+fn parse_hex_color(hex: &str) -> Option<(u8, u8, u8)> {
+    let s = hex.trim().trim_start_matches('#');
+    let (r, g, b) = match s.len() {
+        3 => (
+            u8::from_str_radix(&s[0..1].repeat(2), 16).ok()?,
+            u8::from_str_radix(&s[1..2].repeat(2), 16).ok()?,
+            u8::from_str_radix(&s[2..3].repeat(2), 16).ok()?,
+        ),
+        6 => (
+            u8::from_str_radix(&s[0..2], 16).ok()?,
+            u8::from_str_radix(&s[2..4], 16).ok()?,
+            u8::from_str_radix(&s[4..6], 16).ok()?,
+        ),
+        _ => return None,
+    };
+    Some((r, g, b))
+}
+
+/// Per-channel difference within a tolerance. Default tolerance of 5
+/// matches scratch-vm: loose enough for anti-aliasing, tight enough
+/// that picking "red" doesn't match a slightly-pink neighbor.
+fn colors_match(a: (u8, u8, u8), b: (u8, u8, u8), tolerance: i32) -> bool {
+    (a.0 as i32 - b.0 as i32).abs() <= tolerance
+        && (a.1 as i32 - b.1 as i32).abs() <= tolerance
+        && (a.2 as i32 - b.2 as i32).abs() <= tolerance
+}
+
+/// Resolve a `touching` / `distance to` target name to a stage-coord
+/// point. Returns None for unknown names so the caller can pick a
+/// fallback. Mirrors `resolveSensingTarget` in the TS runtime.
+fn resolve_sensing_target(stage: &Stage, target: &str, self_id: &str) -> Option<(f32, f32)> {
+    if target == "mouse-pointer" {
+        return Some((stage.mouse_x(), stage.mouse_y()));
+    }
+    let lower = target.to_lowercase();
+    stage
+        .sprites
+        .iter()
+        .find(|s| s.id != self_id && s.name.to_lowercase() == lower)
+        .map(|s| (s.x, s.y))
+}
+
 /// Read a value from an input socket if present, else from the field of
 /// the same name. Mirrors `readArg` in the TS interpreter.
 pub fn read_arg(node: &ScriptNode, name: &str, stage: &Stage, sprite_id: &str) -> Value {
@@ -655,6 +866,13 @@ pub fn read_arg(node: &ScriptNode, name: &str, stage: &Stage, sprite_id: &str) -
 /// `evaluate` switch in the TS interpreter.
 pub fn evaluate(node: &ScriptNode, stage: &Stage, sprite_id: &str) -> Value {
     match node.r#type.as_str() {
+        // Blockly built-in literal shadows
+        "text" => Value::Text(node.field("TEXT").unwrap_or("").to_string()),
+        "math_number" => match node.field("NUM") {
+            Some(s) => s.parse::<f64>().map(Value::Number).unwrap_or(Value::Number(0.0)),
+            None => Value::Number(0.0),
+        },
+
         // Motion reporters
         "scratch_motion_x_position" => Value::Number(stage.sprite(sprite_id).map(|s| s.x as f64).unwrap_or(0.0)),
         "scratch_motion_y_position" => Value::Number(stage.sprite(sprite_id).map(|s| s.y as f64).unwrap_or(0.0)),
@@ -756,6 +974,87 @@ pub fn evaluate(node: &ScriptNode, stage: &Stage, sprite_id: &str) -> Value {
             let key = node.field_string("KEY", "space");
             Value::Bool(stage.is_key_pressed(&key))
         }
+        "scratch_sensing_answer" => Value::Text(stage.last_answer().to_string()),
+        "scratch_sensing_touching_color" => {
+            let hex = node.field_string("COLOR", "#ff0000");
+            let target = match parse_hex_color(&hex) {
+                Some(rgb) => rgb,
+                None => return Value::Bool(false),
+            };
+            let me = match stage.sprite(sprite_id) {
+                Some(s) => s,
+                None => return Value::Bool(false),
+            };
+            // Sample a 5x5 grid under the asking sprite's bbox; return
+            // true if any sample is within Scratch's color tolerance of
+            // the picked color. Mirrors the studio's TS interpreter.
+            let half = (40.0 * me.size) / 200.0;
+            for dy in -2..=2 {
+                for dx in -2..=2 {
+                    let px = me.x + (half * dx as f32) / 2.0;
+                    let py = me.y + (half * dy as f32) / 2.0;
+                    if let Some(rgb) = stage.stage_pixel(px, py) {
+                        if colors_match(rgb, target, 5) {
+                            return Value::Bool(true);
+                        }
+                    }
+                }
+            }
+            Value::Bool(false)
+        }
+        "scratch_sensing_touching" => {
+            let target = read_arg(node, "TARGET", stage, sprite_id).as_string();
+            let me = match stage.sprite(sprite_id) {
+                Some(s) => s,
+                None => return Value::Bool(false),
+            };
+            // Half-extent matches the studio's `touching` heuristic: a
+            // 40-unit placeholder × sprite.size%. Mirroring TS keeps the
+            // two runtimes identical even though the real costume could
+            // be bigger; upgrading both to costume bounds is tracked in
+            // the parity follow-ups.
+            let half = (40.0 * me.size) / 200.0;
+            if target == "edge" {
+                use crate::model::{STAGE_HEIGHT, STAGE_WIDTH};
+                let hits = me.x - half <= -STAGE_WIDTH / 2.0
+                    || me.x + half >= STAGE_WIDTH / 2.0
+                    || me.y - half <= -STAGE_HEIGHT / 2.0
+                    || me.y + half >= STAGE_HEIGHT / 2.0;
+                return Value::Bool(hits);
+            }
+            match resolve_sensing_target(stage, &target, sprite_id) {
+                Some((tx, ty)) => {
+                    let half_b = 20.0_f32;
+                    let hits = (tx - me.x).abs() <= half + half_b
+                        && (ty - me.y).abs() <= half + half_b;
+                    Value::Bool(hits)
+                }
+                None => Value::Bool(false),
+            }
+        }
+        "scratch_sensing_distance_to" => {
+            let target = read_arg(node, "TARGET", stage, sprite_id).as_string();
+            let me = match stage.sprite(sprite_id) {
+                Some(s) => (s.x, s.y),
+                None => return Value::Number(10000.0),
+            };
+            match resolve_sensing_target(stage, &target, sprite_id) {
+                Some((tx, ty)) => {
+                    let dx = (tx - me.0) as f64;
+                    let dy = (ty - me.1) as f64;
+                    Value::Number((dx * dx + dy * dy).sqrt())
+                }
+                None => Value::Number(10000.0),
+            }
+        }
+
+        // Sound reporter
+        "scratch_sound_volume" => Value::Number(
+            stage
+                .sprite(sprite_id)
+                .and_then(|s| s.volume)
+                .unwrap_or(100.0) as f64,
+        ),
 
         // Variables / lists
         "scratch_data_variables_get" => {

@@ -24,13 +24,20 @@ Pre-baked example projects you can open in WarpForge Studio and run.
 | `calculator.warpforge.json` | Classic calculator with a 4×5 button pad and display |
 | `pomodoro-timer.warpforge.json` | Focus timer with start/pause/reset and tick handler |
 | `recipe-card.warpforge.json` | Single-page recipe layout (header, ingredients, steps) |
-| `app-menu.warpforge.json` | **Sprite-stage launcher** — three clickable sprites; each fires `scratch_io_open_url` to open a different URL. |
+| `app-menu.warpforge.json` | **Editable launcher menu** — four clickable sprites, each opens a URL or app on click. Add, edit, and remove entries via the Stage panel. |
+| `launchpad.warpforge.json` | **Editable 3×2 launcher dock** — six tiles on a grid backdrop (Browse, Code, AI, Music, Notes, Mail). Each tile opens a URL or app on click; add/edit/remove tiles via the Stage panel. |
+| `menu-editor.warpforge.json` | **In-app editable menu.** Four button sprites (Add, Edit, Delete, Open) drive a pair of parallel lists (`labels` + `urls`). Click Add → asks for label + URL; Edit → asks index + new values; Delete → asks index and removes; Open → asks index and launches the URL via the OS shell handler (real dynamic open via `scratch_io_open_url` plugged with `item N of urls`). Runs both via ⚑ in the Stage panel and via ▶ Run (the Slint codegen target uses a built-in ask overlay for prompts). |
+| `menu-pro.warpforge.json` | **Comprehensive menu manager.** Six action buttons on top of `menu-editor`'s CRUD: + Add, ✎ Edit, ✕ Delete, ▶ Open, ↑ Move Up, ↓ Move Down. Reorder support uses parallel-list swap via `tmp_l` / `tmp_u` variables and bounds-check via `op_gt` / `op_lt` + `length_of_list`. Seeded with three starter entries (GitHub, Mail, Google) on flag click. Works in both runtimes. |
+| `counter.warpforge.json` | **Dynamic-text sprite demo.** A dark panel sprite displays the live value of variable `count`. Click the green `+` to increment, red `−` to decrement; the panel updates every frame because its `forever → set text to (value of count)` loop polls the variable. Showcases `scratch_looks_set_text_to`: a sprite whose visible content IS a variable. |
+| `font-picker.warpforge.json` | **Dynamic text + dynamic font.** A panel sprite renders the value of variable `msg` in the typeface named by variable `font_name`, refreshed every frame via `set text to (value of msg) with font (value of font_name)`. Orange button cycles the font (Georgia → Courier New → Helvetica → Comic Sans MS); green button cycles the message. Showcases `scratch_looks_set_text_with_font`. |
+| `greeting-card.warpforge.json` | **Practical app — editable greeting card.** Two live-bound text panels (a big headline + a signature line) plus five buttons: edit message (asks via `ask_and_wait`), edit signature, cycle through four matched font themes (Classic / Modern / Bold News / Playful), and a green A↑ / red A↓ pair that grows/shrinks `headline_size` in 4-px steps (12..120 clamped). Headline's forever loop chains `set text with font` → `set text size to`, all three inputs live-bound to variables. End-to-end dynamic typography. |
+| `signup-widget.warpforge.json` | **Composite-block source.** Tiny form-style newsletter signup (header, email input, Subscribe button, footer) plus an on-click handler that saves to local storage. The whole wf_window tower is a single chained sequence so you can right-click the window block → **Save as Composite Block…** and turn the entire widget into one reusable block in your toolbox. The on-click handler is a second top-level stack you can wrap independently. |
 | `sprite-bouncer.warpforge.json` | **Sprite runtime demo** — bouncing sprite + score keeper. See below. |
 | `star-burst.warpforge.json` | **Sprite runtime demo** — clones + broadcasts. Click the star to spawn 12 radiating clones; broadcast increments a burst counter. |
 
 ## Sprite runtime examples
 
-`sprite-bouncer.warpforge.json` exercises the in-studio sprite runtime player, not the Slint codegen pipeline. It does **not** run through ▶ Run / `cargo build`. Instead:
+`sprite-bouncer.warpforge.json` and `star-burst.warpforge.json` exercise the in-studio sprite runtime player, not the Slint codegen pipeline. They do **not** run through ▶ Run / `cargo build`. Instead:
 
 1. **File ▾ → Files…** → open `sprite-bouncer.warpforge.json`.
 2. Open the **Stage** panel (right-side dock).

@@ -1,0 +1,217 @@
+{
+  "schema_version": 1,
+  "project": {
+    "id": "example-font-picker",
+    "app_name": "Font Picker",
+    "package_id": "com.warpforge.font-picker",
+    "version": "0.1.0",
+    "author": "WarpForge Examples",
+    "description": "Dynamic-text + dynamic-font demo. The dark panel sprite renders the value of variable `msg` in the typeface named by variable `font_name`, refreshed every frame via\n\n  forever\n    set text to (value of msg) with font (value of font_name)\n\nClick the orange \u21bb to cycle the font through Georgia, Courier New, Helvetica, Comic Sans MS. Click the green pencil to cycle the message. Both inputs to the new scratch_looks_set_text_with_font block are variable getters, so the panel always shows the live values.",
+    "target_type": "desktop_slint",
+    "theme": "auto",
+    "created_at": "2026-05-13T00:00:00Z",
+    "updated_at": "2026-05-13T00:00:00Z"
+  },
+  "workspace_state": {
+    "zoom": 1.0,
+    "pan_x": 0.0,
+    "pan_y": 0.0,
+    "selected_block_ids": [],
+    "blockly_xml": "<xml xmlns=\"https://developers.google.com/blockly/xml\">\n<block type=\"wf_window\" id=\"window_main\" x=\"24\" y=\"24\"><field name=\"HEIGHT\">360</field><field name=\"TITLE\">Font Picker</field><field name=\"WIDTH\">480</field><next><block type=\"wf_screen\" id=\"screen_stage\"><field name=\"NAME\">Stage</field><field name=\"ROUTE\">/</field></block></next></block>\n</xml>",
+    "comments": [],
+    "groups": []
+  },
+  "normalized_graph": {
+    "nodes": [
+      {
+        "id": "window_main",
+        "kind": "structure.window",
+        "category": "structure",
+        "props": {
+          "height": 360,
+          "title": "Font Picker",
+          "width": 480
+        }
+      },
+      {
+        "id": "screen_stage",
+        "kind": "structure.screen",
+        "category": "structure",
+        "props": {
+          "name": "Stage",
+          "route": "/"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge_window_screen",
+        "from": "window_main",
+        "to": "screen_stage",
+        "edge_type": "child"
+      }
+    ]
+  },
+  "ir_snapshot": null,
+  "assets": [
+    {
+      "id": "asset_fp_bg",
+      "kind": "costume",
+      "path": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0ODAgMzYwIj48cmVjdCB3aWR0aD0iNDgwIiBoZWlnaHQ9IjM2MCIgZmlsbD0iI2Y0ZjZmYSIvPjxyZWN0IHg9IjAiIHk9IjQwIiB3aWR0aD0iNDgwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2ZiZmNmZSIvPjxyZWN0IHg9IjAiIHk9IjI2MCIgd2lkdGg9IjQ4MCIgaGVpZ2h0PSI2MCIgZmlsbD0iI2RkZTZmMCIvPjwvc3ZnPg==",
+      "prompt": null,
+      "metadata": {
+        "role": "backdrop",
+        "source": "generated"
+      },
+      "created_at": "2026-05-13T00:00:00.000Z",
+      "version": 1
+    },
+    {
+      "id": "asset_fp_panel",
+      "kind": "costume",
+      "path": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB4PSIyIiB5PSIyIiB3aWR0aD0iOTYiIGhlaWdodD0iOTYiIHJ4PSIxNCIgcnk9IjE0IiBmaWxsPSIjMWEyMzMzIiBzdHJva2U9IiMwZDE0MWQiIHN0cm9rZS13aWR0aD0iMyIvPjwvc3ZnPg==",
+      "prompt": null,
+      "metadata": {
+        "source": "generated"
+      },
+      "created_at": "2026-05-13T00:00:00.000Z",
+      "version": 1
+    },
+    {
+      "id": "asset_fp_font",
+      "kind": "costume",
+      "path": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB4PSI0IiB5PSI0IiB3aWR0aD0iOTIiIGhlaWdodD0iOTIiIHJ4PSIxNCIgcnk9IjE0IgogICAgICAgIGZpbGw9IiNlODkwMjAiIHN0cm9rZT0iIzlhNWExMCIgc3Ryb2tlLXdpZHRoPSIzIi8+PHBhdGggZD0iTTUwIDIyIEEyOCAyOCAwIDEgMCA3OCA1MCIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utd2lkdGg9IjgiIGZpbGw9Im5vbmUiLz48cG9seWdvbiBwb2ludHM9Ijc4LDE4IDYwLDIyIDcwLDM4IiBmaWxsPSIjZmZmZmZmIi8+PC9zdmc+",
+      "prompt": null,
+      "metadata": {
+        "source": "generated"
+      },
+      "created_at": "2026-05-13T00:00:00.000Z",
+      "version": 1
+    },
+    {
+      "id": "asset_fp_msg",
+      "kind": "costume",
+      "path": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB4PSI0IiB5PSI0IiB3aWR0aD0iOTIiIGhlaWdodD0iOTIiIHJ4PSIxNCIgcnk9IjE0IgogICAgICAgIGZpbGw9IiMzYWE2NGEiIHN0cm9rZT0iIzFmNjAyOCIgc3Ryb2tlLXdpZHRoPSIzIi8+PHBvbHlnb24gcG9pbnRzPSIyMiw3OCAzMiw2OCA3MiwyOCA4MiwzOCA0Miw3OCIgZmlsbD0iI2ZmZmZmZiIvPjxwb2x5Z29uIHBvaW50cz0iNzIsMjggODIsMzggNzgsNDIgNjgsMzIiIGZpbGw9IiMxYTIzMzMiLz48L3N2Zz4=",
+      "prompt": null,
+      "metadata": {
+        "source": "generated"
+      },
+      "created_at": "2026-05-13T00:00:00.000Z",
+      "version": 1
+    }
+  ],
+  "ai_history": [],
+  "stage_state": {
+    "backdropIndex": 0,
+    "backdrops": [
+      {
+        "assetId": "asset_fp_bg",
+        "centerX": 240,
+        "centerY": 180,
+        "height": 360,
+        "id": "backdrop_fp",
+        "name": "Pale",
+        "width": 480
+      }
+    ],
+    "globalLists": {},
+    "globalVariables": {
+      "msg": "Hello",
+      "font_name": "Georgia",
+      "font_idx": 0,
+      "msg_idx": 0
+    },
+    "schema_version": 1,
+    "selectedSpriteId": "sprite_fp_panel",
+    "sprites": [
+      {
+        "costumeIndex": 0,
+        "costumes": [
+          {
+            "assetId": "asset_fp_panel",
+            "centerX": 50,
+            "centerY": 50,
+            "height": 100,
+            "id": "costume_fp_panel",
+            "name": "Panel",
+            "width": 100
+          }
+        ],
+        "direction": 90,
+        "id": "sprite_fp_panel",
+        "layer": 1,
+        "lists": {},
+        "name": "Panel",
+        "rotationStyle": "dont-rotate",
+        "scripts_xml": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><block type=\"scratch_event_when_flag_clicked\" id=\"p_hat\" x=\"20\" y=\"20\"><next><block type=\"scratch_data_set_variable\" id=\"p_init_msg\"><field name=\"VARIABLE\">msg</field><value name=\"VALUE\"><shadow type=\"text\"><field name=\"TEXT\">Hello</field></shadow></value><next><block type=\"scratch_data_set_variable\" id=\"p_init_font\"><field name=\"VARIABLE\">font_name</field><value name=\"VALUE\"><shadow type=\"text\"><field name=\"TEXT\">Georgia</field></shadow></value><next><block type=\"scratch_data_set_variable\" id=\"p_init_idx\"><field name=\"VARIABLE\">font_idx</field><value name=\"VALUE\"><shadow type=\"math_number\"><field name=\"NUM\">0</field></shadow></value><next><block type=\"scratch_data_set_variable\" id=\"p_init_midx\"><field name=\"VARIABLE\">msg_idx</field><value name=\"VALUE\"><shadow type=\"math_number\"><field name=\"NUM\">0</field></shadow></value><next><block type=\"scratch_control_forever\" id=\"p_loop\"><statement name=\"DO\"><block type=\"scratch_looks_set_text_with_font\" id=\"p_setbox\"><value name=\"TEXT\"><block type=\"scratch_data_variables_get\"><field name=\"VARIABLE\">msg</field></block></value><value name=\"FONT\"><block type=\"scratch_data_variables_get\"><field name=\"VARIABLE\">font_name</field></block></value></block></statement></block></next></block></next></block></next></block></next></block></next></block></xml>",
+        "size": 180,
+        "sounds": [],
+        "variables": {},
+        "visible": true,
+        "x": 0,
+        "y": 50
+      },
+      {
+        "costumeIndex": 0,
+        "costumes": [
+          {
+            "assetId": "asset_fp_font",
+            "centerX": 50,
+            "centerY": 50,
+            "height": 100,
+            "id": "costume_fp_font",
+            "name": "CycleFont",
+            "width": 100
+          }
+        ],
+        "direction": 90,
+        "id": "sprite_fp_font",
+        "layer": 2,
+        "lists": {},
+        "name": "CycleFont",
+        "rotationStyle": "dont-rotate",
+        "scripts_xml": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><block type=\"scratch_event_when_this_sprite_clicked\" id=\"cf_click\" x=\"20\" y=\"20\"><next><block type=\"scratch_data_set_variable\" id=\"cf_inc\"><field name=\"VARIABLE\">font_idx</field><value name=\"VALUE\"><block type=\"scratch_op_mod\"><value name=\"A\"><block type=\"scratch_op_add\"><value name=\"A\"><block type=\"scratch_data_variables_get\"><field name=\"VARIABLE\">font_idx</field></block></value><value name=\"B\"><shadow type=\"math_number\"><field name=\"NUM\">1</field></shadow></value></block></value><value name=\"B\"><shadow type=\"math_number\"><field name=\"NUM\">4</field></shadow></value></block></value><next><block type=\"scratch_control_if\" id=\"cf_if0\"><value name=\"CONDITION\"><block type=\"scratch_op_eq\"><value name=\"A\"><block type=\"scratch_data_variables_get\"><field name=\"VARIABLE\">font_idx</field></block></value><value name=\"B\"><shadow type=\"math_number\"><field name=\"NUM\">0</field></shadow></value></block></value><statement name=\"DO\"><block type=\"scratch_data_set_variable\"><field name=\"VARIABLE\">font_name</field><value name=\"VALUE\"><shadow type=\"text\"><field name=\"TEXT\">Georgia</field></shadow></value></block></statement><next><block type=\"scratch_control_if\" id=\"cf_if1\"><value name=\"CONDITION\"><block type=\"scratch_op_eq\"><value name=\"A\"><block type=\"scratch_data_variables_get\"><field name=\"VARIABLE\">font_idx</field></block></value><value name=\"B\"><shadow type=\"math_number\"><field name=\"NUM\">1</field></shadow></value></block></value><statement name=\"DO\"><block type=\"scratch_data_set_variable\"><field name=\"VARIABLE\">font_name</field><value name=\"VALUE\"><shadow type=\"text\"><field name=\"TEXT\">Courier New</field></shadow></value></block></statement><next><block type=\"scratch_control_if\" id=\"cf_if2\"><value name=\"CONDITION\"><block type=\"scratch_op_eq\"><value name=\"A\"><block type=\"scratch_data_variables_get\"><field name=\"VARIABLE\">font_idx</field></block></value><value name=\"B\"><shadow type=\"math_number\"><field name=\"NUM\">2</field></shadow></value></block></value><statement name=\"DO\"><block type=\"scratch_data_set_variable\"><field name=\"VARIABLE\">font_name</field><value name=\"VALUE\"><shadow type=\"text\"><field name=\"TEXT\">Helvetica</field></shadow></value></block></statement><next><block type=\"scratch_control_if\" id=\"cf_if3\"><value name=\"CONDITION\"><block type=\"scratch_op_eq\"><value name=\"A\"><block type=\"scratch_data_variables_get\"><field name=\"VARIABLE\">font_idx</field></block></value><value name=\"B\"><shadow type=\"math_number\"><field name=\"NUM\">3</field></shadow></value></block></value><statement name=\"DO\"><block type=\"scratch_data_set_variable\"><field name=\"VARIABLE\">font_name</field><value name=\"VALUE\"><shadow type=\"text\"><field name=\"TEXT\">Comic Sans MS</field></shadow></value></block></statement></block></next></block></next></block></next></block></next></block></next></block></xml>",
+        "size": 70,
+        "sounds": [],
+        "variables": {},
+        "visible": true,
+        "x": -90,
+        "y": -110
+      },
+      {
+        "costumeIndex": 0,
+        "costumes": [
+          {
+            "assetId": "asset_fp_msg",
+            "centerX": 50,
+            "centerY": 50,
+            "height": 100,
+            "id": "costume_fp_msg",
+            "name": "CycleMsg",
+            "width": 100
+          }
+        ],
+        "direction": 90,
+        "id": "sprite_fp_msg",
+        "layer": 3,
+        "lists": {},
+        "name": "CycleMsg",
+        "rotationStyle": "dont-rotate",
+        "scripts_xml": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><block type=\"scratch_event_when_this_sprite_clicked\" id=\"cm_click\" x=\"20\" y=\"20\"><next><block type=\"scratch_data_set_variable\" id=\"cm_inc\"><field name=\"VARIABLE\">msg_idx</field><value name=\"VALUE\"><block type=\"scratch_op_mod\"><value name=\"A\"><block type=\"scratch_op_add\"><value name=\"A\"><block type=\"scratch_data_variables_get\"><field name=\"VARIABLE\">msg_idx</field></block></value><value name=\"B\"><shadow type=\"math_number\"><field name=\"NUM\">1</field></shadow></value></block></value><value name=\"B\"><shadow type=\"math_number\"><field name=\"NUM\">3</field></shadow></value></block></value><next><block type=\"scratch_control_if\" id=\"cm_if0\"><value name=\"CONDITION\"><block type=\"scratch_op_eq\"><value name=\"A\"><block type=\"scratch_data_variables_get\"><field name=\"VARIABLE\">msg_idx</field></block></value><value name=\"B\"><shadow type=\"math_number\"><field name=\"NUM\">0</field></shadow></value></block></value><statement name=\"DO\"><block type=\"scratch_data_set_variable\"><field name=\"VARIABLE\">msg</field><value name=\"VALUE\"><shadow type=\"text\"><field name=\"TEXT\">Hello</field></shadow></value></block></statement><next><block type=\"scratch_control_if\" id=\"cm_if1\"><value name=\"CONDITION\"><block type=\"scratch_op_eq\"><value name=\"A\"><block type=\"scratch_data_variables_get\"><field name=\"VARIABLE\">msg_idx</field></block></value><value name=\"B\"><shadow type=\"math_number\"><field name=\"NUM\">1</field></shadow></value></block></value><statement name=\"DO\"><block type=\"scratch_data_set_variable\"><field name=\"VARIABLE\">msg</field><value name=\"VALUE\"><shadow type=\"text\"><field name=\"TEXT\">WarpForge</field></shadow></value></block></statement><next><block type=\"scratch_control_if\" id=\"cm_if2\"><value name=\"CONDITION\"><block type=\"scratch_op_eq\"><value name=\"A\"><block type=\"scratch_data_variables_get\"><field name=\"VARIABLE\">msg_idx</field></block></value><value name=\"B\"><shadow type=\"math_number\"><field name=\"NUM\">2</field></shadow></value></block></value><statement name=\"DO\"><block type=\"scratch_data_set_variable\"><field name=\"VARIABLE\">msg</field><value name=\"VALUE\"><shadow type=\"text\"><field name=\"TEXT\">Type Lab</field></shadow></value></block></statement></block></next></block></next></block></next></block></next></block></xml>",
+        "size": 70,
+        "sounds": [],
+        "variables": {},
+        "visible": true,
+        "x": 90,
+        "y": -110
+      }
+    ]
+  },
+  "settings": {
+    "autosave_interval_secs": 30,
+    "validate_on_change": false,
+    "codegen_deterministic": true,
+    "ai_default_text_provider": "ollama",
+    "ai_default_image_provider": "comfyui"
+  }
+}

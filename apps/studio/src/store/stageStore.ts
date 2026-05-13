@@ -7,6 +7,7 @@ import {
   type Sprite,
   type StageState,
 } from "../types/workspace";
+import { derivePreviewFromScripts } from "../runtime/spriteTextPreview";
 
 /**
  * Live runtime state for the sprite stage.
@@ -157,7 +158,20 @@ export const useStageStore = create<StageStore>((set, get) => ({
 
   updateSprite(id, patch) {
     set((state) => ({
-      sprites: state.sprites.map((s) => (s.id === id ? { ...s, ...patch } : s)),
+      sprites: state.sprites.map((s) => {
+        if (s.id !== id) return s;
+        const merged = { ...s, ...patch };
+        // When the script chain itself changed, derive a WYSIWYG
+        // preview from any literal set_text_to / set_text_with_font /
+        // set_text_size_to inputs and apply it immediately, so the
+        // user sees the text/font/size on the stage as they author
+        // without waiting for the green flag.
+        if (typeof patch.scripts_xml === "string") {
+          const preview = derivePreviewFromScripts(patch.scripts_xml);
+          return { ...merged, ...preview };
+        }
+        return merged;
+      }),
     }));
   },
 

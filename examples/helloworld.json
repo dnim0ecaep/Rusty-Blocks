@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "project": {
+    "id": "example-pomodoro-timer",
+    "app_name": "Hello World",
+    "package_id": "com.warpforge.pomodoro-timer",
+    "version": "0.1.0",
+    "author": "WarpForge Examples",
+    "description": "Focus timer with start/pause/reset and tick handler — bundled example. Open this file in WarpForge Studio and click ▶ Run.",
+    "target_type": "desktop_slint",
+    "theme": "auto",
+    "created_at": "2026-05-04T00:00:00Z",
+    "updated_at": "2026-05-13T17:17:30.562885799Z"
+  },
+  "workspace_state": {
+    "zoom": 1.0,
+    "pan_x": 0.0,
+    "pan_y": 0.0,
+    "selected_block_ids": [],
+    "blockly_xml": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><block type=\"wf_on_app_start\" id=\"f5={`O43uff,5iXT-@8t\" x=\"-60\" y=\"180\"><next><block type=\"wf_window\" id=\"window_main\"><field name=\"TITLE\">Hello-World</field><field name=\"WIDTH\">420</field><field name=\"HEIGHT\">360</field><next><block type=\"wf_screen\" id=\"screen_home\"><field name=\"NAME\">Focus</field><field name=\"ROUTE\">/</field><next><block type=\"wf_ui_text\" id=\"ui_phase_label\"><field name=\"TEXT\">Hello World</field></block></next></block></next></block></next></block></xml>",
+    "comments": [],
+    "groups": []
+  },
+  "normalized_graph": {
+    "nodes": [
+      {
+        "id": "f5={`O43uff,5iXT-@8t",
+        "kind": "events.on_app_start",
+        "category": "events",
+        "props": {}
+      },
+      {
+        "id": "screen_home",
+        "kind": "structure.screen",
+        "category": "structure",
+        "props": {
+          "name": "Focus",
+          "route": "/"
+        }
+      },
+      {
+        "id": "ui_phase_label",
+        "kind": "ui.text",
+        "category": "ui",
+        "props": {
+          "text": "Hello World"
+        }
+      },
+      {
+        "id": "window_main",
+        "kind": "structure.window",
+        "category": "structure",
+        "props": {
+          "height": 360,
+          "title": "Hello-World",
+          "width": 420
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge-f5={`O43uff,5iXT-@8t-window_main",
+        "from": "f5={`O43uff,5iXT-@8t",
+        "to": "window_main",
+        "edge_type": "flow"
+      },
+      {
+        "id": "edge-screen_home-ui_phase_label",
+        "from": "screen_home",
+        "to": "ui_phase_label",
+        "edge_type": "flow"
+      },
+      {
+        "id": "edge-window_main-screen_home",
+        "from": "window_main",
+        "to": "screen_home",
+        "edge_type": "flow"
+      }
+    ]
+  },
+  "ir_snapshot": null,
+  "assets": [],
+  "ai_history": [],
+  "stage_state": {
+    "backdropIndex": -1,
+    "backdrops": [],
+    "globalLists": {},
+    "globalVariables": {},
+    "schema_version": 1,
+    "sprites": []
+  },
+  "settings": {
+    "autosave_interval_secs": 20,
+    "validate_on_change": true,
+    "codegen_deterministic": true,
+    "ai_default_text_provider": "ollama",
+    "ai_default_image_provider": "comfyui"
+  }
+}

@@ -2,7 +2,11 @@ import * as Blockly from "blockly";
 
 import type { CustomBlockDef } from "./customBlockTypes";
 import { toBlocklyJson } from "./customBlockTypes";
-import { useBlockOrgStore } from "../store/blockOrgStore";
+import {
+  BUILTIN_CATEGORY_NAMES,
+  MY_BLOCKS_CATEGORY,
+  useBlockOrgStore,
+} from "../store/blockOrgStore";
 
 /**
  * Register a single custom block definition with Blockly.
@@ -10,6 +14,10 @@ import { useBlockOrgStore } from "../store/blockOrgStore";
  * Safe to call multiple times for the same `type`: it overwrites the existing
  * registration (Blockly allows this). The toolbox category assignment is also
  * updated in blockOrgStore so the toolbox builder picks it up.
+ *
+ * If `def.category` references a category that doesn't exist (deleted or
+ * never created), the block falls back to "My Blocks" instead of being
+ * filed under a missing name where the toolbox builder would drop it.
  */
 export function registerCustomBlock(def: CustomBlockDef): void {
   const json = toBlocklyJson(def);
@@ -17,9 +25,16 @@ export function registerCustomBlock(def: CustomBlockDef): void {
   // still updates the registry, which is what we want during edits.
   Blockly.common.defineBlocksWithJsonArray([json as never]);
 
-  const assignments = useBlockOrgStore.getState().assignments;
-  if (assignments[def.type] !== def.category) {
-    useBlockOrgStore.getState().moveBlock(def.type, def.category);
+  const orgState = useBlockOrgStore.getState();
+  const knownCategories = new Set<string>([
+    ...BUILTIN_CATEGORY_NAMES,
+    ...orgState.customCategories.map((c) => c.name),
+  ]);
+  const targetCategory = knownCategories.has(def.category)
+    ? def.category
+    : MY_BLOCKS_CATEGORY;
+  if (orgState.assignments[def.type] !== targetCategory) {
+    orgState.moveBlock(def.type, targetCategory);
   }
 }
 

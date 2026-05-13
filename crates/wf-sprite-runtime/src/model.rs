@@ -169,6 +169,22 @@ pub struct Sprite {
     pub layer: i32,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub bubble: Option<Bubble>,
+    /// Dynamic-text overlay set by `scratch_looks_set_text_to`. Painted
+    /// on top of the sprite when present and non-empty. Snake-case in
+    /// the JSON to match the studio's `text_value` field name.
+    #[serde(default, skip_serializing_if = "Option::is_none", rename = "text_value")]
+    pub text_value: Option<String>,
+    /// Font family for the dynamic-text overlay, set by
+    /// `scratch_looks_set_text_with_font`. CSS-style value: a system
+    /// font name, a stack, or None for the renderer default.
+    #[serde(default, skip_serializing_if = "Option::is_none", rename = "font_family")]
+    pub font_family: Option<String>,
+    /// Explicit font size in pixels for the dynamic-text overlay, set
+    /// by `scratch_looks_set_text_size_to`. None falls back to the
+    /// renderer's auto-derive (~32% of sprite height). Clamped to
+    /// 8..200 at write time.
+    #[serde(default, skip_serializing_if = "Option::is_none", rename = "text_size")]
+    pub text_size: Option<f32>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub effects: Option<Effects>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -198,8 +214,21 @@ pub enum BubbleKind { Say, Think }
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Effects {
+    /// 0..200, hue rotation. Wraps mod 200.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub color: Option<f32>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub fisheye: Option<f32>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub whirl: Option<f32>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub pixelate: Option<f32>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub mosaic: Option<f32>,
+    /// -100..100.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub brightness: Option<f32>,
+    /// 0..100. Inverse of opacity.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ghost: Option<f32>,
 }

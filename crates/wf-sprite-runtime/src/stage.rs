@@ -7,7 +7,7 @@
 
 use std::collections::{HashMap, HashSet};
 
-use crate::model::{ScalarJson, Sprite, StageState, Value};
+use crate::model::{Costume, ScalarJson, Sprite, StageState, Value};
 
 pub struct Stage {
     pub sprites: Vec<Sprite>,
@@ -15,6 +15,10 @@ pub struct Stage {
     pub global_lists: HashMap<String, Vec<ScalarJson>>,
     pub visible_monitors: HashSet<String>,
     pub backdrop_index: i32,
+    /// Available backdrop costumes — the active one is `backdrops[backdrop_index]`
+    /// when the index is in-range. Stored so `scratch_looks_switch_backdrop`
+    /// can resolve by name and the host can re-render on index change.
+    pub backdrops: Vec<Costume>,
 
     // Live input state.
     pressed_keys: HashSet<String>,
@@ -37,6 +41,22 @@ pub struct Stage {
     /// `take_pending_url_opens()` after each tick.
     pending_url_opens: Vec<String>,
 
+    /// Currently-displayed ask prompt. `scratch_sensing_ask_and_wait`
+    /// sets this; `submit_answer` clears it. The host watches this
+    /// each frame and shows / hides its ask overlay accordingly.
+    pending_question: Option<String>,
+    /// Last submitted answer. `scratch_sensing_answer` reporter reads this.
+    last_answer: String,
+
+    /// CPU-side rasterized snapshot of the previous frame, used by
+    /// `scratch_sensing_touching_color` to sample what the user actually
+    /// sees. The host (Slint codegen main.rs) rasterizes backdrop +
+    /// sprites into a Pixmap each tick and hands the RGBA bytes here
+    /// via `set_pixel_buffer`. Layout: tightly-packed RGBA8.
+    pixel_buffer_width: u32,
+    pixel_buffer_height: u32,
+    pixel_buffer: Vec<u8>,
+
     /// Allocator for fresh sprite ids when cloning.
     next_id: u64,
     /// Next layer for newly-added sprites.
@@ -52,6 +72,7 @@ impl Stage {
             global_lists: state.global_lists,
             visible_monitors: HashSet::new(),
             backdrop_index: state.backdrop_index,
+            backdrops: state.backdrops,
             pressed_keys: HashSet::new(),
             mouse_x: 0.0,
             mouse_y: 0.0,
@@ -60,6 +81,11 @@ impl Stage {
             clock_ms: 0.0,
             active_script_ids: HashSet::new(),
             pending_url_opens: Vec::new(),
+            pending_question: None,
+            last_answer: String::new(),
+            pixel_buffer_width: 0,
+            pixel_buffer_height: 0,
+            pixel_buffer: Vec::new(),
             next_id: 1,
             next_layer,
         }
@@ -175,5 +201,70 @@ impl Stage {
     /// to a system call that may outlive the next tick's mutation.
     pub fn take_pending_url_opens(&mut self) -> Vec<String> {
         std::mem::take(&mut self.pending_url_opens)
+    }
+
+    // ── Ask / answer ──────────────────────────────────────────────────
+    /// Currently-displayed prompt, if any. Hosts mirror this into their
+    /// ask-overlay UI each frame (visible when Some, hidden when None).
+    pub fn pending_question(&self) -> Option<&str> {
+        self.pending_question.as_deref()
+    }
+    /// Set the prompt text — called by `scratch_sensing_ask_and_wait`.
+    /// Multiple asks while one is pending overwrite (last one wins);
+    /// in practice scripts park on AwaitAnswer between asks so this
+    /// is rare. The simplification matches Scratch's "one ask at a time"
+    /// behavior closely enough for this runtime's scope.
+    pub fn set_pending_question(&mut self, q: String) {
+        self.pending_question = Some(q);
+    }
+    /// The most recently submitted answer. `scratch_sensing_answer`
+    /// reads this. Defaults to empty string before any answer.
+    pub fn last_answer(&self) -> &str {
+        &self.last_answer
+    }
+    /// Host calls this when the user submits the prompt. Stores the
+    /// answer for `scratch_sensing_answer` and clears the prompt so
+    /// any AwaitAnswer-parked scripts can resume.
+    pub fn submit_answer(&mut self, answer: String) {
+        self.last_answer = answer;
+        self.pending_question = None;
+    }
+
+    // ── Pixel buffer (touching_color) ─────────────────────────────────
+    /// Hand the host's just-rendered stage raster to the runtime.
+    /// `data` is RGBA8, `width * height * 4` bytes.
+    pub fn set_pixel_buffer(&mut self, width: u32, height: u32, data: Vec<u8>) {
+        self.pixel_buffer_width = width;
+        self.pixel_buffer_height = height;
+        self.pixel_buffer = data;
+    }
+
+    /// Sample the rendered stage at Scratch coords. Returns RGB if the
+    /// host has uploaded a buffer and the coords are in-range, else
+    /// None. The runtime uses this to fulfil `touching_color`.
+    pub fn stage_pixel(&self, x: f32, y: f32) -> Option<(u8, u8, u8)> {
+        if self.pixel_buffer.is_empty() || self.pixel_buffer_width == 0 {
+            return None;
+        }
+        // Scratch coords (origin centered, +y up) → pixel coords (origin
+        // top-left, +y down). Map via the runtime's logical stage size,
+        // not the buffer's, so the buffer can be at any resolution and
+        // we still hit the right logical pixel.
+        use crate::model::{STAGE_HEIGHT, STAGE_WIDTH};
+        let buf_w = self.pixel_buffer_width as f32;
+        let buf_h = self.pixel_buffer_height as f32;
+        let px = ((x + STAGE_WIDTH / 2.0) * buf_w / STAGE_WIDTH).round() as i32;
+        let py = ((STAGE_HEIGHT / 2.0 - y) * buf_h / STAGE_HEIGHT).round() as i32;
+        if px < 0 || py < 0 || px >= self.pixel_buffer_width as i32
+            || py >= self.pixel_buffer_height as i32
+        {
+            return None;
+        }
+        let idx = ((py as u32 * self.pixel_buffer_width + px as u32) * 4) as usize;
+        let buf = &self.pixel_buffer;
+        if idx + 2 >= buf.len() {
+            return None;
+        }
+        Some((buf[idx], buf[idx + 1], buf[idx + 2]))
     }
 }

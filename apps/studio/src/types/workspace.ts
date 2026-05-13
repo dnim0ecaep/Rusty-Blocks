@@ -130,6 +130,30 @@ export interface Sprite {
    */
   bubble?: { kind: "say" | "think"; text: string };
   /**
+   * Dynamic-text overlay set by `scratch_looks_set_text_to`. When
+   * non-empty, the renderer paints this string centered on the sprite
+   * (in addition to the costume / placeholder). Useful for "this sprite
+   * shows the current value of variable X" — wire `set text to (value
+   * of X)` inside a forever loop.
+   */
+  text_value?: string;
+  /**
+   * Font family for the dynamic-text overlay, set by
+   * `scratch_looks_set_text_with_font`. Accepts any CSS-style font
+   * value: a system font name ("Courier New"), a stack
+   * ("Georgia, serif"), or empty for the renderer default. Web-safe
+   * names work in both runtimes because the studio canvas and the
+   * compiled Slint binary both delegate to the host font system.
+   */
+  font_family?: string;
+  /**
+   * Explicit font size in pixels for the dynamic-text overlay, set by
+   * `scratch_looks_set_text_size_to`. When undefined, the renderer
+   * auto-derives ~32% of the sprite's rendered height. Clamped to
+   * 8..200 at write time.
+   */
+  text_size?: number;
+  /**
    * Graphic effects. Brightness, ghost, and color render to the canvas
    * via the Canvas2D `filter` chain (`brightness(...)`, opacity, and
    * `hue-rotate(...)` respectively). Fisheye / whirl / pixelate / mosaic

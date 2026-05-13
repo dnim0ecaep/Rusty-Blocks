@@ -33,6 +33,12 @@ interface UiStore {
    */
   playerMode: boolean;
   /**
+   * When false, the stage canvas omits the small name label drawn below
+   * each sprite. The label is on by default to match Scratch — toggle
+   * off for a cleaner stage during demos or screenshots.
+   */
+  showSpriteNames: boolean;
+  /**
    * Target render/scheduler tick rate. The scheduler still schedules via
    * raf, but skips ticks whose elapsed time is below 1000/targetFps.
    * `Infinity` means "tick every animation frame" (~60+).
@@ -56,6 +62,7 @@ interface UiStore {
   toggleModulesDialog(): void;
   toggleDarkMode(): void;
   togglePlayerMode(): void;
+  toggleSpriteNames(): void;
   setTargetFps(fps: number): void;
   setBottomTab(tab: UiStore["activeBottomTab"]): void;
   setSelectedBlockId(id?: string): void;
@@ -76,6 +83,7 @@ export const useUiStore = create<UiStore>()(
       showModulesDialog: false,
       darkMode: false,
       playerMode: false,
+      showSpriteNames: true,
       targetFps: 30,
       editorTab: "code",
       activeBottomTab: "code",
@@ -123,13 +131,20 @@ export const useUiStore = create<UiStore>()(
       togglePlayerMode() {
         set((state) => ({ playerMode: !state.playerMode }));
       },
+      toggleSpriteNames() {
+        set((state) => ({ showSpriteNames: !state.showSpriteNames }));
+      },
       setTargetFps(fps) {
         // Allow Infinity for "unlimited"; clamp anything else to a sane band.
         const clamped = fps === Infinity ? Infinity : Math.max(1, Math.min(240, fps));
         set({ targetFps: clamped });
       },
       setBottomTab(tab) {
-        set({ activeBottomTab: tab });
+        // Selecting a tab implies the user wants to look at it; force
+        // the panel visible. Otherwise toolbar actions like ▶ Run
+        // (which selects "logs") silently swap the tab on a collapsed
+        // panel and the user sees nothing.
+        set({ activeBottomTab: tab, showBottomPanel: true });
       },
       setSelectedBlockId(id) {
         set({ selectedBlockId: id });
@@ -143,6 +158,7 @@ export const useUiStore = create<UiStore>()(
       partialize: (state: UiStore) => ({
         darkMode: state.darkMode,
         targetFps: state.targetFps,
+        showSpriteNames: state.showSpriteNames,
       }),
     }
   )

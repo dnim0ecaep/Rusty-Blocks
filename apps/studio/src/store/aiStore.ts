@@ -16,6 +16,7 @@ export interface AiConfig {
     model: string;
     apiKey: string;
   };
+  developerInstructions: string;
 }
 
 const DEFAULT_CONFIG: AiConfig = {
@@ -30,7 +31,8 @@ const DEFAULT_CONFIG: AiConfig = {
     url: "https://api.openai.com",
     model: "gpt-4o-mini",
     apiKey: ""
-  }
+  },
+  developerInstructions: ""
 };
 
 const CONFIG_STORAGE_KEY = "warpforge_ai_config";
@@ -45,6 +47,18 @@ function loadConfigFromStorage(): AiConfig {
     console.warn("Failed to load AI config from localStorage:", error);
   }
   return DEFAULT_CONFIG;
+}
+
+type ProviderKey = "ollama" | "comfyui" | "openai";
+
+function providerSettings(
+  config: AiConfig,
+  provider: string
+): AiConfig[ProviderKey] | Record<string, never> {
+  if (provider === "ollama" || provider === "comfyui" || provider === "openai") {
+    return config[provider];
+  }
+  return {};
 }
 
 function saveConfigToStorage(config: AiConfig): void {
@@ -113,7 +127,7 @@ export const useAiStore = create<AiStore>((set, get) => ({
 
     try {
       const { config } = get();
-      const providerConfig = config[provider as keyof AiConfig];
+      const providerConfig = providerSettings(config, provider);
       
       // Use appropriate mode for each provider
       const mode = provider === "comfyui" ? "image" : "text";
@@ -188,11 +202,18 @@ export const useAiStore = create<AiStore>((set, get) => ({
 
     try {
       const { provider, config } = get();
-      const providerConfig = config[provider as keyof AiConfig];
+      const providerConfig = providerSettings(config, provider);
+
+      // Prepend developer instructions to text-style prompts. Image
+      // generation is a single descriptive prompt, so leave it alone.
+      const instructions = config.developerInstructions.trim();
+      const finalPrompt = instructions && mode !== "image"
+        ? `${instructions}\n\n${prompt}`
+        : prompt;
 
       const response = await aiRunMode({
         mode,
-        prompt,
+        prompt: finalPrompt,
         provider,
         context,
         providerUrl: 'url' in providerConfig ? providerConfig.url : undefined,

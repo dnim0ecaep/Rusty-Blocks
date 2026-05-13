@@ -6,6 +6,13 @@ import { useProjectStore } from "../store/projectStore";
 import { useUiStore } from "../store/uiStore";
 import { Dropdown, DropdownItem, DropdownSeparator } from "./Dropdown";
 import { StageSizeDialog } from "./StageSizeDialog";
+import {
+  canRedo,
+  canUndo,
+  redo,
+  subscribe as subscribeHistory,
+  undo,
+} from "../blocks/workspaceHistory";
 
 const DEFAULT_EXPORTS_DIR = "./exports";
 
@@ -85,6 +92,19 @@ export function TopToolbar() {
   const setTargetFps = useUiStore((s) => s.setTargetFps);
   const togglePlayerMode = useUiStore((s) => s.togglePlayerMode);
   const [showStageSize, setShowStageSize] = useState(false);
+
+  // Track whether the active workspace has anything to undo / redo so
+  // the Edit menu items render disabled when the stacks are empty.
+  // workspaceHistory pings every subscriber after each undo/redo and
+  // when the active workspace changes.
+  const [historyTick, setHistoryTick] = useState(0);
+  useEffect(() => subscribeHistory(() => setHistoryTick((n) => n + 1)), []);
+  // Read on every render — cheap; reads off two booleans behind a
+  // module-level pointer. `historyTick` is the dependency that
+  // forces this re-evaluation when something changes.
+  const undoEnabled = canUndo();
+  const redoEnabled = canRedo();
+  void historyTick;
 
   const title = useMemo(() => {
     if (!project) return "No project loaded";
@@ -265,6 +285,23 @@ export function TopToolbar() {
             title="Parse a .rs file and view it as Blockly blocks"
           >
             Import Rust File…
+          </DropdownItem>
+        </Dropdown>
+
+        <Dropdown label="Edit" disabled={isBusy}>
+          <DropdownItem
+            onClick={() => undo()}
+            disabled={!undoEnabled}
+            title="Reverse the last block edit (Ctrl+Z)"
+          >
+            ↶ Undo&nbsp;&nbsp;<span className="muted">Ctrl+Z</span>
+          </DropdownItem>
+          <DropdownItem
+            onClick={() => redo()}
+            disabled={!redoEnabled}
+            title="Re-apply the last undone edit (Ctrl+Shift+Z)"
+          >
+            ↷ Redo&nbsp;&nbsp;<span className="muted">Ctrl+Shift+Z</span>
           </DropdownItem>
         </Dropdown>
 

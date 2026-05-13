@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { listen } from "@tauri-apps/api/event";
 import { TopToolbar } from "./shell/TopToolbar";
 import { EditorPanel } from "./shell/EditorPanel";
 import { RightInspector } from "./shell/RightInspector";
@@ -34,6 +35,27 @@ export function App() {
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", darkMode ? "dark" : "light");
   }, [darkMode]);
+
+  // Stream compile-log events from `run_generated_app` into the bottom
+  // panel's Logs tab. The Tauri command emits one event per stage and
+  // one event per line of cargo stdout/stderr; we mirror each into the
+  // project store's log array so the panel auto-scrolls them in live.
+  useEffect(() => {
+    const addLog = useProjectStore.getState().addLog;
+    let cleanup: (() => void) | undefined;
+    listen<{ kind: string; message: string }>("compile_log", (event) => {
+      const { kind, message } = event.payload;
+      // Prefix stage markers and errors so the user can skim the log
+      // and find phase boundaries quickly.
+      const prefix =
+        kind === "stage" ? "▸ " :
+        kind === "error" ? "✗ " :
+        kind === "done"  ? "✓ " :
+        "  ";
+      addLog(prefix + message);
+    }).then((un) => { cleanup = un; });
+    return () => cleanup?.();
+  }, []);
 
   // Push the user's framerate preference into the shared scheduler.
   // Done in an effect (not at module load) so the persisted value is

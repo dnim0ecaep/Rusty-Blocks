@@ -8,6 +8,7 @@ import {
   snapshot as stageInputSnapshot,
   timerSeconds,
 } from "./stageInput";
+import { colorsMatch, getStagePixel, parseHexColor } from "./stagePixel";
 import { STAGE_HEIGHT, STAGE_WIDTH, type Sprite } from "../types/workspace";
 
 /**
@@ -299,6 +300,21 @@ export function* runBlock(
       }
       break;
     }
+    // Worked-example block — see docs/manual.md §12. Picks a uniform
+    // random point inside the stage bounds (inset by the sprite's
+    // half-extent so the sprite doesn't end up clipping an edge) and
+    // patches the sprite's x/y. No fields, no inputs.
+    case "scratch_motion_teleport_random": {
+      const half = spriteHalfSize(sprite);
+      const minX = -STAGE_WIDTH / 2 + half;
+      const maxX = STAGE_WIDTH / 2 - half;
+      const minY = -STAGE_HEIGHT / 2 + half;
+      const maxY = STAGE_HEIGHT / 2 - half;
+      const x = Math.random() * (maxX - minX) + minX;
+      const y = Math.random() * (maxY - minY) + minY;
+      ctx.patchSprite({ x, y });
+      break;
+    }
     case "scratch_motion_set_rotation_style": {
       const style = readString(block, "STYLE", "all-around");
       const valid: Sprite["rotationStyle"] =
@@ -421,6 +437,41 @@ export function* runBlock(
     case "scratch_looks_hide":
       ctx.patchSprite({ visible: false });
       break;
+    case "scratch_looks_set_text_to": {
+      // Plug any reporter (most often a variable getter) into the TEXT
+      // input — readArg evaluates it and we coerce to string. Empty
+      // string clears the text overlay so the sprite goes back to
+      // costume-only rendering.
+      const value = String(readArg(block, "TEXT", ctx));
+      ctx.patchSprite({ text_value: value });
+      break;
+    }
+    case "scratch_looks_set_text_with_font": {
+      // Two value inputs — either or both can be a variable getter so
+      // text + font can be live-bound. Empty FONT clears the per-sprite
+      // override and lets the renderer fall back to its default sans-
+      // serif stack.
+      const text = String(readArg(block, "TEXT", ctx));
+      const font = String(readArg(block, "FONT", ctx));
+      ctx.patchSprite({
+        text_value: text,
+        font_family: font.trim() === "" ? undefined : font,
+      });
+      break;
+    }
+    case "scratch_looks_set_text_size_to": {
+      // Pixel font-size for the dynamic-text overlay. NaN / Infinity /
+      // ≤0 clear the override; valid values clamp to [8, 200] so a
+      // user-bound variable that drifts out of range still renders
+      // something sane instead of disappearing or melting the layout.
+      const raw = asNumber(readArg(block, "SIZE", ctx));
+      const cleaned =
+        Number.isFinite(raw) && raw > 0
+          ? Math.max(8, Math.min(200, raw))
+          : undefined;
+      ctx.patchSprite({ text_size: cleaned });
+      break;
+    }
     case "scratch_looks_change_size": {
       const d = asNumber(readArg(block, "DSIZE", ctx));
       ctx.patchSprite({ size: Math.max(0, sprite.size + d) });
@@ -595,7 +646,7 @@ export function* runBlock(
 
     // ── External side-effects ──────────────────────────────────────────
     case "scratch_io_open_url": {
-      const url = readString(block, "URL", "").trim();
+      const url = String(readArg(block, "URL", ctx)).trim();
       if (url && typeof window !== "undefined") {
         // Studio in-tab runtime: open the URL in a new browser tab.
         // The native (Slint/macroquad) hosts handle this differently —
@@ -701,6 +752,12 @@ export function evaluate(block: BlockLike, ctx: ExecContext): number | string | 
   const sprite = ctx.getSprite();
   if (!sprite) return 0;
   switch (block.type) {
+    // ── Blockly built-in literal shadows ────────────────────────────────
+    case "text":
+      return readString(block, "TEXT", "");
+    case "math_number":
+      return readNumber(block, "NUM", 0);
+
     // ── Motion reporters ────────────────────────────────────────────────
     case "scratch_motion_x_position":
       return sprite.x;
@@ -835,6 +892,25 @@ export function evaluate(block: BlockLike, ctx: ExecContext): number | string | 
       const dx = point.x - sprite.x;
       const dy = point.y - sprite.y;
       return Math.sqrt(dx * dx + dy * dy);
+    }
+    case "scratch_sensing_touching_color": {
+      const hex = readString(block, "COLOR", "#ff0000");
+      const target = parseHexColor(hex);
+      if (!target) return false;
+      // Sample a 5x5 grid under the sprite's bounding box and return
+      // true if any sample is within Scratch's standard color tolerance
+      // of the picked color. Sampling more than the center handles
+      // non-uniform costumes and sprites whose center isn't filled.
+      const half = (SPRITE_PLACEHOLDER_SIZE * sprite.size) / 200;
+      for (let dy = -2; dy <= 2; dy++) {
+        for (let dx = -2; dx <= 2; dx++) {
+          const px = sprite.x + (half * dx) / 2;
+          const py = sprite.y + (half * dy) / 2;
+          const rgb = getStagePixel(px, py);
+          if (rgb && colorsMatch(rgb, target)) return true;
+        }
+      }
+      return false;
     }
     case "scratch_sensing_touching": {
       const target = String(readArg(block, "TARGET", ctx));

@@ -1,0 +1,333 @@
+{
+  "schema_version": 1,
+  "project": {
+    "id": "example-launchpad",
+    "app_name": "Launchpad",
+    "package_id": "com.warpforge.launchpad",
+    "version": "0.1.0",
+    "author": "WarpForge Examples",
+    "description": "Editable 3x2 launcher dock \u2014 six clickable tiles arranged in a grid; each tile opens a URL or app via the OS shell handler. Add new tiles from the Stage panel's sprite library, remove tiles via the - Remove button, and edit a tile's URL by selecting its sprite and changing the URL field in its when-clicked stack. The Mail tile uses a mailto: URI to open the default mail app; the others open websites. Demonstrates scratch_io_open_url + when_this_sprite_clicked + grid layout.",
+    "target_type": "desktop_slint",
+    "theme": "auto",
+    "created_at": "2026-05-09T10:00:00Z",
+    "updated_at": "2026-05-09T10:00:00Z"
+  },
+  "workspace_state": {
+    "zoom": 1.0,
+    "pan_x": 0.0,
+    "pan_y": 0.0,
+    "selected_block_ids": [],
+    "blockly_xml": "<xml xmlns=\"https://developers.google.com/blockly/xml\">\n<block type=\"wf_window\" id=\"window_main\" x=\"24\" y=\"24\"><field name=\"HEIGHT\">360</field><field name=\"TITLE\">Launchpad</field><field name=\"WIDTH\">480</field><next><block type=\"wf_screen\" id=\"screen_stage\"><field name=\"NAME\">Stage</field><field name=\"ROUTE\">/</field></block></next></block>\n</xml>",
+    "comments": [],
+    "groups": []
+  },
+  "normalized_graph": {
+    "nodes": [
+      {
+        "id": "window_main",
+        "kind": "structure.window",
+        "category": "structure",
+        "props": {
+          "height": 360,
+          "title": "Launchpad",
+          "width": 480
+        }
+      },
+      {
+        "id": "screen_stage",
+        "kind": "structure.screen",
+        "category": "structure",
+        "props": {
+          "name": "Stage",
+          "route": "/"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge_window_screen",
+        "from": "window_main",
+        "to": "screen_stage",
+        "edge_type": "child"
+      }
+    ]
+  },
+  "ir_snapshot": null,
+  "assets": [
+    {
+      "id": "asset_lp_grid",
+      "kind": "costume",
+      "path": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0ODAgMzYwIj48cmVjdCB3aWR0aD0iNDgwIiBoZWlnaHQ9IjM2MCIgZmlsbD0iI2Y0ZjZmYSIvPjxsaW5lIHgxPSIwIiB5MT0iMCIgeDI9IjAiIHkyPSIzNjAiIHN0cm9rZT0iI2NkZDZlMiIgc3Ryb2tlLXdpZHRoPSIxIi8+PGxpbmUgeDE9IjMwIiB5MT0iMCIgeDI9IjMwIiB5Mj0iMzYwIiBzdHJva2U9IiNjZGQ2ZTIiIHN0cm9rZS13aWR0aD0iMSIvPjxsaW5lIHgxPSI2MCIgeTE9IjAiIHgyPSI2MCIgeTI9IjM2MCIgc3Ryb2tlPSIjY2RkNmUyIiBzdHJva2Utd2lkdGg9IjEiLz48bGluZSB4MT0iOTAiIHkxPSIwIiB4Mj0iOTAiIHkyPSIzNjAiIHN0cm9rZT0iI2NkZDZlMiIgc3Ryb2tlLXdpZHRoPSIxIi8+PGxpbmUgeDE9IjEyMCIgeTE9IjAiIHgyPSIxMjAiIHkyPSIzNjAiIHN0cm9rZT0iI2NkZDZlMiIgc3Ryb2tlLXdpZHRoPSIxIi8+PGxpbmUgeDE9IjE1MCIgeTE9IjAiIHgyPSIxNTAiIHkyPSIzNjAiIHN0cm9rZT0iI2NkZDZlMiIgc3Ryb2tlLXdpZHRoPSIxIi8+PGxpbmUgeDE9IjE4MCIgeTE9IjAiIHgyPSIxODAiIHkyPSIzNjAiIHN0cm9rZT0iI2NkZDZlMiIgc3Ryb2tlLXdpZHRoPSIxIi8+PGxpbmUgeDE9IjIxMCIgeTE9IjAiIHgyPSIyMTAiIHkyPSIzNjAiIHN0cm9rZT0iI2NkZDZlMiIgc3Ryb2tlLXdpZHRoPSIxIi8+PGxpbmUgeDE9IjI0MCIgeTE9IjAiIHgyPSIyNDAiIHkyPSIzNjAiIHN0cm9rZT0iI2NkZDZlMiIgc3Ryb2tlLXdpZHRoPSIxIi8+PGxpbmUgeDE9IjI3MCIgeTE9IjAiIHgyPSIyNzAiIHkyPSIzNjAiIHN0cm9rZT0iI2NkZDZlMiIgc3Ryb2tlLXdpZHRoPSIxIi8+PGxpbmUgeDE9IjMwMCIgeTE9IjAiIHgyPSIzMDAiIHkyPSIzNjAiIHN0cm9rZT0iI2NkZDZlMiIgc3Ryb2tlLXdpZHRoPSIxIi8+PGxpbmUgeDE9IjMzMCIgeTE9IjAiIHgyPSIzMzAiIHkyPSIzNjAiIHN0cm9rZT0iI2NkZDZlMiIgc3Ryb2tlLXdpZHRoPSIxIi8+PGxpbmUgeDE9IjM2MCIgeTE9IjAiIHgyPSIzNjAiIHkyPSIzNjAiIHN0cm9rZT0iI2NkZDZlMiIgc3Ryb2tlLXdpZHRoPSIxIi8+PGxpbmUgeDE9IjM5MCIgeTE9IjAiIHgyPSIzOTAiIHkyPSIzNjAiIHN0cm9rZT0iI2NkZDZlMiIgc3Ryb2tlLXdpZHRoPSIxIi8+PGxpbmUgeDE9IjQyMCIgeTE9IjAiIHgyPSI0MjAiIHkyPSIzNjAiIHN0cm9rZT0iI2NkZDZlMiIgc3Ryb2tlLXdpZHRoPSIxIi8+PGxpbmUgeDE9IjQ1MCIgeTE9IjAiIHgyPSI0NTAiIHkyPSIzNjAiIHN0cm9rZT0iI2NkZDZlMiIgc3Ryb2tlLXdpZHRoPSIxIi8+PGxpbmUgeDE9IjQ4MCIgeTE9IjAiIHgyPSI0ODAiIHkyPSIzNjAiIHN0cm9rZT0iI2NkZDZlMiIgc3Ryb2tlLXdpZHRoPSIxIi8+PGxpbmUgeDE9IjAiIHkxPSIwIiB4Mj0iNDgwIiB5Mj0iMCIgc3Ryb2tlPSIjY2RkNmUyIiBzdHJva2Utd2lkdGg9IjEiLz48bGluZSB4MT0iMCIgeTE9IjMwIiB4Mj0iNDgwIiB5Mj0iMzAiIHN0cm9rZT0iI2NkZDZlMiIgc3Ryb2tlLXdpZHRoPSIxIi8+PGxpbmUgeDE9IjAiIHkxPSI2MCIgeDI9IjQ4MCIgeTI9IjYwIiBzdHJva2U9IiNjZGQ2ZTIiIHN0cm9rZS13aWR0aD0iMSIvPjxsaW5lIHgxPSIwIiB5MT0iOTAiIHgyPSI0ODAiIHkyPSI5MCIgc3Ryb2tlPSIjY2RkNmUyIiBzdHJva2Utd2lkdGg9IjEiLz48bGluZSB4MT0iMCIgeTE9IjEyMCIgeDI9IjQ4MCIgeTI9IjEyMCIgc3Ryb2tlPSIjY2RkNmUyIiBzdHJva2Utd2lkdGg9IjEiLz48bGluZSB4MT0iMCIgeTE9IjE1MCIgeDI9IjQ4MCIgeTI9IjE1MCIgc3Ryb2tlPSIjY2RkNmUyIiBzdHJva2Utd2lkdGg9IjEiLz48bGluZSB4MT0iMCIgeTE9IjE4MCIgeDI9IjQ4MCIgeTI9IjE4MCIgc3Ryb2tlPSIjY2RkNmUyIiBzdHJva2Utd2lkdGg9IjEiLz48bGluZSB4MT0iMCIgeTE9IjIxMCIgeDI9IjQ4MCIgeTI9IjIxMCIgc3Ryb2tlPSIjY2RkNmUyIiBzdHJva2Utd2lkdGg9IjEiLz48bGluZSB4MT0iMCIgeTE9IjI0MCIgeDI9IjQ4MCIgeTI9IjI0MCIgc3Ryb2tlPSIjY2RkNmUyIiBzdHJva2Utd2lkdGg9IjEiLz48bGluZSB4MT0iMCIgeTE9IjI3MCIgeDI9IjQ4MCIgeTI9IjI3MCIgc3Ryb2tlPSIjY2RkNmUyIiBzdHJva2Utd2lkdGg9IjEiLz48bGluZSB4MT0iMCIgeTE9IjMwMCIgeDI9IjQ4MCIgeTI9IjMwMCIgc3Ryb2tlPSIjY2RkNmUyIiBzdHJva2Utd2lkdGg9IjEiLz48bGluZSB4MT0iMCIgeTE9IjMzMCIgeDI9IjQ4MCIgeTI9IjMzMCIgc3Ryb2tlPSIjY2RkNmUyIiBzdHJva2Utd2lkdGg9IjEiLz48bGluZSB4MT0iMCIgeTE9IjM2MCIgeDI9IjQ4MCIgeTI9IjM2MCIgc3Ryb2tlPSIjY2RkNmUyIiBzdHJva2Utd2lkdGg9IjEiLz48bGluZSB4MT0iMjQwIiB5MT0iMCIgeDI9IjI0MCIgeTI9IjM2MCIgc3Ryb2tlPSIjNzg5OGMwIiBzdHJva2Utd2lkdGg9IjIiLz48bGluZSB4MT0iMCIgeTE9IjE4MCIgeDI9IjQ4MCIgeTI9IjE4MCIgc3Ryb2tlPSIjNzg5OGMwIiBzdHJva2Utd2lkdGg9IjIiLz48L3N2Zz4=",
+      "prompt": null,
+      "metadata": {
+        "builtin_id": "lib_bg_grid",
+        "role": "backdrop",
+        "source": "builtin"
+      },
+      "created_at": "2026-05-09T10:00:00.000Z",
+      "version": 1
+    },
+    {
+      "id": "asset_lp_rocket",
+      "kind": "costume",
+      "path": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cGF0aCBkPSJNNDAgODAgTDQwIDMwIFE0MCAxMiA1MCA4IFE2MCAxMiA2MCAzMCBMNjAgODAgWiIgZmlsbD0iI2Y0ZjZmYSIvPgo8cGF0aCBkPSJNNDAgODAgTDQwIDMwIFE0MCAxMiA1MCA4IFE2MCAxMiA2MCAzMCBMNjAgODAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2E4YThiOCIgc3Ryb2tlLXdpZHRoPSIyIi8+CjxjaXJjbGUgY3g9IjUwIiBjeT0iNDAiIHI9IjYiIGZpbGw9IiMzYThhZjAiLz4KPHBvbHlnb24gcG9pbnRzPSI0MCw3MCAyOCw4NiA0MCw4MiIgZmlsbD0iI2U4NGE0YSIvPgo8cG9seWdvbiBwb2ludHM9IjYwLDcwIDcyLDg2IDYwLDgyIiBmaWxsPSIjZTg0YTRhIi8+Cjxwb2x5Z29uIHBvaW50cz0iNDQsODQgNTAsOTQgNTYsODQiIGZpbGw9IiNmMGMwMjAiLz48L3N2Zz4=",
+      "prompt": null,
+      "metadata": {
+        "builtin_id": "lib_rocket",
+        "source": "builtin"
+      },
+      "created_at": "2026-05-09T10:00:00.000Z",
+      "version": 1
+    },
+    {
+      "id": "asset_lp_key",
+      "kind": "costume",
+      "path": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48Y2lyY2xlIGN4PSIyOCIgY3k9IjUwIiByPSIxNiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZjBjMDIwIiBzdHJva2Utd2lkdGg9IjYiLz4KPGxpbmUgeDE9IjQ0IiB5MT0iNTAiIHgyPSI4NiIgeTI9IjUwIiBzdHJva2U9IiNmMGMwMjAiIHN0cm9rZS13aWR0aD0iNiIvPgo8bGluZSB4MT0iNzQiIHkxPSI1MCIgeDI9Ijc0IiB5Mj0iNjQiIHN0cm9rZT0iI2YwYzAyMCIgc3Ryb2tlLXdpZHRoPSI2Ii8+CjxsaW5lIHgxPSI4NCIgeTE9IjUwIiB4Mj0iODQiIHkyPSI2MCIgc3Ryb2tlPSIjZjBjMDIwIiBzdHJva2Utd2lkdGg9IjYiLz48L3N2Zz4=",
+      "prompt": null,
+      "metadata": {
+        "builtin_id": "lib_key",
+        "source": "builtin"
+      },
+      "created_at": "2026-05-09T10:00:00.000Z",
+      "version": 1
+    },
+    {
+      "id": "asset_lp_bulb",
+      "kind": "costume",
+      "path": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cGF0aCBkPSJNMzAgMzYgUTMwIDE0IDUwIDE0IFE3MCAxNCA3MCAzNiBRNzAgNTAgNjAgNjAgTDYwIDcwIEw0MCA3MCBMNDAgNjAgUTMwIDUwIDMwIDM2IFoiIGZpbGw9IiNmMGUwNDAiLz4KPHJlY3QgeD0iNDAiIHk9IjcwIiB3aWR0aD0iMjAiIGhlaWdodD0iNiIgZmlsbD0iIzg4OCIvPgo8cmVjdCB4PSI0MiIgeT0iNzYiIHdpZHRoPSIxNiIgaGVpZ2h0PSI0IiBmaWxsPSIjODg4Ii8+CjxyZWN0IHg9IjQ0IiB5PSI4MCIgd2lkdGg9IjEyIiBoZWlnaHQ9IjMiIGZpbGw9IiM4ODgiLz4KPGxpbmUgeDE9IjQwIiB5MT0iNzQiIHgyPSI2MCIgeTI9Ijc0IiBzdHJva2U9IiM0MDQwNDgiLz48L3N2Zz4=",
+      "prompt": null,
+      "metadata": {
+        "builtin_id": "lib_lightbulb",
+        "source": "builtin"
+      },
+      "created_at": "2026-05-09T10:00:00.000Z",
+      "version": 1
+    },
+    {
+      "id": "asset_lp_music",
+      "kind": "costume",
+      "path": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48ZWxsaXBzZSBjeD0iMzQiIGN5PSI3NCIgcng9IjEyIiByeT0iOSIgZmlsbD0iIzNhM2E0OCIgdHJhbnNmb3JtPSJyb3RhdGUoLTIwIDM0IDc0KSIvPgo8cmVjdCB4PSI0NCIgeT0iMjAiIHdpZHRoPSI0IiBoZWlnaHQ9IjU2IiBmaWxsPSIjM2EzYTQ4Ii8+CjxwYXRoIGQ9Ik00NCAyMCBRNzAgMjYgNzAgNDAgUTYwIDMwIDQ0IDMyIFoiIGZpbGw9IiMzYTNhNDgiLz48L3N2Zz4=",
+      "prompt": null,
+      "metadata": {
+        "builtin_id": "lib_music",
+        "source": "builtin"
+      },
+      "created_at": "2026-05-09T10:00:00.000Z",
+      "version": 1
+    },
+    {
+      "id": "asset_lp_pencil",
+      "kind": "costume",
+      "path": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cG9seWdvbiBwb2ludHM9IjE0LDgwIDI4LDY2IDg2LDggOTIsMTQgMzQsNzIgMjAsODYiIGZpbGw9IiNmMGM4NzgiLz4KPHBvbHlnb24gcG9pbnRzPSIxNCw4MCAyOCw2NiAzNCw3MiAyMCw4NiIgZmlsbD0iIzNhM2E0OCIvPgo8cG9seWdvbiBwb2ludHM9Ijg2LDggOTIsMTQgODYsMjAgODAsMTQiIGZpbGw9IiNjYzQwNDAiLz48L3N2Zz4=",
+      "prompt": null,
+      "metadata": {
+        "builtin_id": "lib_pencil",
+        "source": "builtin"
+      },
+      "created_at": "2026-05-09T10:00:00.000Z",
+      "version": 1
+    },
+    {
+      "id": "asset_lp_book",
+      "kind": "costume",
+      "path": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB4PSIyMCIgeT0iMjAiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgZmlsbD0iI2EwNDA0MCIvPgo8cmVjdCB4PSIyMiIgeT0iMjIiIHdpZHRoPSI1NiIgaGVpZ2h0PSI1NiIgZmlsbD0iI2NjNjA2MCIvPgo8bGluZSB4MT0iNTAiIHkxPSIyMiIgeDI9IjUwIiB5Mj0iNzgiIHN0cm9rZT0iIzdhMjAyMCIgc3Ryb2tlLXdpZHRoPSIyIi8+CjxsaW5lIHgxPSIzMCIgeTE9IjM2IiB4Mj0iNDQiIHkyPSIzNiIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjEiLz4KPGxpbmUgeDE9IjMwIiB5MT0iNDQiIHgyPSI0NCIgeTI9IjQ0IiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMSIvPgo8bGluZSB4MT0iNTYiIHkxPSIzNiIgeDI9IjcwIiB5Mj0iMzYiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIxIi8+CjxsaW5lIHgxPSI1NiIgeTE9IjQ0IiB4Mj0iNzAiIHkyPSI0NCIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjEiLz48L3N2Zz4=",
+      "prompt": null,
+      "metadata": {
+        "builtin_id": "lib_book",
+        "source": "builtin"
+      },
+      "created_at": "2026-05-09T10:00:00.000Z",
+      "version": 1
+    }
+  ],
+  "ai_history": [],
+  "stage_state": {
+    "backdropIndex": 0,
+    "backdrops": [
+      {
+        "assetId": "asset_lp_grid",
+        "centerX": 240,
+        "centerY": 180,
+        "height": 360,
+        "id": "backdrop_lp_grid",
+        "name": "Grid",
+        "width": 480
+      }
+    ],
+    "globalLists": {},
+    "globalVariables": {},
+    "schema_version": 1,
+    "selectedSpriteId": "sprite_browse",
+    "sprites": [
+      {
+        "costumeIndex": 0,
+        "costumes": [
+          {
+            "assetId": "asset_lp_rocket",
+            "centerX": 50,
+            "centerY": 50,
+            "height": 100,
+            "id": "costume_browse",
+            "name": "Browse",
+            "width": 100
+          }
+        ],
+        "direction": 90,
+        "id": "sprite_browse",
+        "layer": 1,
+        "lists": {},
+        "name": "Browse",
+        "rotationStyle": "dont-rotate",
+        "scripts_xml": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><block type=\"scratch_event_when_flag_clicked\" id=\"br_hat\" x=\"40\" y=\"40\"><next><block type=\"scratch_looks_say\" id=\"br_say\"><field name=\"MESSAGE\">Open browser</field></block></next></block><block type=\"scratch_event_when_this_sprite_clicked\" id=\"br_click\" x=\"40\" y=\"180\"><next><block type=\"scratch_io_open_url\" id=\"br_open\"><value name=\"URL\"><shadow type=\"text\"><field name=\"TEXT\">https://www.google.com</field></shadow></value></block></next></block></xml>",
+        "size": 110,
+        "sounds": [],
+        "variables": {},
+        "visible": true,
+        "x": -160,
+        "y": 60
+      },
+      {
+        "costumeIndex": 0,
+        "costumes": [
+          {
+            "assetId": "asset_lp_key",
+            "centerX": 50,
+            "centerY": 50,
+            "height": 100,
+            "id": "costume_code",
+            "name": "Code",
+            "width": 100
+          }
+        ],
+        "direction": 90,
+        "id": "sprite_code",
+        "layer": 2,
+        "lists": {},
+        "name": "Code",
+        "rotationStyle": "dont-rotate",
+        "scripts_xml": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><block type=\"scratch_event_when_flag_clicked\" id=\"cd_hat\" x=\"40\" y=\"40\"><next><block type=\"scratch_looks_say\" id=\"cd_say\"><field name=\"MESSAGE\">Open GitHub</field></block></next></block><block type=\"scratch_event_when_this_sprite_clicked\" id=\"cd_click\" x=\"40\" y=\"180\"><next><block type=\"scratch_io_open_url\" id=\"cd_open\"><value name=\"URL\"><shadow type=\"text\"><field name=\"TEXT\">https://github.com</field></shadow></value></block></next></block></xml>",
+        "size": 110,
+        "sounds": [],
+        "variables": {},
+        "visible": true,
+        "x": 0,
+        "y": 60
+      },
+      {
+        "costumeIndex": 0,
+        "costumes": [
+          {
+            "assetId": "asset_lp_bulb",
+            "centerX": 50,
+            "centerY": 50,
+            "height": 100,
+            "id": "costume_ai",
+            "name": "AI",
+            "width": 100
+          }
+        ],
+        "direction": 90,
+        "id": "sprite_ai",
+        "layer": 3,
+        "lists": {},
+        "name": "AI",
+        "rotationStyle": "dont-rotate",
+        "scripts_xml": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><block type=\"scratch_event_when_flag_clicked\" id=\"ai_hat\" x=\"40\" y=\"40\"><next><block type=\"scratch_looks_say\" id=\"ai_say\"><field name=\"MESSAGE\">Open Claude</field></block></next></block><block type=\"scratch_event_when_this_sprite_clicked\" id=\"ai_click\" x=\"40\" y=\"180\"><next><block type=\"scratch_io_open_url\" id=\"ai_open\"><value name=\"URL\"><shadow type=\"text\"><field name=\"TEXT\">https://claude.ai</field></shadow></value></block></next></block></xml>",
+        "size": 110,
+        "sounds": [],
+        "variables": {},
+        "visible": true,
+        "x": 160,
+        "y": 60
+      },
+      {
+        "costumeIndex": 0,
+        "costumes": [
+          {
+            "assetId": "asset_lp_music",
+            "centerX": 50,
+            "centerY": 50,
+            "height": 100,
+            "id": "costume_music",
+            "name": "Music",
+            "width": 100
+          }
+        ],
+        "direction": 90,
+        "id": "sprite_music",
+        "layer": 4,
+        "lists": {},
+        "name": "Music",
+        "rotationStyle": "dont-rotate",
+        "scripts_xml": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><block type=\"scratch_event_when_flag_clicked\" id=\"mu_hat\" x=\"40\" y=\"40\"><next><block type=\"scratch_looks_say\" id=\"mu_say\"><field name=\"MESSAGE\">Open Music</field></block></next></block><block type=\"scratch_event_when_this_sprite_clicked\" id=\"mu_click\" x=\"40\" y=\"180\"><next><block type=\"scratch_io_open_url\" id=\"mu_open\"><value name=\"URL\"><shadow type=\"text\"><field name=\"TEXT\">https://music.youtube.com</field></shadow></value></block></next></block></xml>",
+        "size": 110,
+        "sounds": [],
+        "variables": {},
+        "visible": true,
+        "x": -160,
+        "y": -60
+      },
+      {
+        "costumeIndex": 0,
+        "costumes": [
+          {
+            "assetId": "asset_lp_pencil",
+            "centerX": 50,
+            "centerY": 50,
+            "height": 100,
+            "id": "costume_notes",
+            "name": "Notes",
+            "width": 100
+          }
+        ],
+        "direction": 90,
+        "id": "sprite_notes",
+        "layer": 5,
+        "lists": {},
+        "name": "Notes",
+        "rotationStyle": "dont-rotate",
+        "scripts_xml": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><block type=\"scratch_event_when_flag_clicked\" id=\"nt_hat\" x=\"40\" y=\"40\"><next><block type=\"scratch_looks_say\" id=\"nt_say\"><field name=\"MESSAGE\">Open Notes</field></block></next></block><block type=\"scratch_event_when_this_sprite_clicked\" id=\"nt_click\" x=\"40\" y=\"180\"><next><block type=\"scratch_io_open_url\" id=\"nt_open\"><value name=\"URL\"><shadow type=\"text\"><field name=\"TEXT\">https://keep.google.com</field></shadow></value></block></next></block></xml>",
+        "size": 110,
+        "sounds": [],
+        "variables": {},
+        "visible": true,
+        "x": 0,
+        "y": -60
+      },
+      {
+        "costumeIndex": 0,
+        "costumes": [
+          {
+            "assetId": "asset_lp_book",
+            "centerX": 50,
+            "centerY": 50,
+            "height": 100,
+            "id": "costume_mail",
+            "name": "Mail",
+            "width": 100
+          }
+        ],
+        "direction": 90,
+        "id": "sprite_mail",
+        "layer": 6,
+        "lists": {},
+        "name": "Mail",
+        "rotationStyle": "dont-rotate",
+        "scripts_xml": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><block type=\"scratch_event_when_flag_clicked\" id=\"ml_hat\" x=\"40\" y=\"40\"><next><block type=\"scratch_looks_say\" id=\"ml_say\"><field name=\"MESSAGE\">Open Mail App</field></block></next></block><block type=\"scratch_event_when_this_sprite_clicked\" id=\"ml_click\" x=\"40\" y=\"180\"><next><block type=\"scratch_io_open_url\" id=\"ml_open\"><value name=\"URL\"><shadow type=\"text\"><field name=\"TEXT\">mailto:hello@example.com?subject=Hi</field></shadow></value></block></next></block></xml>",
+        "size": 110,
+        "sounds": [],
+        "variables": {},
+        "visible": true,
+        "x": 160,
+        "y": -60
+      }
+    ]
+  },
+  "settings": {
+    "autosave_interval_secs": 30,
+    "validate_on_change": false,
+    "codegen_deterministic": true,
+    "ai_default_text_provider": "ollama",
+    "ai_default_image_provider": "comfyui"
+  }
+}

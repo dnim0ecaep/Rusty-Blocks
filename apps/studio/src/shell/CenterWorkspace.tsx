@@ -7,6 +7,7 @@ import { registerAllCustomBlocks, registerCustomBlock } from "../blocks/register
 import { registerWarpforgeMutators } from "../blocks/blockMutators";
 import { registerBlockExplainMenu } from "../blocks/blockContextMenu";
 import { setVibeWorkspace } from "../blocks/vibeWorkspace";
+import { registerActiveWorkspace, redo, undo } from "../blocks/workspaceHistory";
 import { buildToolboxXml } from "../blocks/toolboxBuilder";
 import {
   applyCategoryColorsToWorkspace,
@@ -53,10 +54,14 @@ export function CenterWorkspace() {
       return;
     }
 
+    // Extensions / mutators must register before block defs that
+    // reference them — Blockly looks up the `extensions: [...]` names
+    // at define-time. Doing this last (which we used to) silently
+    // dropped every extension on the floor.
+    registerWarpforgeMutators();
     registerWarpforgeBlocks();
     registerRustBlocks();
     registerAllCustomBlocks(useCustomBlocksStore.getState().blocks);
-    registerWarpforgeMutators();
     registerBlockExplainMenu();
     // Patch every registered block's init() so it applies the user's
     // category color override after running the original init. Must come
@@ -100,6 +105,40 @@ export function CenterWorkspace() {
 
     workspaceRef.current = workspace;
     setVibeWorkspace(workspace);
+    registerActiveWorkspace(workspace);
+
+    // Ctrl+Z / Ctrl+Shift+Z (Cmd+ on macOS) → undo / redo against the
+    // workspace's built-in history stack. We listen at the document
+    // level (not the workspace container) because the user might be
+    // hovering the sprite list or the stage when they press the
+    // shortcut. Skip when focus is in a text input so we don't steal
+    // the OS-level edit shortcut from real text editing.
+    const isEditingText = (target: EventTarget | null): boolean => {
+      if (!(target instanceof HTMLElement)) return false;
+      const tag = target.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return true;
+      if (target.isContentEditable) return true;
+      return false;
+    };
+    const onKeyDown = (e: KeyboardEvent) => {
+      const mod = e.ctrlKey || e.metaKey;
+      if (!mod) return;
+      const key = e.key.toLowerCase();
+      // Redo: Ctrl+Shift+Z OR Ctrl+Y. Both should NOT also do undo.
+      if ((key === "z" && e.shiftKey) || key === "y") {
+        if (isEditingText(e.target)) return;
+        e.preventDefault();
+        redo();
+        return;
+      }
+      // Undo: plain Ctrl+Z.
+      if (key === "z" && !e.shiftKey) {
+        if (isEditingText(e.target)) return;
+        e.preventDefault();
+        undo();
+      }
+    };
+    document.addEventListener("keydown", onKeyDown);
 
     const resizeObserver = new ResizeObserver(() => {
       Blockly.svgResize(workspace);
@@ -152,6 +191,8 @@ export function CenterWorkspace() {
 
     return () => {
       resizeObserver.disconnect();
+      document.removeEventListener("keydown", onKeyDown);
+      registerActiveWorkspace(null);
       workspace.dispose();
       workspaceRef.current = null;
       setVibeWorkspace(null);

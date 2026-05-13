@@ -400,3 +400,38 @@ describe("blockOrgStore category ordering", () => {
     store.deletePreset("with-order");
   });
 });
+
+describe("blockOrgStore removeCategory migration", () => {
+  afterEach(() => {
+    useBlockOrgStore.getState().resetToDefaults();
+  });
+
+  it("reassigns blocks from a deleted category back to My Blocks", () => {
+    const store = useBlockOrgStore.getState();
+    store.addCategory("Menus");
+    store.moveBlock("wf_custom_menu_matt", "Menus");
+    expect(useBlockOrgStore.getState().assignments["wf_custom_menu_matt"]).toBe("Menus");
+
+    store.removeCategory("Menus");
+
+    const after = useBlockOrgStore.getState();
+    expect(after.customCategories.find((c) => c.name === "Menus")).toBeUndefined();
+    // The block keeps its assignment, but the assignment now points at
+    // a still-existing category so the toolbox builder renders it.
+    expect(after.assignments["wf_custom_menu_matt"]).toBe("My Blocks");
+  });
+
+  it("leaves unrelated assignments untouched on removeCategory", () => {
+    const store = useBlockOrgStore.getState();
+    store.addCategory("Menus");
+    store.addCategory("Forms");
+    store.moveBlock("wf_custom_a", "Menus");
+    store.moveBlock("wf_custom_b", "Forms");
+
+    store.removeCategory("Menus");
+
+    const after = useBlockOrgStore.getState();
+    expect(after.assignments["wf_custom_a"]).toBe("My Blocks");
+    expect(after.assignments["wf_custom_b"]).toBe("Forms");
+  });
+});

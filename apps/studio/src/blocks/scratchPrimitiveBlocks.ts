@@ -271,6 +271,29 @@ const BLOCKS: BlockDef[] = [
     },
   },
   {
+    // Worked example block — see docs/manual.md §12 ("Worked example:
+    // adding a new sprite block"). Statement, zero inputs, mutates
+    // sprite x/y to a uniform random point inside the stage bounds.
+    // Picked as the canonical "smallest non-trivial block" so a new
+    // contributor can see all four edits in one pull request:
+    //   1. this declaration
+    //   2. apps/studio/src/runtime/scriptInterpreter.ts — TS handler
+    //   3. crates/wf-sprite-runtime/src/interpreter.rs — Rust handler
+    //   4. crates/wf-sprite-runtime/tests/smoke.rs — behavioural test
+    // The parity test (tests/parity.rs) catches any of those four edits
+    // being skipped.
+    type: "scratch_motion_teleport_random",
+    label: "Teleport to random position",
+    category: "Motion",
+    json: {
+      type: "scratch_motion_teleport_random",
+      message0: "teleport to random position",
+      previousStatement: null,
+      nextStatement: null,
+      style: "motion_blocks",
+    },
+  },
+  {
     type: "scratch_motion_set_rotation_style",
     label: "Set rotation style",
     category: "Motion",
@@ -438,6 +461,65 @@ const BLOCKS: BlockDef[] = [
       previousStatement: null,
       nextStatement: null,
       style: "looks_blocks",
+    },
+  },
+  {
+    // Dynamic-text sprite: paints the connected reporter's value on top
+    // of the sprite's costume (or in place of the placeholder square)
+    // each render tick. Plug a `value of <var>` reporter in to get a
+    // sprite that always shows the current value of a variable.
+    type: "scratch_looks_set_text_to",
+    label: "Set text",
+    category: "Looks",
+    json: {
+      type: "scratch_looks_set_text_to",
+      message0: "set text to %1",
+      args0: [valueInput("TEXT")],
+      previousStatement: null,
+      nextStatement: null,
+      style: "looks_blocks",
+      extensions: ["wf_text_input_default"],
+    },
+  },
+  {
+    // Atomic combined block — sets both the dynamic-text overlay AND
+    // its font family in one statement. Either input can be a variable
+    // getter so the canonical pattern is:
+    //   forever
+    //     set text to (value of msg) with font (value of font_name)
+    // and both update live as the user mutates msg / font_name. Empty
+    // FONT falls back to the renderer's default sans-serif stack.
+    type: "scratch_looks_set_text_with_font",
+    label: "Set text with font",
+    category: "Looks",
+    json: {
+      type: "scratch_looks_set_text_with_font",
+      message0: "set text to %1 with font %2",
+      args0: [valueInput("TEXT"), valueInput("FONT")],
+      previousStatement: null,
+      nextStatement: null,
+      style: "looks_blocks",
+      extensions: ["wf_text_font_default"],
+    },
+  },
+  {
+    // Explicit font-size control for the dynamic-text overlay. One
+    // value input (SIZE) in pixels. Plug a variable getter to make
+    // size live-bindable. Out-of-range / NaN values clear the override
+    // so the renderer falls back to the existing auto-derive (~32% of
+    // sprite height). Pair with set_text_to / set_text_with_font for
+    // full control over the overlay.
+    type: "scratch_looks_set_text_size_to",
+    label: "Set text size",
+    category: "Looks",
+    json: {
+      type: "scratch_looks_set_text_size_to",
+      message0: "set text size to %1",
+      args0: [valueInput("SIZE")],
+      previousStatement: null,
+      nextStatement: null,
+      style: "looks_blocks",
+      extensions: ["wf_text_size_default"],
     },
   },
   {
@@ -871,14 +953,24 @@ const BLOCKS: BlockDef[] = [
       style: "sensing_blocks",
     },
   },
-  // `scratch_sensing_touching_color` is intentionally not registered.
-  // Implementing it correctly requires sampling pixels from the rendered
-  // stage canvas (rasterize every visible sprite + backdrop, then read
-  // the pixel at the asking sprite's bounding box and compare to the
-  // user-picked color with tolerance). Until that runtime support
-  // lands, exposing the block in the toolbox would silently return
-  // false — worse than not offering it. Restore this entry once the
-  // interpreter has a `getStagePixel(x, y)` hook.
+  // `scratch_sensing_touching_color` is now wired end-to-end: the studio
+  // reads the stage canvas via `getStagePixel`, and the native runtime
+  // composites sprites + backdrop into a CPU-side raster (`tiny-skia`)
+  // sampled by `Stage::stage_pixel`. The reporter samples a small grid
+  // under the asking sprite's bounding box and returns true if any sample
+  // is within Scratch's standard color tolerance of the picked color.
+  {
+    type: "scratch_sensing_touching_color",
+    label: "Touching color? (reporter)",
+    category: "Sensing",
+    json: {
+      type: "scratch_sensing_touching_color",
+      message0: "touching color %1 ?",
+      args0: [{ type: "field_colour", name: "COLOR", colour: "#ff0000" }],
+      output: "Boolean",
+      style: "sensing_blocks",
+    },
+  },
   {
     type: "scratch_sensing_distance_to",
     label: "Distance to (reporter)",
@@ -1402,10 +1494,11 @@ const BLOCKS: BlockDef[] = [
     json: {
       type: "scratch_io_open_url",
       message0: "open URL %1",
-      args0: [{ ...text("https://example.com"), name: "URL" }],
+      args0: [valueInput("URL")],
       previousStatement: null,
       nextStatement: null,
       style: "events_blocks",
+      extensions: ["wf_open_url_default"],
     },
   },
 ];

@@ -1,0 +1,295 @@
+{
+  "schema_version": 1,
+  "project": {
+    "id": "example-menu-editor",
+    "app_name": "Menu Editor",
+    "package_id": "com.warpforge.menu-editor",
+    "version": "0.1.0",
+    "author": "WarpForge Examples",
+    "description": "In-app editable menu \u2014 four colored button sprites (green +, orange pencil, red X, blue \u25b6 for Add / Edit / Delete / Open) drive a pair of parallel lists (labels + urls) shown as monitors. On flag click each button says its name and the title bar greets you. Click Add \u2192 ask for label and URL. Click Edit \u2192 ask which #, then new values. Click Delete \u2192 ask which # and remove. Click Open \u2192 ask which # and launch via the OS shell. Per-entry URL launch uses scratch_io_open_url with a connected scratch_data_item_of_list reporter.",
+    "target_type": "desktop_slint",
+    "theme": "auto",
+    "created_at": "2026-05-09T11:00:00Z",
+    "updated_at": "2026-05-09T11:00:00Z"
+  },
+  "workspace_state": {
+    "zoom": 1.0,
+    "pan_x": 0.0,
+    "pan_y": 0.0,
+    "selected_block_ids": [],
+    "blockly_xml": "<xml xmlns=\"https://developers.google.com/blockly/xml\">\n<block type=\"wf_window\" id=\"window_main\" x=\"24\" y=\"24\"><field name=\"HEIGHT\">360</field><field name=\"TITLE\">Menu Editor</field><field name=\"WIDTH\">480</field><next><block type=\"wf_screen\" id=\"screen_stage\"><field name=\"NAME\">Stage</field><field name=\"ROUTE\">/</field></block></next></block>\n</xml>",
+    "comments": [],
+    "groups": []
+  },
+  "normalized_graph": {
+    "nodes": [
+      {
+        "id": "window_main",
+        "kind": "structure.window",
+        "category": "structure",
+        "props": {
+          "height": 360,
+          "title": "Menu Editor",
+          "width": 480
+        }
+      },
+      {
+        "id": "screen_stage",
+        "kind": "structure.screen",
+        "category": "structure",
+        "props": {
+          "name": "Stage",
+          "route": "/"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge_window_screen",
+        "from": "window_main",
+        "to": "screen_stage",
+        "edge_type": "child"
+      }
+    ]
+  },
+  "ir_snapshot": null,
+  "assets": [
+    {
+      "id": "asset_me_bg",
+      "kind": "costume",
+      "path": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0ODAgMzYwIj48cmVjdCB3aWR0aD0iNDgwIiBoZWlnaHQ9IjM2MCIgZmlsbD0iI2Y0ZjZmYSIvPgo8cmVjdCB4PSIwIiB5PSIyMjAiIHdpZHRoPSI0ODAiIGhlaWdodD0iNjAiIGZpbGw9IiNlNmViZjMiLz48L3N2Zz4=",
+      "prompt": null,
+      "metadata": {
+        "role": "backdrop",
+        "source": "generated"
+      },
+      "created_at": "2026-05-09T11:00:00.000Z",
+      "version": 1
+    },
+    {
+      "id": "asset_me_title",
+      "kind": "costume",
+      "path": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB4PSI0IiB5PSIzMCIgd2lkdGg9IjkyIiBoZWlnaHQ9IjQwIiByeD0iMTAiIHJ5PSIxMCIgZmlsbD0iIzFhMjMzMyIvPgo8cmVjdCB4PSIxNCIgeT0iNDIiIHdpZHRoPSIxNCIgaGVpZ2h0PSIxNiIgZmlsbD0iI2ZmZmZmZiIgb3BhY2l0eT0iMC44Ii8+CjxyZWN0IHg9IjM0IiB5PSI0MiIgd2lkdGg9IjE0IiBoZWlnaHQ9IjE2IiBmaWxsPSIjZmZmZmZmIiBvcGFjaXR5PSIwLjYiLz4KPHJlY3QgeD0iNTQiIHk9IjQyIiB3aWR0aD0iMTQiIGhlaWdodD0iMTYiIGZpbGw9IiNmZmZmZmYiIG9wYWNpdHk9IjAuNCIvPgo8cmVjdCB4PSI3NCIgeT0iNDIiIHdpZHRoPSIxNCIgaGVpZ2h0PSIxNiIgZmlsbD0iI2ZmZmZmZiIgb3BhY2l0eT0iMC4yIi8+PC9zdmc+",
+      "prompt": null,
+      "metadata": {
+        "source": "generated"
+      },
+      "created_at": "2026-05-09T11:00:00.000Z",
+      "version": 1
+    },
+    {
+      "id": "asset_me_add",
+      "kind": "costume",
+      "path": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB4PSI0IiB5PSI0IiB3aWR0aD0iOTIiIGhlaWdodD0iOTIiIHJ4PSIxNCIgcnk9IjE0IiBmaWxsPSIjM2FhNjRhIiBzdHJva2U9IiMxZjYwMjgiIHN0cm9rZS13aWR0aD0iMyIvPgo8cmVjdCB4PSI0MiIgeT0iMjIiIHdpZHRoPSIxNiIgaGVpZ2h0PSI1NiIgcng9IjMiIHJ5PSIzIiBmaWxsPSIjZmZmZmZmIi8+PHJlY3QgeD0iMjIiIHk9IjQyIiB3aWR0aD0iNTYiIGhlaWdodD0iMTYiIHJ4PSIzIiByeT0iMyIgZmlsbD0iI2ZmZmZmZiIvPjwvc3ZnPg==",
+      "prompt": null,
+      "metadata": {
+        "source": "generated"
+      },
+      "created_at": "2026-05-09T11:00:00.000Z",
+      "version": 1
+    },
+    {
+      "id": "asset_me_edit",
+      "kind": "costume",
+      "path": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB4PSI0IiB5PSI0IiB3aWR0aD0iOTIiIGhlaWdodD0iOTIiIHJ4PSIxNCIgcnk9IjE0IiBmaWxsPSIjZTg5MDIwIiBzdHJva2U9IiM5YTVhMTAiIHN0cm9rZS13aWR0aD0iMyIvPgo8cG9seWdvbiBwb2ludHM9IjIyLDc4IDMyLDY4IDcyLDI4IDgyLDM4IDQyLDc4IiBmaWxsPSIjZmZmZmZmIi8+PHBvbHlnb24gcG9pbnRzPSIyMiw3OCAzMiw2OCA0Miw3OCIgZmlsbD0iI2ZmZmZmZiIvPjxwb2x5Z29uIHBvaW50cz0iNzIsMjggODIsMzggNzgsNDIgNjgsMzIiIGZpbGw9IiMxYTIzMzMiLz48L3N2Zz4=",
+      "prompt": null,
+      "metadata": {
+        "source": "generated"
+      },
+      "created_at": "2026-05-09T11:00:00.000Z",
+      "version": 1
+    },
+    {
+      "id": "asset_me_delete",
+      "kind": "costume",
+      "path": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB4PSI0IiB5PSI0IiB3aWR0aD0iOTIiIGhlaWdodD0iOTIiIHJ4PSIxNCIgcnk9IjE0IiBmaWxsPSIjZDA0YTRhIiBzdHJva2U9IiM3YTFmMWYiIHN0cm9rZS13aWR0aD0iMyIvPgo8cG9seWdvbiBwb2ludHM9IjI2LDMwIDMwLDI2IDc0LDcwIDcwLDc0IiBmaWxsPSIjZmZmZmZmIi8+PHBvbHlnb24gcG9pbnRzPSI3MCwyNiA3NCwzMCAzMCw3NCAyNiw3MCIgZmlsbD0iI2ZmZmZmZiIvPjwvc3ZnPg==",
+      "prompt": null,
+      "metadata": {
+        "source": "generated"
+      },
+      "created_at": "2026-05-09T11:00:00.000Z",
+      "version": 1
+    },
+    {
+      "id": "asset_me_open",
+      "kind": "costume",
+      "path": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB4PSI0IiB5PSI0IiB3aWR0aD0iOTIiIGhlaWdodD0iOTIiIHJ4PSIxNCIgcnk9IjE0IiBmaWxsPSIjM2E3ZmQ1IiBzdHJva2U9IiMxYzRhOGEiIHN0cm9rZS13aWR0aD0iMyIvPgo8cG9seWdvbiBwb2ludHM9IjMyLDIyIDMyLDc4IDgwLDUwIiBmaWxsPSIjZmZmZmZmIi8+PC9zdmc+",
+      "prompt": null,
+      "metadata": {
+        "source": "generated"
+      },
+      "created_at": "2026-05-09T11:00:00.000Z",
+      "version": 1
+    }
+  ],
+  "ai_history": [],
+  "stage_state": {
+    "backdropIndex": 0,
+    "backdrops": [
+      {
+        "assetId": "asset_me_bg",
+        "centerX": 240,
+        "centerY": 180,
+        "height": 360,
+        "id": "backdrop_me",
+        "name": "Pale",
+        "width": 480
+      }
+    ],
+    "globalLists": {
+      "labels": [],
+      "urls": []
+    },
+    "globalVariables": {},
+    "schema_version": 1,
+    "selectedSpriteId": "sprite_me_add",
+    "sprites": [
+      {
+        "costumeIndex": 0,
+        "costumes": [
+          {
+            "assetId": "asset_me_title",
+            "centerX": 50,
+            "centerY": 50,
+            "height": 100,
+            "id": "costume_me_title",
+            "name": "Title",
+            "width": 100
+          }
+        ],
+        "direction": 90,
+        "id": "sprite_me_title",
+        "layer": 1,
+        "lists": {},
+        "name": "Title",
+        "rotationStyle": "dont-rotate",
+        "scripts_xml": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><block type=\"scratch_event_when_flag_clicked\" id=\"ti_hat\" x=\"20\" y=\"20\"><next><block type=\"scratch_looks_say_for_secs\" id=\"ti_say\"><value name=\"MESSAGE\"><shadow type=\"text\"><field name=\"TEXT\">Menu Manager \u2014 green=Add, orange=Edit, red=Delete, blue=Open</field></shadow></value><value name=\"SECS\"><shadow type=\"math_number\"><field name=\"NUM\">3</field></shadow></value><next><block type=\"scratch_data_show_variable\" id=\"ti_show_labels\"><field name=\"VARIABLE\">labels</field><next><block type=\"scratch_data_show_variable\" id=\"ti_show_urls\"><field name=\"VARIABLE\">urls</field><next><block type=\"scratch_data_add_to_list\" id=\"ti_seed1_lab\"><field name=\"LIST\">labels</field><value name=\"ITEM\"><shadow type=\"text\"><field name=\"TEXT\">GitHub</field></shadow></value><next><block type=\"scratch_data_add_to_list\" id=\"ti_seed1_url\"><field name=\"LIST\">urls</field><value name=\"ITEM\"><shadow type=\"text\"><field name=\"TEXT\">https://github.com</field></shadow></value><next><block type=\"scratch_data_add_to_list\" id=\"ti_seed2_lab\"><field name=\"LIST\">labels</field><value name=\"ITEM\"><shadow type=\"text\"><field name=\"TEXT\">Mail</field></shadow></value><next><block type=\"scratch_data_add_to_list\" id=\"ti_seed2_url\"><field name=\"LIST\">urls</field><value name=\"ITEM\"><shadow type=\"text\"><field name=\"TEXT\">mailto:hello@example.com</field></shadow></value></block></next></block></next></block></next></block></next></block></next></block></next></block></next></block></xml>",
+        "size": 140,
+        "sounds": [],
+        "variables": {},
+        "visible": true,
+        "x": 100,
+        "y": 140
+      },
+      {
+        "costumeIndex": 0,
+        "costumes": [
+          {
+            "assetId": "asset_me_add",
+            "centerX": 50,
+            "centerY": 50,
+            "height": 100,
+            "id": "costume_me_add",
+            "name": "Add",
+            "width": 100
+          }
+        ],
+        "direction": 90,
+        "id": "sprite_me_add",
+        "layer": 2,
+        "lists": {},
+        "name": "Add",
+        "rotationStyle": "dont-rotate",
+        "scripts_xml": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><block type=\"scratch_event_when_flag_clicked\" id=\"ad_hat\" x=\"20\" y=\"20\"><next><block type=\"scratch_looks_say_for_secs\" id=\"ad_intro\"><value name=\"MESSAGE\"><shadow type=\"text\"><field name=\"TEXT\">Add \u2014 click me to add an entry</field></shadow></value><value name=\"SECS\"><shadow type=\"math_number\"><field name=\"NUM\">3</field></shadow></value></block></next></block><block type=\"scratch_event_when_this_sprite_clicked\" id=\"ad_click\" x=\"20\" y=\"200\"><next><block type=\"scratch_sensing_ask_and_wait\" id=\"ad_ask_lab\"><value name=\"QUESTION\"><shadow type=\"text\"><field name=\"TEXT\">Label for the new entry?</field></shadow></value><next><block type=\"scratch_data_add_to_list\" id=\"ad_add_lab\"><field name=\"LIST\">labels</field><value name=\"ITEM\"><block type=\"scratch_sensing_answer\" id=\"ad_ans1\"></block></value><next><block type=\"scratch_sensing_ask_and_wait\" id=\"ad_ask_url\"><value name=\"QUESTION\"><shadow type=\"text\"><field name=\"TEXT\">URL for the new entry? (https://\u2026 or mailto:\u2026 or any URI scheme)</field></shadow></value><next><block type=\"scratch_data_add_to_list\" id=\"ad_add_url\"><field name=\"LIST\">urls</field><value name=\"ITEM\"><block type=\"scratch_sensing_answer\" id=\"ad_ans2\"></block></value></block></next></block></next></block></next></block></next></block></xml>",
+        "size": 80,
+        "sounds": [],
+        "variables": {},
+        "visible": true,
+        "x": -150,
+        "y": -50
+      },
+      {
+        "costumeIndex": 0,
+        "costumes": [
+          {
+            "assetId": "asset_me_edit",
+            "centerX": 50,
+            "centerY": 50,
+            "height": 100,
+            "id": "costume_me_edit",
+            "name": "Edit",
+            "width": 100
+          }
+        ],
+        "direction": 90,
+        "id": "sprite_me_edit",
+        "layer": 3,
+        "lists": {},
+        "name": "Edit",
+        "rotationStyle": "dont-rotate",
+        "scripts_xml": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><block type=\"scratch_event_when_flag_clicked\" id=\"ed_hat\" x=\"20\" y=\"20\"><next><block type=\"scratch_looks_say_for_secs\" id=\"ed_intro\"><value name=\"MESSAGE\"><shadow type=\"text\"><field name=\"TEXT\">Edit \u2014 click me to change an entry</field></shadow></value><value name=\"SECS\"><shadow type=\"math_number\"><field name=\"NUM\">3</field></shadow></value></block></next></block><block type=\"scratch_event_when_this_sprite_clicked\" id=\"ed_click\" x=\"20\" y=\"200\"><next><block type=\"scratch_sensing_ask_and_wait\" id=\"ed_ask_idx\"><value name=\"QUESTION\"><shadow type=\"text\"><field name=\"TEXT\">Edit which entry number?</field></shadow></value><next><block type=\"scratch_data_set_variable\" id=\"ed_set_i\"><field name=\"VARIABLE\">i</field><value name=\"VALUE\"><block type=\"scratch_sensing_answer\" id=\"ed_ans1\"></block></value><next><block type=\"scratch_sensing_ask_and_wait\" id=\"ed_ask_lab\"><value name=\"QUESTION\"><shadow type=\"text\"><field name=\"TEXT\">New label for that entry?</field></shadow></value><next><block type=\"scratch_data_replace_in_list\" id=\"ed_rep_lab\"><field name=\"LIST\">labels</field><value name=\"INDEX\"><block type=\"scratch_data_variables_get\" id=\"ed_get_i1\"><field name=\"VARIABLE\">i</field></block></value><value name=\"ITEM\"><block type=\"scratch_sensing_answer\" id=\"ed_ans2\"></block></value><next><block type=\"scratch_sensing_ask_and_wait\" id=\"ed_ask_url\"><value name=\"QUESTION\"><shadow type=\"text\"><field name=\"TEXT\">New URL for that entry?</field></shadow></value><next><block type=\"scratch_data_replace_in_list\" id=\"ed_rep_url\"><field name=\"LIST\">urls</field><value name=\"INDEX\"><block type=\"scratch_data_variables_get\" id=\"ed_get_i2\"><field name=\"VARIABLE\">i</field></block></value><value name=\"ITEM\"><block type=\"scratch_sensing_answer\" id=\"ed_ans3\"></block></value></block></next></block></next></block></next></block></next></block></next></block></next></block></xml>",
+        "size": 80,
+        "sounds": [],
+        "variables": {
+          "i": 0
+        },
+        "visible": true,
+        "x": -50,
+        "y": -50
+      },
+      {
+        "costumeIndex": 0,
+        "costumes": [
+          {
+            "assetId": "asset_me_delete",
+            "centerX": 50,
+            "centerY": 50,
+            "height": 100,
+            "id": "costume_me_delete",
+            "name": "Delete",
+            "width": 100
+          }
+        ],
+        "direction": 90,
+        "id": "sprite_me_delete",
+        "layer": 4,
+        "lists": {},
+        "name": "Delete",
+        "rotationStyle": "dont-rotate",
+        "scripts_xml": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><block type=\"scratch_event_when_flag_clicked\" id=\"de_hat\" x=\"20\" y=\"20\"><next><block type=\"scratch_looks_say_for_secs\" id=\"de_intro\"><value name=\"MESSAGE\"><shadow type=\"text\"><field name=\"TEXT\">Delete \u2014 click me to remove an entry</field></shadow></value><value name=\"SECS\"><shadow type=\"math_number\"><field name=\"NUM\">3</field></shadow></value></block></next></block><block type=\"scratch_event_when_this_sprite_clicked\" id=\"de_click\" x=\"20\" y=\"200\"><next><block type=\"scratch_sensing_ask_and_wait\" id=\"de_ask_idx\"><value name=\"QUESTION\"><shadow type=\"text\"><field name=\"TEXT\">Delete which entry number?</field></shadow></value><next><block type=\"scratch_data_set_variable\" id=\"de_set_i\"><field name=\"VARIABLE\">i</field><value name=\"VALUE\"><block type=\"scratch_sensing_answer\" id=\"de_ans\"></block></value><next><block type=\"scratch_data_delete_from_list\" id=\"de_del_lab\"><field name=\"LIST\">labels</field><value name=\"INDEX\"><block type=\"scratch_data_variables_get\" id=\"de_get_i1\"><field name=\"VARIABLE\">i</field></block></value><next><block type=\"scratch_data_delete_from_list\" id=\"de_del_url\"><field name=\"LIST\">urls</field><value name=\"INDEX\"><block type=\"scratch_data_variables_get\" id=\"de_get_i2\"><field name=\"VARIABLE\">i</field></block></value></block></next></block></next></block></next></block></next></block></xml>",
+        "size": 80,
+        "sounds": [],
+        "variables": {
+          "i": 0
+        },
+        "visible": true,
+        "x": 50,
+        "y": -50
+      },
+      {
+        "costumeIndex": 0,
+        "costumes": [
+          {
+            "assetId": "asset_me_open",
+            "centerX": 50,
+            "centerY": 50,
+            "height": 100,
+            "id": "costume_me_open",
+            "name": "Open",
+            "width": 100
+          }
+        ],
+        "direction": 90,
+        "id": "sprite_me_open",
+        "layer": 5,
+        "lists": {},
+        "name": "Open",
+        "rotationStyle": "dont-rotate",
+        "scripts_xml": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><block type=\"scratch_event_when_flag_clicked\" id=\"op_hat\" x=\"20\" y=\"20\"><next><block type=\"scratch_looks_say_for_secs\" id=\"op_intro\"><value name=\"MESSAGE\"><shadow type=\"text\"><field name=\"TEXT\">Open \u2014 click me to launch an entry</field></shadow></value><value name=\"SECS\"><shadow type=\"math_number\"><field name=\"NUM\">3</field></shadow></value></block></next></block><block type=\"scratch_event_when_this_sprite_clicked\" id=\"op_click\" x=\"20\" y=\"200\"><next><block type=\"scratch_sensing_ask_and_wait\" id=\"op_ask_idx\"><value name=\"QUESTION\"><shadow type=\"text\"><field name=\"TEXT\">Open which entry number?</field></shadow></value><next><block type=\"scratch_io_open_url\" id=\"op_open\"><value name=\"URL\"><block type=\"scratch_data_item_of_list\" id=\"op_item\"><value name=\"INDEX\"><block type=\"scratch_sensing_answer\" id=\"op_ans\"></block></value><field name=\"LIST\">urls</field></block></value></block></next></block></next></block></xml>",
+        "size": 80,
+        "sounds": [],
+        "variables": {},
+        "visible": true,
+        "x": 150,
+        "y": -50
+      }
+    ]
+  },
+  "settings": {
+    "autosave_interval_secs": 30,
+    "validate_on_change": false,
+    "codegen_deterministic": true,
+    "ai_default_text_provider": "ollama",
+    "ai_default_image_provider": "comfyui"
+  }
+}

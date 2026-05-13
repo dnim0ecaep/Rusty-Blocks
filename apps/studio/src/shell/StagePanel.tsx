@@ -30,6 +30,7 @@ import {
   installListeners as installStageInputListeners,
   keyEventToScratchName,
 } from "../runtime/stageInput";
+import { registerStageCanvas } from "../runtime/stagePixel";
 import { useProjectStore } from "../store/projectStore";
 import { useStageStore } from "../store/stageStore";
 import { useUiStore } from "../store/uiStore";
@@ -89,6 +90,7 @@ export function StagePanel() {
   const projectStageHeight = useProjectStore(
     (s) => s.project?.project.stage_height,
   );
+  const showSpriteNames = useUiStore((s) => s.showSpriteNames);
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const draggingIdRef = useRef<string | null>(null);
@@ -127,7 +129,12 @@ export function StagePanel() {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    return installStageInputListeners(canvas);
+    registerStageCanvas(canvas, STAGE_WIDTH, STAGE_HEIGHT);
+    const detach = installStageInputListeners(canvas);
+    return () => {
+      registerStageCanvas(null, STAGE_WIDTH, STAGE_HEIGHT);
+      detach?.();
+    };
   }, []);
 
   // Fire `when key pressed` hats on each discrete keydown. We skip OS
@@ -267,13 +274,48 @@ export function StagePanel() {
         ctx.stroke();
       }
       ctx.restore();
+      // Dynamic-text overlay (set by `scratch_looks_set_text_to` or
+      // `scratch_looks_set_text_with_font`). Drawn outside the
+      // rotation/effects frame so the text reads upright regardless of
+      // sprite direction or graphic effects. Font size scales with the
+      // sprite footprint; a white halo + dark fill keeps the glyph
+      // legible against any costume background. The font family comes
+      // from `sprite.font_family` when set, with `ui-sans-serif` /
+      // `system-ui` / `sans-serif` as the fallback stack so an
+      // unrecognized custom font still resolves to something readable.
+      if (s.text_value && s.text_value.length > 0) {
+        ctx.save();
+        // Explicit size from `scratch_looks_set_text_size_to` wins;
+        // otherwise auto-derive ~32% of the sprite's rendered height
+        // so a bigger sprite shows bigger text without manual tuning.
+        const fontPx =
+          s.text_size && s.text_size > 0
+            ? s.text_size
+            : Math.max(12, Math.round(sizePx * 0.32));
+        const familyStack = s.font_family && s.font_family.trim().length > 0
+          ? `${s.font_family}, ui-sans-serif, system-ui, sans-serif`
+          : "ui-sans-serif, system-ui, sans-serif";
+        ctx.font = `bold ${fontPx}px ${familyStack}`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.lineWidth = Math.max(2, fontPx / 6);
+        ctx.strokeStyle = "rgba(255,255,255,0.95)";
+        ctx.strokeText(s.text_value, px, py);
+        ctx.fillStyle = "#1a2333";
+        ctx.fillText(s.text_value, px, py);
+        ctx.restore();
+      }
       // Name label below — drawn without effects so it's always readable.
-      ctx.save();
-      ctx.fillStyle = s.id === selectedSpriteId ? "#1967d2" : "#5b6371";
-      ctx.font = "11px sans-serif";
-      ctx.textAlign = "center";
-      ctx.fillText(s.name, px, py + sizePx / 2 + 14);
-      ctx.restore();
+      // Suppressed entirely when the user toggles names off from the
+      // stage toolbar (useful for screenshots and demos).
+      if (showSpriteNames) {
+        ctx.save();
+        ctx.fillStyle = s.id === selectedSpriteId ? "#1967d2" : "#5b6371";
+        ctx.font = "11px sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText(s.name, px, py + sizePx / 2 + 14);
+        ctx.restore();
+      }
     }
   }, [
     sprites,
@@ -283,16 +325,28 @@ export function StagePanel() {
     costumesLoadedTick,
     projectStageWidth,
     projectStageHeight,
+    showSpriteNames,
   ]);
 
   // Hit-test a click against sprite bounding boxes (top sprite wins).
+  // Use the actual rendered costume size when its image has loaded so a
+  // big costume catches clicks across its full visible footprint, not
+  // just the 40-unit placeholder square.
   const findSpriteAt = (px: number, py: number): Sprite | null => {
     const layered = [...sprites].sort((a, b) => b.layer - a.layer);
     for (const s of layered) {
       if (!s.visible) continue;
       const { px: cx, py: cy } = scratchToCanvas(s.x, s.y);
-      const half = (SPRITE_PLACEHOLDER_SIZE * s.size) / 200;
-      if (px >= cx - half && px <= cx + half && py >= cy - half && py <= cy + half) {
+      const costume = s.costumes[s.costumeIndex];
+      const img = costume?.assetId ? getCostumeImage(costume.assetId) : null;
+      const scale = s.size / 100;
+      const halfX = img && img.naturalWidth > 0
+        ? (img.naturalWidth * scale) / 2
+        : (SPRITE_PLACEHOLDER_SIZE * s.size) / 200;
+      const halfY = img && img.naturalHeight > 0
+        ? (img.naturalHeight * scale) / 2
+        : (SPRITE_PLACEHOLDER_SIZE * s.size) / 200;
+      if (px >= cx - halfX && px <= cx + halfX && py >= cy - halfY && py <= cy + halfY) {
         return s;
       }
     }
@@ -405,6 +459,7 @@ export function StagePanel() {
           >
             ▶ Step
           </button>
+          <SpriteNamesToggleButton />
           <PlayerModeButton />
         </div>
       </header>
@@ -613,6 +668,25 @@ function MonitorOverlay() {
  * on. Title swaps between "Enter player mode" and "Exit player mode (Esc)"
  * so the same button does both.
  */
+function SpriteNamesToggleButton() {
+  const showSpriteNames = useUiStore((s) => s.showSpriteNames);
+  const toggleSpriteNames = useUiStore((s) => s.toggleSpriteNames);
+  return (
+    <button
+      type="button"
+      className="stage-panel-btn"
+      onClick={toggleSpriteNames}
+      title={
+        showSpriteNames
+          ? "Hide sprite names on the stage"
+          : "Show sprite names on the stage"
+      }
+    >
+      {showSpriteNames ? "Aa" : "A̶a̶"}
+    </button>
+  );
+}
+
 function PlayerModeButton() {
   const playerMode = useUiStore((s) => s.playerMode);
   const togglePlayerMode = useUiStore((s) => s.togglePlayerMode);

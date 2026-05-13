@@ -2,6 +2,8 @@
 
 WarpForge Studio is a local-first desktop application builder with a Scratch/TurboWarp-inspired block workflow and a production compiler pipeline for real installable apps.
 
+**End-user guide:** [`docs/manual.md`](docs/manual.md) — what the studio is, how to build form-style apps and sprite-stage apps, the block reference, the Vibe AI builder, custom blocks, running / exporting, and troubleshooting.
+
 ## Product Pipeline
 
 `Blocks UI -> Parsed Graph -> Typed IR -> Validator -> Codegen -> Project Assembler -> Packager`

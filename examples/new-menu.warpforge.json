@@ -1,0 +1,250 @@
+{
+  "schema_version": 1,
+  "project": {
+    "id": "22a71828-1b43-4513-8dd2-9f84735f3fe8",
+    "app_name": "New Menu",
+    "package_id": "com.warpforge.new-menu",
+    "version": "0.1.0",
+    "author": "WarpForge User",
+    "description": "Clickable launcher menu. Each sprite is a menu entry: clicking it opens a URL or mail draft. Edit a sprite's scripts_xml to change its target. Add or remove sprites from the Stage panel to add or remove menu entries.",
+    "target_type": "desktop_slint",
+    "theme": "auto",
+    "created_at": "2026-05-13T16:54:54.121688708Z",
+    "updated_at": "2026-05-13T16:54:54.121688708Z"
+  },
+  "workspace_state": {
+    "zoom": 1.0,
+    "pan_x": 0.0,
+    "pan_y": 0.0,
+    "selected_block_ids": [],
+    "blockly_xml": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><block type=\"wf_window\" id=\"window_main\" x=\"24\" y=\"24\"><field name=\"TITLE\">New Menu</field><field name=\"WIDTH\">640</field><field name=\"HEIGHT\">400</field><next><block type=\"wf_screen\" id=\"screen_home\"><field name=\"NAME\">Home</field><field name=\"ROUTE\">/</field></block></next></block></xml>",
+    "comments": [],
+    "groups": []
+  },
+  "normalized_graph": {
+    "nodes": [
+      {
+        "id": "window_main",
+        "kind": "structure.window",
+        "category": "structure",
+        "props": {
+          "title": "New Menu",
+          "width": 640,
+          "height": 400
+        }
+      },
+      {
+        "id": "screen_home",
+        "kind": "structure.screen",
+        "category": "structure",
+        "props": {
+          "name": "Home",
+          "route": "/"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge_window_screen",
+        "from": "window_main",
+        "to": "screen_home",
+        "edge_type": "child"
+      }
+    ]
+  },
+  "ir_snapshot": null,
+  "assets": [
+    {
+      "id": "asset_backdrop_slate",
+      "kind": "costume",
+      "path": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NDAgNDAwIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwIiB5MT0iMCIgeDI9IjAiIHkyPSIxIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiMzYjQyNTIiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMyNTJiMzciLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iNjQwIiBoZWlnaHQ9IjQwMCIgZmlsbD0idXJsKCNnKSIvPjx0ZXh0IHg9IjMyMCIgeT0iNTAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjI2IiBmaWxsPSIjZWNlZmY0IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXdlaWdodD0iYm9sZCI+TmV3IE1lbnU8L3RleHQ+PC9zdmc+",
+      "prompt": null,
+      "metadata": {
+        "role": "backdrop",
+        "source": "builtin"
+      },
+      "created_at": "2026-05-13T16:54:54.121688708Z",
+      "version": 1
+    },
+    {
+      "id": "asset_tile_docs",
+      "kind": "costume",
+      "path": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjAgMTIwIj48cmVjdCB4PSI4IiB5PSI4IiB3aWR0aD0iMTA0IiBoZWlnaHQ9IjEwNCIgcng9IjE2IiBmaWxsPSIjNWU4MWFjIi8+PHJlY3QgeD0iMjgiIHk9IjI0IiB3aWR0aD0iNjQiIGhlaWdodD0iNzIiIHJ4PSI0IiBmaWxsPSIjZWNlZmY0Ii8+PGxpbmUgeDE9IjM4IiB5MT0iNDQiIHgyPSI4MiIgeTI9IjQ0IiBzdHJva2U9IiM0YzU2NmEiIHN0cm9rZS13aWR0aD0iMyIvPjxsaW5lIHgxPSIzOCIgeTE9IjU4IiB4Mj0iODIiIHkyPSI1OCIgc3Ryb2tlPSIjNGM1NjZhIiBzdHJva2Utd2lkdGg9IjMiLz48bGluZSB4MT0iMzgiIHkxPSI3MiIgeDI9IjcwIiB5Mj0iNzIiIHN0cm9rZT0iIzRjNTY2YSIgc3Ryb2tlLXdpZHRoPSIzIi8+PC9zdmc+",
+      "prompt": null,
+      "metadata": {
+        "source": "builtin"
+      },
+      "created_at": "2026-05-13T16:54:54.121688708Z",
+      "version": 1
+    },
+    {
+      "id": "asset_tile_rust",
+      "kind": "costume",
+      "path": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjAgMTIwIj48cmVjdCB4PSI4IiB5PSI4IiB3aWR0aD0iMTA0IiBoZWlnaHQ9IjEwNCIgcng9IjE2IiBmaWxsPSIjZDA4NzcwIi8+PGNpcmNsZSBjeD0iNjAiIGN5PSI2MCIgcj0iMjgiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzJlMzQ0MCIgc3Ryb2tlLXdpZHRoPSI2Ii8+PGNpcmNsZSBjeD0iNjAiIGN5PSI2MCIgcj0iMTAiIGZpbGw9IiMyZTM0NDAiLz48L3N2Zz4=",
+      "prompt": null,
+      "metadata": {
+        "source": "builtin"
+      },
+      "created_at": "2026-05-13T16:54:54.121688708Z",
+      "version": 1
+    },
+    {
+      "id": "asset_tile_slint",
+      "kind": "costume",
+      "path": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjAgMTIwIj48cmVjdCB4PSI4IiB5PSI4IiB3aWR0aD0iMTA0IiBoZWlnaHQ9IjEwNCIgcng9IjE2IiBmaWxsPSIjMmU3ZDMyIi8+PHBvbHlnb24gcG9pbnRzPSIzNiwzMiA4NCwzMiA4NCw1MiA1Niw1MiA1Niw3MCA3OCw3MCA3OCw5MCAzNiw5MCIgZmlsbD0iI2VjZWZmNCIvPjwvc3ZnPg==",
+      "prompt": null,
+      "metadata": {
+        "source": "builtin"
+      },
+      "created_at": "2026-05-13T16:54:54.121688708Z",
+      "version": 1
+    },
+    {
+      "id": "asset_tile_mail",
+      "kind": "costume",
+      "path": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjAgMTIwIj48cmVjdCB4PSI4IiB5PSI4IiB3aWR0aD0iMTA0IiBoZWlnaHQ9IjEwNCIgcng9IjE2IiBmaWxsPSIjYjQ4Njg5Ii8+PHJlY3QgeD0iMjQiIHk9IjM2IiB3aWR0aD0iNzIiIGhlaWdodD0iNDgiIHJ4PSI0IiBmaWxsPSIjZWNlZmY0Ii8+PHBvbHlsaW5lIHBvaW50cz0iMjQsMzYgNjAsNjYgOTYsMzYiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzRjNTY2YSIgc3Ryb2tlLXdpZHRoPSIzIi8+PC9zdmc+",
+      "prompt": null,
+      "metadata": {
+        "source": "builtin"
+      },
+      "created_at": "2026-05-13T16:54:54.121688708Z",
+      "version": 1
+    }
+  ],
+  "ai_history": [],
+  "stage_state": {
+    "backdropIndex": 0,
+    "backdrops": [
+      {
+        "assetId": "asset_backdrop_slate",
+        "centerX": 320,
+        "centerY": 200,
+        "height": 400,
+        "id": "backdrop_main",
+        "name": "Slate",
+        "width": 640
+      }
+    ],
+    "globalLists": {},
+    "globalVariables": {},
+    "schema_version": 1,
+    "selectedSpriteId": "sprite_docs",
+    "sprites": [
+      {
+        "costumeIndex": 0,
+        "costumes": [
+          {
+            "assetId": "asset_tile_docs",
+            "centerX": 60,
+            "centerY": 60,
+            "height": 120,
+            "id": "costume_docs",
+            "name": "Docs",
+            "width": 120
+          }
+        ],
+        "direction": 90,
+        "id": "sprite_docs",
+        "layer": 1,
+        "lists": {},
+        "name": "Docs",
+        "rotationStyle": "dont-rotate",
+        "scripts_xml": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><block type=\"scratch_event_when_flag_clicked\" id=\"docs_hat\" x=\"40\" y=\"40\"><next><block type=\"scratch_looks_say\" id=\"docs_say\"><field name=\"MESSAGE\">Docs</field></block></next></block><block type=\"scratch_event_when_this_sprite_clicked\" id=\"docs_click\" x=\"40\" y=\"180\"><next><block type=\"scratch_io_open_url\" id=\"docs_open\"><value name=\"URL\"><shadow type=\"text\"><field name=\"TEXT\">https://docs.rs/</field></shadow></value></block></next></block></xml>",
+        "size": 100,
+        "sounds": [],
+        "variables": {},
+        "visible": true,
+        "x": -210,
+        "y": 0
+      },
+      {
+        "costumeIndex": 0,
+        "costumes": [
+          {
+            "assetId": "asset_tile_rust",
+            "centerX": 60,
+            "centerY": 60,
+            "height": 120,
+            "id": "costume_rust",
+            "name": "Rust",
+            "width": 120
+          }
+        ],
+        "direction": 90,
+        "id": "sprite_rust",
+        "layer": 2,
+        "lists": {},
+        "name": "Rust",
+        "rotationStyle": "dont-rotate",
+        "scripts_xml": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><block type=\"scratch_event_when_flag_clicked\" id=\"rust_hat\" x=\"40\" y=\"40\"><next><block type=\"scratch_looks_say\" id=\"rust_say\"><field name=\"MESSAGE\">rust-lang.org</field></block></next></block><block type=\"scratch_event_when_this_sprite_clicked\" id=\"rust_click\" x=\"40\" y=\"180\"><next><block type=\"scratch_io_open_url\" id=\"rust_open\"><value name=\"URL\"><shadow type=\"text\"><field name=\"TEXT\">https://www.rust-lang.org/</field></shadow></value></block></next></block></xml>",
+        "size": 100,
+        "sounds": [],
+        "variables": {},
+        "visible": true,
+        "x": -70,
+        "y": 0
+      },
+      {
+        "costumeIndex": 0,
+        "costumes": [
+          {
+            "assetId": "asset_tile_slint",
+            "centerX": 60,
+            "centerY": 60,
+            "height": 120,
+            "id": "costume_slint",
+            "name": "Slint",
+            "width": 120
+          }
+        ],
+        "direction": 90,
+        "id": "sprite_slint",
+        "layer": 3,
+        "lists": {},
+        "name": "Slint",
+        "rotationStyle": "dont-rotate",
+        "scripts_xml": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><block type=\"scratch_event_when_flag_clicked\" id=\"slint_hat\" x=\"40\" y=\"40\"><next><block type=\"scratch_looks_say\" id=\"slint_say\"><field name=\"MESSAGE\">slint.dev</field></block></next></block><block type=\"scratch_event_when_this_sprite_clicked\" id=\"slint_click\" x=\"40\" y=\"180\"><next><block type=\"scratch_io_open_url\" id=\"slint_open\"><value name=\"URL\"><shadow type=\"text\"><field name=\"TEXT\">https://slint.dev/</field></shadow></value></block></next></block></xml>",
+        "size": 100,
+        "sounds": [],
+        "variables": {},
+        "visible": true,
+        "x": 70,
+        "y": 0
+      },
+      {
+        "costumeIndex": 0,
+        "costumes": [
+          {
+            "assetId": "asset_tile_mail",
+            "centerX": 60,
+            "centerY": 60,
+            "height": 120,
+            "id": "costume_mail",
+            "name": "Mail",
+            "width": 120
+          }
+        ],
+        "direction": 90,
+        "id": "sprite_mail",
+        "layer": 4,
+        "lists": {},
+        "name": "Mail",
+        "rotationStyle": "dont-rotate",
+        "scripts_xml": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><block type=\"scratch_event_when_flag_clicked\" id=\"mail_hat\" x=\"40\" y=\"40\"><next><block type=\"scratch_looks_say\" id=\"mail_say\"><field name=\"MESSAGE\">Open Mail</field></block></next></block><block type=\"scratch_event_when_this_sprite_clicked\" id=\"mail_click\" x=\"40\" y=\"180\"><next><block type=\"scratch_io_open_url\" id=\"mail_open\"><value name=\"URL\"><shadow type=\"text\"><field name=\"TEXT\">mailto:hello@example.com?subject=Hi%20from%20New%20Menu</field></shadow></value></block></next></block></xml>",
+        "size": 100,
+        "sounds": [],
+        "variables": {},
+        "visible": true,
+        "x": 210,
+        "y": 0
+      }
+    ]
+  },
+  "settings": {
+    "autosave_interval_secs": 20,
+    "validate_on_change": false,
+    "codegen_deterministic": true,
+    "ai_default_text_provider": "ollama",
+    "ai_default_image_provider": "comfyui"
+  }
+}

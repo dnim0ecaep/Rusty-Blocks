@@ -2,6 +2,7 @@ import type { CustomCategory } from "../store/blockOrgStore";
 import {
   CATEGORY_DEFS,
   displayCategoryName,
+  MY_BLOCKS_CATEGORY,
   orderCategoryNames,
 } from "../store/blockOrgStore";
 
@@ -37,9 +38,18 @@ export function buildToolboxXml(
   for (const name of naturalOrder) {
     byCategory[name] = [];
   }
+  // Route every assignment to its declared category, falling back to
+  // "My Blocks" when the category isn't present (custom category was
+  // deleted, renamed away, or assignment carries a stale name from
+  // an imported module). Without this fallback, an orphaned block
+  // is silently dropped from the toolbox even though it's still in
+  // localStorage and registered with Blockly — which is exactly how
+  // user-created blocks "disappear" when their category goes away.
   for (const [blockType, catName] of Object.entries(assignments)) {
     if (byCategory[catName] !== undefined) {
       byCategory[catName].push(blockType);
+    } else if (byCategory[MY_BLOCKS_CATEGORY] !== undefined) {
+      byCategory[MY_BLOCKS_CATEGORY].push(blockType);
     }
   }
 

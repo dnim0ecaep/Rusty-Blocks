@@ -527,11 +527,19 @@ export const useBlockOrgStore = create<BlockOrgStore>()(
           delete nextRenames[name];
           const nextColors = { ...state.categoryColors };
           delete nextColors[name];
+          // Migrate any blocks that were filed under `name` to "My Blocks"
+          // so they remain visible in the toolbox. Without this, user-
+          // created blocks vanish when their category is deleted.
+          const nextAssignments: Record<string, string> = {};
+          for (const [blockType, cat] of Object.entries(state.assignments)) {
+            nextAssignments[blockType] = cat === name ? MY_BLOCKS_CATEGORY : cat;
+          }
           return {
             customCategories: state.customCategories.filter((c) => c.name !== name),
             categoryRenames: nextRenames,
             categoryOrder: state.categoryOrder.filter((n) => n !== name),
             categoryColors: nextColors,
+            assignments: nextAssignments,
           };
         });
       },

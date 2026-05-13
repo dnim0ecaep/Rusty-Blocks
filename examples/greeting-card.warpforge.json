@@ -1,0 +1,371 @@
+{
+  "schema_version": 1,
+  "project": {
+    "id": "example-greeting-card",
+    "app_name": "Greeting Card",
+    "package_id": "com.warpforge.greeting-card",
+    "version": "0.1.0",
+    "author": "WarpForge Examples",
+    "description": "Real-feeling app showcasing scratch_looks_set_text_with_font + scratch_looks_set_text_size_to. Two sprites are 'live labels' \u2014 the big headline panel paints the value of `message` in `style_font` at `headline_size` pixels, the signature panel paints `signer` in `sig_font` at its auto-derived size. All three updates flow every frame through a forever loop chaining set-text-with-font \u2192 set-text-size-to.\n\nFive buttons drive the variables:\n  \u2022 Blue pencil \u2014 ask for a new headline message (ask_and_wait).\n  \u2022 Orange pen \u2014 ask for a sign-off line.\n  \u2022 Purple Aa \u2014 cycle through four matched font themes.\n  \u2022 Green A\u2191 \u2014 grow the headline (+4 px, capped at 120).\n  \u2022 Red A\u2193 \u2014 shrink the headline (\u22124 px, floored at 12).\n\nDemonstrates the full dynamic-typography pipeline: forever + set-text-with-font + set-text-size-to with all three inputs sourced from variables.",
+    "target_type": "desktop_slint",
+    "theme": "auto",
+    "created_at": "2026-05-13T00:00:00Z",
+    "updated_at": "2026-05-13T00:00:00Z"
+  },
+  "workspace_state": {
+    "zoom": 1.0,
+    "pan_x": 0.0,
+    "pan_y": 0.0,
+    "selected_block_ids": [],
+    "blockly_xml": "<xml xmlns=\"https://developers.google.com/blockly/xml\">\n<block type=\"wf_window\" id=\"window_main\" x=\"24\" y=\"24\"><field name=\"HEIGHT\">360</field><field name=\"TITLE\">Greeting Card</field><field name=\"WIDTH\">480</field><next><block type=\"wf_screen\" id=\"screen_stage\"><field name=\"NAME\">Stage</field><field name=\"ROUTE\">/</field></block></next></block>\n</xml>",
+    "comments": [],
+    "groups": []
+  },
+  "normalized_graph": {
+    "nodes": [
+      {
+        "id": "window_main",
+        "kind": "structure.window",
+        "category": "structure",
+        "props": {
+          "height": 360,
+          "title": "Greeting Card",
+          "width": 480
+        }
+      },
+      {
+        "id": "screen_stage",
+        "kind": "structure.screen",
+        "category": "structure",
+        "props": {
+          "name": "Stage",
+          "route": "/"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge_window_screen",
+        "from": "window_main",
+        "to": "screen_stage",
+        "edge_type": "child"
+      }
+    ]
+  },
+  "ir_snapshot": null,
+  "assets": [
+    {
+      "id": "asset_gc_bg",
+      "kind": "costume",
+      "path": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0ODAgMzYwIj48cmVjdCB3aWR0aD0iNDgwIiBoZWlnaHQ9IjM2MCIgZmlsbD0iI2ZmZjllNiIvPgo8cmVjdCB4PSIyMCIgeT0iMjAiIHdpZHRoPSI0NDAiIGhlaWdodD0iMzIwIiBmaWxsPSIjZmZmZGYyIgogICAgICBzdHJva2U9IiNkNGMwOGEiIHN0cm9rZS13aWR0aD0iMyIgcng9IjE0IiByeT0iMTQiLz4KPGNpcmNsZSBjeD0iNjAiIGN5PSI2MCIgIHI9IjQiIGZpbGw9IiNlOGMwNjAiLz4KPGNpcmNsZSBjeD0iNDIwIiBjeT0iNjAiIHI9IjQiIGZpbGw9IiNlOGMwNjAiLz4KPGNpcmNsZSBjeD0iNjAiIGN5PSIzMDAiIHI9IjQiIGZpbGw9IiNlOGMwNjAiLz4KPGNpcmNsZSBjeD0iNDIwIiBjeT0iMzAwIiByPSI0IiBmaWxsPSIjZThjMDYwIi8+PC9zdmc+",
+      "prompt": null,
+      "metadata": {
+        "role": "backdrop",
+        "source": "generated"
+      },
+      "created_at": "2026-05-13T00:00:00.000Z",
+      "version": 1
+    },
+    {
+      "id": "asset_gc_headline",
+      "kind": "costume",
+      "path": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB4PSIyIiB5PSIyMCIgd2lkdGg9Ijk2IiBoZWlnaHQ9IjYwIiByeD0iOCIgcnk9IjgiCiAgICAgIGZpbGw9IiNmZmY0YzYiIHN0cm9rZT0iI2M5YTA1MCIgc3Ryb2tlLXdpZHRoPSIyIi8+PC9zdmc+",
+      "prompt": null,
+      "metadata": {
+        "source": "generated"
+      },
+      "created_at": "2026-05-13T00:00:00.000Z",
+      "version": 1
+    },
+    {
+      "id": "asset_gc_signature",
+      "kind": "costume",
+      "path": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB4PSIyIiB5PSIzNSIgd2lkdGg9Ijk2IiBoZWlnaHQ9IjMwIiByeD0iNiIgcnk9IjYiCiAgICAgIGZpbGw9IiNmZmZmZmYiIHN0cm9rZT0iI2JkYTA2NSIgc3Ryb2tlLXdpZHRoPSIyIi8+PC9zdmc+",
+      "prompt": null,
+      "metadata": {
+        "source": "generated"
+      },
+      "created_at": "2026-05-13T00:00:00.000Z",
+      "version": 1
+    },
+    {
+      "id": "asset_gc_emsg",
+      "kind": "costume",
+      "path": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB4PSI0IiB5PSI0IiB3aWR0aD0iOTIiIGhlaWdodD0iOTIiIHJ4PSIxNCIgcnk9IjE0IgogICAgICAgIGZpbGw9IiMzYTdmZDUiIHN0cm9rZT0iIzFjNGE4YSIgc3Ryb2tlLXdpZHRoPSIzIi8+PHBvbHlnb24gcG9pbnRzPSIyMiw3OCAzMiw2OCA3MiwyOCA4MiwzOCA0Miw3OCIgZmlsbD0iI2ZmZmZmZiIvPjxwb2x5Z29uIHBvaW50cz0iNzIsMjggODIsMzggNzgsNDIgNjgsMzIiIGZpbGw9IiMxYTIzMzMiLz48L3N2Zz4=",
+      "prompt": null,
+      "metadata": {
+        "source": "generated"
+      },
+      "created_at": "2026-05-13T00:00:00.000Z",
+      "version": 1
+    },
+    {
+      "id": "asset_gc_esig",
+      "kind": "costume",
+      "path": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB4PSI0IiB5PSI0IiB3aWR0aD0iOTIiIGhlaWdodD0iOTIiIHJ4PSIxNCIgcnk9IjE0IgogICAgICAgIGZpbGw9IiNlODkwMjAiIHN0cm9rZT0iIzlhNWExMCIgc3Ryb2tlLXdpZHRoPSIzIi8+PHBhdGggZD0iTTYyIDI2IEw4MiA0NiIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utd2lkdGg9IjgiIGZpbGw9Im5vbmUiLz48cG9seWdvbiBwb2ludHM9IjE4LDgwIDM2LDc0IDcwLDQwIDU2LDI2IDIyLDYwIiBmaWxsPSIjZmZmZmZmIi8+PHBvbHlnb24gcG9pbnRzPSI1NiwyNiA3MCw0MCA3OCwzMiA2NCwxOCIgZmlsbD0iIzFhMjMzMyIvPjwvc3ZnPg==",
+      "prompt": null,
+      "metadata": {
+        "source": "generated"
+      },
+      "created_at": "2026-05-13T00:00:00.000Z",
+      "version": 1
+    },
+    {
+      "id": "asset_gc_style",
+      "kind": "costume",
+      "path": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB4PSI0IiB5PSI0IiB3aWR0aD0iOTIiIGhlaWdodD0iOTIiIHJ4PSIxNCIgcnk9IjE0IgogICAgICAgIGZpbGw9IiM3ODU4ZDgiIHN0cm9rZT0iIzNmMmY4MCIgc3Ryb2tlLXdpZHRoPSIzIi8+PHBvbHlnb24gcG9pbnRzPSIyMCw3NiAzMCwyOCA0MCwyOCA1MCw3NiA0Miw3NiAzOCw2MCAzMiw2MCAyOCw3NiIgZmlsbD0iI2ZmZmZmZiIvPjxwb2x5Z29uIHBvaW50cz0iMzIsNTIgMzgsNTIgMzUsMzgiIGZpbGw9IiMzYWE2NGEiLz48cGF0aCBkPSJNNjIgNzYgTDYyIDUwIFE2MiAzOCA3MiAzOCBRODIgMzggODIgNTAgTDgyIDc2IEw3NCA3NiBMNzQgNjAgTDcwIDYwIEw3MCA3NiBaIiBmaWxsPSIjZmZmZmZmIi8+PHJlY3QgeD0iNjIiIHk9IjYwIiB3aWR0aD0iMjAiIGhlaWdodD0iNCIgZmlsbD0iIzNhYTY0YSIvPjwvc3ZnPg==",
+      "prompt": null,
+      "metadata": {
+        "source": "generated"
+      },
+      "created_at": "2026-05-13T00:00:00.000Z",
+      "version": 1
+    },
+    {
+      "id": "asset_gc_szup",
+      "kind": "costume",
+      "path": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB4PSI0IiB5PSI0IiB3aWR0aD0iOTIiIGhlaWdodD0iOTIiIHJ4PSIxNCIgcnk9IjE0IgogICAgICAgIGZpbGw9IiMzYWE2NGEiIHN0cm9rZT0iIzFmNjAyOCIgc3Ryb2tlLXdpZHRoPSIzIi8+PHBvbHlnb24gcG9pbnRzPSIyMiw3OCAzNiwzMCA1MCwzMCA2NCw3OCA1NCw3OCA1MCw2NiAzNiw2NiAzMiw3OCIgZmlsbD0iI2ZmZmZmZiIvPjxyZWN0IHg9IjM4IiB5PSI1OCIgd2lkdGg9IjEwIiBoZWlnaHQ9IjMiIGZpbGw9IiM3ODU4ZDgiLz48cG9seWdvbiBwb2ludHM9Ijc4LDMwIDY4LDQyIDc4LDQyIDc4LDcyIDgyLDcyIDgyLDQyIDkyLDQyIiBmaWxsPSIjZmZmZmZmIi8+PC9zdmc+",
+      "prompt": null,
+      "metadata": {
+        "source": "generated"
+      },
+      "created_at": "2026-05-13T00:00:00.000Z",
+      "version": 1
+    },
+    {
+      "id": "asset_gc_szdn",
+      "kind": "costume",
+      "path": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB4PSI0IiB5PSI0IiB3aWR0aD0iOTIiIGhlaWdodD0iOTIiIHJ4PSIxNCIgcnk9IjE0IgogICAgICAgIGZpbGw9IiNkMDRhNGEiIHN0cm9rZT0iIzdhMWYxZiIgc3Ryb2tlLXdpZHRoPSIzIi8+PHBvbHlnb24gcG9pbnRzPSIyMiw3OCAzNiwzMCA1MCwzMCA2NCw3OCA1NCw3OCA1MCw2NiAzNiw2NiAzMiw3OCIgZmlsbD0iI2ZmZmZmZiIvPjxyZWN0IHg9IjM4IiB5PSI1OCIgd2lkdGg9IjEwIiBoZWlnaHQ9IjMiIGZpbGw9IiM3ODU4ZDgiLz48cG9seWdvbiBwb2ludHM9Ijc4LDMwIDc4LDYwIDY4LDYwIDg0LDcyIDkyLDYwIDgyLDYwIDgyLDMwIiBmaWxsPSIjZmZmZmZmIi8+PC9zdmc+",
+      "prompt": null,
+      "metadata": {
+        "source": "generated"
+      },
+      "created_at": "2026-05-13T00:00:00.000Z",
+      "version": 1
+    }
+  ],
+  "ai_history": [],
+  "stage_state": {
+    "backdropIndex": 0,
+    "backdrops": [
+      {
+        "assetId": "asset_gc_bg",
+        "centerX": 240,
+        "centerY": 180,
+        "height": 360,
+        "id": "backdrop_gc",
+        "name": "Card Stock",
+        "width": 480
+      }
+    ],
+    "globalLists": {},
+    "globalVariables": {
+      "message": "Happy Birthday!",
+      "signer": "\u2014 from a friend",
+      "style_font": "Georgia",
+      "sig_font": "Brush Script MT",
+      "style_idx": 0,
+      "headline_size": 48
+    },
+    "schema_version": 1,
+    "selectedSpriteId": "sprite_gc_headline",
+    "sprites": [
+      {
+        "costumeIndex": 0,
+        "costumes": [
+          {
+            "assetId": "asset_gc_headline",
+            "centerX": 50,
+            "centerY": 50,
+            "height": 100,
+            "id": "costume_gc_headline",
+            "name": "Headline",
+            "width": 100
+          }
+        ],
+        "direction": 90,
+        "id": "sprite_gc_headline",
+        "layer": 1,
+        "lists": {},
+        "name": "Headline",
+        "rotationStyle": "dont-rotate",
+        "scripts_xml": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><block type=\"scratch_event_when_flag_clicked\" id=\"hl_hat\" x=\"20\" y=\"20\"><next><block type=\"scratch_data_set_variable\" id=\"hl_msg\"><field name=\"VARIABLE\">message</field><value name=\"VALUE\"><shadow type=\"text\"><field name=\"TEXT\">Happy Birthday!</field></shadow></value><next><block type=\"scratch_data_set_variable\" id=\"hl_font\"><field name=\"VARIABLE\">style_font</field><value name=\"VALUE\"><shadow type=\"text\"><field name=\"TEXT\">Georgia</field></shadow></value><next><block type=\"scratch_data_set_variable\" id=\"hl_idx\"><field name=\"VARIABLE\">style_idx</field><value name=\"VALUE\"><shadow type=\"math_number\"><field name=\"NUM\">0</field></shadow></value><next><block type=\"scratch_control_forever\" id=\"hl_loop\"><statement name=\"DO\"><block type=\"scratch_looks_set_text_with_font\" id=\"hl_paint\"><value name=\"TEXT\"><block type=\"scratch_data_variables_get\"><field name=\"VARIABLE\">message</field></block></value><value name=\"FONT\"><block type=\"scratch_data_variables_get\"><field name=\"VARIABLE\">style_font</field></block></value><next><block type=\"scratch_looks_set_text_size_to\" id=\"hl_size\"><value name=\"SIZE\"><block type=\"scratch_data_variables_get\"><field name=\"VARIABLE\">headline_size</field></block></value></block></next></block></statement></block></next></block></next></block></next></block></next></block></xml>",
+        "size": 320,
+        "sounds": [],
+        "variables": {},
+        "visible": true,
+        "x": 0,
+        "y": 80
+      },
+      {
+        "costumeIndex": 0,
+        "costumes": [
+          {
+            "assetId": "asset_gc_signature",
+            "centerX": 50,
+            "centerY": 50,
+            "height": 100,
+            "id": "costume_gc_signature",
+            "name": "Signature",
+            "width": 100
+          }
+        ],
+        "direction": 90,
+        "id": "sprite_gc_signature",
+        "layer": 2,
+        "lists": {},
+        "name": "Signature",
+        "rotationStyle": "dont-rotate",
+        "scripts_xml": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><block type=\"scratch_event_when_flag_clicked\" id=\"sg_hat\" x=\"20\" y=\"20\"><next><block type=\"scratch_data_set_variable\" id=\"sg_who\"><field name=\"VARIABLE\">signer</field><value name=\"VALUE\"><shadow type=\"text\"><field name=\"TEXT\">\u2014 from a friend</field></shadow></value><next><block type=\"scratch_data_set_variable\" id=\"sg_font\"><field name=\"VARIABLE\">sig_font</field><value name=\"VALUE\"><shadow type=\"text\"><field name=\"TEXT\">Brush Script MT</field></shadow></value><next><block type=\"scratch_control_forever\" id=\"sg_loop\"><statement name=\"DO\"><block type=\"scratch_looks_set_text_with_font\" id=\"sg_paint\"><value name=\"TEXT\"><block type=\"scratch_data_variables_get\"><field name=\"VARIABLE\">signer</field></block></value><value name=\"FONT\"><block type=\"scratch_data_variables_get\"><field name=\"VARIABLE\">sig_font</field></block></value></block></statement></block></next></block></next></block></next></block></xml>",
+        "size": 200,
+        "sounds": [],
+        "variables": {},
+        "visible": true,
+        "x": 80,
+        "y": -10
+      },
+      {
+        "costumeIndex": 0,
+        "costumes": [
+          {
+            "assetId": "asset_gc_emsg",
+            "centerX": 50,
+            "centerY": 50,
+            "height": 100,
+            "id": "costume_gc_emsg",
+            "name": "EditMsg",
+            "width": 100
+          }
+        ],
+        "direction": 90,
+        "id": "sprite_gc_emsg",
+        "layer": 3,
+        "lists": {},
+        "name": "EditMsg",
+        "rotationStyle": "dont-rotate",
+        "scripts_xml": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><block type=\"scratch_event_when_this_sprite_clicked\" id=\"em_click\" x=\"20\" y=\"20\"><next><block type=\"scratch_sensing_ask_and_wait\" id=\"em_ask\"><value name=\"QUESTION\"><shadow type=\"text\"><field name=\"TEXT\">What should the card say?</field></shadow></value><next><block type=\"scratch_data_set_variable\" id=\"em_set\"><field name=\"VARIABLE\">message</field><value name=\"VALUE\"><block type=\"scratch_sensing_answer\"></block></value></block></next></block></next></block></xml>",
+        "size": 60,
+        "sounds": [],
+        "variables": {},
+        "visible": true,
+        "x": -180,
+        "y": -110
+      },
+      {
+        "costumeIndex": 0,
+        "costumes": [
+          {
+            "assetId": "asset_gc_esig",
+            "centerX": 50,
+            "centerY": 50,
+            "height": 100,
+            "id": "costume_gc_esig",
+            "name": "EditSig",
+            "width": 100
+          }
+        ],
+        "direction": 90,
+        "id": "sprite_gc_esig",
+        "layer": 4,
+        "lists": {},
+        "name": "EditSig",
+        "rotationStyle": "dont-rotate",
+        "scripts_xml": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><block type=\"scratch_event_when_this_sprite_clicked\" id=\"es_click\" x=\"20\" y=\"20\"><next><block type=\"scratch_sensing_ask_and_wait\" id=\"es_ask\"><value name=\"QUESTION\"><shadow type=\"text\"><field name=\"TEXT\">Sign-off line? (e.g. \u2014 Sam)</field></shadow></value><next><block type=\"scratch_data_set_variable\" id=\"es_set\"><field name=\"VARIABLE\">signer</field><value name=\"VALUE\"><block type=\"scratch_sensing_answer\"></block></value></block></next></block></next></block></xml>",
+        "size": 60,
+        "sounds": [],
+        "variables": {},
+        "visible": true,
+        "x": -90,
+        "y": -110
+      },
+      {
+        "costumeIndex": 0,
+        "costumes": [
+          {
+            "assetId": "asset_gc_style",
+            "centerX": 50,
+            "centerY": 50,
+            "height": 100,
+            "id": "costume_gc_style",
+            "name": "ChangeStyle",
+            "width": 100
+          }
+        ],
+        "direction": 90,
+        "id": "sprite_gc_style",
+        "layer": 5,
+        "lists": {},
+        "name": "ChangeStyle",
+        "rotationStyle": "dont-rotate",
+        "scripts_xml": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><block type=\"scratch_event_when_this_sprite_clicked\" id=\"st_click\" x=\"20\" y=\"20\"><next><block type=\"scratch_data_set_variable\" id=\"st_inc\"><field name=\"VARIABLE\">style_idx</field><value name=\"VALUE\"><block type=\"scratch_op_mod\"><value name=\"A\"><block type=\"scratch_op_add\"><value name=\"A\"><block type=\"scratch_data_variables_get\"><field name=\"VARIABLE\">style_idx</field></block></value><value name=\"B\"><shadow type=\"math_number\"><field name=\"NUM\">1</field></shadow></value></block></value><value name=\"B\"><shadow type=\"math_number\"><field name=\"NUM\">4</field></shadow></value></block></value><next><block type=\"scratch_control_if\" id=\"st_if0\"><value name=\"CONDITION\"><block type=\"scratch_op_eq\"><value name=\"A\"><block type=\"scratch_data_variables_get\"><field name=\"VARIABLE\">style_idx</field></block></value><value name=\"B\"><shadow type=\"math_number\"><field name=\"NUM\">0</field></shadow></value></block></value><statement name=\"DO\"><block type=\"scratch_data_set_variable\"><field name=\"VARIABLE\">style_font</field><value name=\"VALUE\"><shadow type=\"text\"><field name=\"TEXT\">Georgia</field></shadow></value><next><block type=\"scratch_data_set_variable\"><field name=\"VARIABLE\">sig_font</field><value name=\"VALUE\"><shadow type=\"text\"><field name=\"TEXT\">Brush Script MT</field></shadow></value></block></next></block></statement><next><block type=\"scratch_control_if\" id=\"st_if1\"><value name=\"CONDITION\"><block type=\"scratch_op_eq\"><value name=\"A\"><block type=\"scratch_data_variables_get\"><field name=\"VARIABLE\">style_idx</field></block></value><value name=\"B\"><shadow type=\"math_number\"><field name=\"NUM\">1</field></shadow></value></block></value><statement name=\"DO\"><block type=\"scratch_data_set_variable\"><field name=\"VARIABLE\">style_font</field><value name=\"VALUE\"><shadow type=\"text\"><field name=\"TEXT\">Helvetica</field></shadow></value><next><block type=\"scratch_data_set_variable\"><field name=\"VARIABLE\">sig_font</field><value name=\"VALUE\"><shadow type=\"text\"><field name=\"TEXT\">Courier New</field></shadow></value></block></next></block></statement><next><block type=\"scratch_control_if\" id=\"st_if2\"><value name=\"CONDITION\"><block type=\"scratch_op_eq\"><value name=\"A\"><block type=\"scratch_data_variables_get\"><field name=\"VARIABLE\">style_idx</field></block></value><value name=\"B\"><shadow type=\"math_number\"><field name=\"NUM\">2</field></shadow></value></block></value><statement name=\"DO\"><block type=\"scratch_data_set_variable\"><field name=\"VARIABLE\">style_font</field><value name=\"VALUE\"><shadow type=\"text\"><field name=\"TEXT\">Impact</field></shadow></value><next><block type=\"scratch_data_set_variable\"><field name=\"VARIABLE\">sig_font</field><value name=\"VALUE\"><shadow type=\"text\"><field name=\"TEXT\">Times New Roman</field></shadow></value></block></next></block></statement><next><block type=\"scratch_control_if\" id=\"st_if3\"><value name=\"CONDITION\"><block type=\"scratch_op_eq\"><value name=\"A\"><block type=\"scratch_data_variables_get\"><field name=\"VARIABLE\">style_idx</field></block></value><value name=\"B\"><shadow type=\"math_number\"><field name=\"NUM\">3</field></shadow></value></block></value><statement name=\"DO\"><block type=\"scratch_data_set_variable\"><field name=\"VARIABLE\">style_font</field><value name=\"VALUE\"><shadow type=\"text\"><field name=\"TEXT\">Comic Sans MS</field></shadow></value><next><block type=\"scratch_data_set_variable\"><field name=\"VARIABLE\">sig_font</field><value name=\"VALUE\"><shadow type=\"text\"><field name=\"TEXT\">Comic Sans MS</field></shadow></value></block></next></block></statement></block></next></block></next></block></next></block></next></block></next></block></xml>",
+        "size": 60,
+        "sounds": [],
+        "variables": {},
+        "visible": true,
+        "x": 0,
+        "y": -110
+      },
+      {
+        "costumeIndex": 0,
+        "costumes": [
+          {
+            "assetId": "asset_gc_szdn",
+            "centerX": 50,
+            "centerY": 50,
+            "height": 100,
+            "id": "costume_gc_szdn",
+            "name": "SizeDown",
+            "width": 100
+          }
+        ],
+        "direction": 90,
+        "id": "sprite_gc_szdn",
+        "layer": 6,
+        "lists": {},
+        "name": "SizeDown",
+        "rotationStyle": "dont-rotate",
+        "scripts_xml": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><block type=\"scratch_event_when_this_sprite_clicked\" id=\"sd_click\" x=\"20\" y=\"20\"><next><block type=\"scratch_data_set_variable\" id=\"sd_set\"><field name=\"VARIABLE\">headline_size</field><value name=\"VALUE\"><block type=\"scratch_op_subtract\"><value name=\"A\"><block type=\"scratch_data_variables_get\"><field name=\"VARIABLE\">headline_size</field></block></value><value name=\"B\"><shadow type=\"math_number\"><field name=\"NUM\">4</field></shadow></value></block></value><next><block type=\"scratch_control_if\" id=\"sd_floor\"><value name=\"CONDITION\"><block type=\"scratch_op_lt\"><value name=\"A\"><block type=\"scratch_data_variables_get\"><field name=\"VARIABLE\">headline_size</field></block></value><value name=\"B\"><shadow type=\"math_number\"><field name=\"NUM\">12</field></shadow></value></block></value><statement name=\"DO\"><block type=\"scratch_data_set_variable\"><field name=\"VARIABLE\">headline_size</field><value name=\"VALUE\"><shadow type=\"math_number\"><field name=\"NUM\">12</field></shadow></value></block></statement></block></next></block></next></block></xml>",
+        "size": 60,
+        "sounds": [],
+        "variables": {},
+        "visible": true,
+        "x": 90,
+        "y": -110
+      },
+      {
+        "costumeIndex": 0,
+        "costumes": [
+          {
+            "assetId": "asset_gc_szup",
+            "centerX": 50,
+            "centerY": 50,
+            "height": 100,
+            "id": "costume_gc_szup",
+            "name": "SizeUp",
+            "width": 100
+          }
+        ],
+        "direction": 90,
+        "id": "sprite_gc_szup",
+        "layer": 7,
+        "lists": {},
+        "name": "SizeUp",
+        "rotationStyle": "dont-rotate",
+        "scripts_xml": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><block type=\"scratch_event_when_this_sprite_clicked\" id=\"su_click\" x=\"20\" y=\"20\"><next><block type=\"scratch_data_set_variable\" id=\"su_set\"><field name=\"VARIABLE\">headline_size</field><value name=\"VALUE\"><block type=\"scratch_op_add\"><value name=\"A\"><block type=\"scratch_data_variables_get\"><field name=\"VARIABLE\">headline_size</field></block></value><value name=\"B\"><shadow type=\"math_number\"><field name=\"NUM\">4</field></shadow></value></block></value><next><block type=\"scratch_control_if\" id=\"su_cap\"><value name=\"CONDITION\"><block type=\"scratch_op_gt\"><value name=\"A\"><block type=\"scratch_data_variables_get\"><field name=\"VARIABLE\">headline_size</field></block></value><value name=\"B\"><shadow type=\"math_number\"><field name=\"NUM\">120</field></shadow></value></block></value><statement name=\"DO\"><block type=\"scratch_data_set_variable\"><field name=\"VARIABLE\">headline_size</field><value name=\"VALUE\"><shadow type=\"math_number\"><field name=\"NUM\">120</field></shadow></value></block></statement></block></next></block></next></block></xml>",
+        "size": 60,
+        "sounds": [],
+        "variables": {},
+        "visible": true,
+        "x": 180,
+        "y": -110
+      }
+    ]
+  },
+  "settings": {
+    "autosave_interval_secs": 30,
+    "validate_on_change": false,
+    "codegen_deterministic": true,
+    "ai_default_text_provider": "ollama",
+    "ai_default_image_provider": "comfyui"
+  }
+}

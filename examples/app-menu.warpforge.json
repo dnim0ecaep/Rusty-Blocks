@@ -6,7 +6,7 @@
     "package_id": "com.warpforge.app-menu",
     "version": "0.1.0",
     "author": "WarpForge Examples",
-    "description": "Sprite-stage launcher: each sprite is a clickable menu item that opens a URL via the platform's shell handler. Demonstrates scratch_io_open_url + when_this_sprite_clicked + multi-sprite layout.",
+    "description": "Editable launcher menu \u2014 each sprite on the stage is a menu entry that opens a URL or an app when clicked. Use the Stage panel to ADD a new entry (drag from the sprite library), REMOVE one (delete sprite), or EDIT one (select a sprite, then change its URL field in its scripts_xml). The Robot entry uses a mailto: URI to open your default mail app; the others open websites. Demonstrates scratch_io_open_url + when_this_sprite_clicked + multi-sprite layout.",
     "target_type": "desktop_slint",
     "theme": "auto",
     "created_at": "2026-05-07T00:00:00Z",
@@ -113,6 +113,18 @@
       },
       "created_at": "2026-05-09T09:55:48.043Z",
       "version": 1
+    },
+    {
+      "id": "asset_robot01",
+      "kind": "costume",
+      "path": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB4PSIzMiIgeT0iMzIiIHdpZHRoPSIzNiIgaGVpZ2h0PSI0MCIgZmlsbD0iI2E4YThiMCIgc3Ryb2tlPSIjNDA0MDQ4IiBzdHJva2Utd2lkdGg9IjIiLz48cmVjdCB4PSIzOCIgeT0iMzgiIHdpZHRoPSIyNCIgaGVpZ2h0PSIxNCIgZmlsbD0iIzNhM2E0OCIvPjxjaXJjbGUgY3g9IjQ0IiBjeT0iNDUiIHI9IjMiIGZpbGw9IiMzM2ZmNjYiLz48Y2lyY2xlIGN4PSI1NiIgY3k9IjQ1IiByPSIzIiBmaWxsPSIjMzNmZjY2Ii8+PHJlY3QgeD0iNDQiIHk9IjU4IiB3aWR0aD0iMTIiIGhlaWdodD0iMyIgZmlsbD0iIzNhM2E0OCIvPjxyZWN0IHg9IjM4IiB5PSIyMCIgd2lkdGg9IjI0IiBoZWlnaHQ9IjE0IiBmaWxsPSIjYThhOGIwIiBzdHJva2U9IiM0MDQwNDgiIHN0cm9rZS13aWR0aD0iMiIvPjxsaW5lIHgxPSI1MCIgeTE9IjIwIiB4Mj0iNTAiIHkyPSIxNCIgc3Ryb2tlPSIjNDA0MDQ4IiBzdHJva2Utd2lkdGg9IjIiLz48Y2lyY2xlIGN4PSI1MCIgY3k9IjEyIiByPSIzIiBmaWxsPSIjZTg0YTRhIi8+PHJlY3QgeD0iMjAiIHk9IjQ0IiB3aWR0aD0iMTIiIGhlaWdodD0iNiIgZmlsbD0iI2E4YThiMCIgc3Ryb2tlPSIjNDA0MDQ4IiBzdHJva2Utd2lkdGg9IjIiLz48cmVjdCB4PSI2OCIgeT0iNDQiIHdpZHRoPSIxMiIgaGVpZ2h0PSI2IiBmaWxsPSIjYThhOGIwIiBzdHJva2U9IiM0MDQwNDgiIHN0cm9rZS13aWR0aD0iMiIvPjxyZWN0IHg9IjM2IiB5PSI3NCIgd2lkdGg9IjEwIiBoZWlnaHQ9IjE0IiBmaWxsPSIjYThhOGIwIiBzdHJva2U9IiM0MDQwNDgiIHN0cm9rZS13aWR0aD0iMiIvPjxyZWN0IHg9IjU0IiB5PSI3NCIgd2lkdGg9IjEwIiBoZWlnaHQ9IjE0IiBmaWxsPSIjYThhOGIwIiBzdHJva2U9IiM0MDQwNDgiIHN0cm9rZS13aWR0aD0iMiIvPjwvc3ZnPg==",
+      "prompt": null,
+      "metadata": {
+        "builtin_id": "lib_robot",
+        "source": "builtin"
+      },
+      "created_at": "2026-05-09T09:55:50.000Z",
+      "version": 1
     }
   ],
   "ai_history": [],
@@ -153,12 +165,12 @@
         "lists": {},
         "name": "WarpForge",
         "rotationStyle": "dont-rotate",
-        "scripts_xml": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><block type=\"scratch_event_when_flag_clicked\" id=\"wf_hat\" x=\"40\" y=\"40\"><next><block type=\"scratch_looks_say\" id=\"wf_say\"><field name=\"MESSAGE\">WarpForge GitHub</field></block></next></block><block type=\"scratch_event_when_this_sprite_clicked\" id=\"wf_click\" x=\"40\" y=\"180\"><next><block type=\"scratch_io_open_url\" id=\"wf_open\"><field name=\"URL\">https://github.com/anthropics/warpforge</field></block></next></block></xml>",
+        "scripts_xml": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><block type=\"scratch_event_when_flag_clicked\" id=\"wf_hat\" x=\"40\" y=\"40\"><next><block type=\"scratch_looks_say\" id=\"wf_say\"><field name=\"MESSAGE\">WarpForge GitHub</field></block></next></block><block type=\"scratch_event_when_this_sprite_clicked\" id=\"wf_click\" x=\"40\" y=\"180\"><next><block type=\"scratch_io_open_url\" id=\"wf_open\"><value name=\"URL\"><shadow type=\"text\"><field name=\"TEXT\">https://github.com/anthropics/warpforge</field></shadow></value></block></next></block></xml>",
         "size": 80,
         "sounds": [],
         "variables": {},
         "visible": true,
-        "x": -160,
+        "x": -180,
         "y": 60
       },
       {
@@ -180,12 +192,12 @@
         "lists": {},
         "name": "Rust",
         "rotationStyle": "dont-rotate",
-        "scripts_xml": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><block type=\"scratch_event_when_flag_clicked\" id=\"rs_hat\" x=\"40\" y=\"40\"><next><block type=\"scratch_looks_say\" id=\"rs_say\"><field name=\"MESSAGE\">rust-lang.org</field></block></next></block><block type=\"scratch_event_when_this_sprite_clicked\" id=\"rs_click\" x=\"40\" y=\"180\"><next><block type=\"scratch_io_open_url\" id=\"rs_open\"><field name=\"URL\">https://www.rust-lang.org/</field></block></next></block></xml>",
+        "scripts_xml": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><block type=\"scratch_event_when_flag_clicked\" id=\"rs_hat\" x=\"40\" y=\"40\"><next><block type=\"scratch_looks_say\" id=\"rs_say\"><field name=\"MESSAGE\">rust-lang.org</field></block></next></block><block type=\"scratch_event_when_this_sprite_clicked\" id=\"rs_click\" x=\"40\" y=\"180\"><next><block type=\"scratch_io_open_url\" id=\"rs_open\"><value name=\"URL\"><shadow type=\"text\"><field name=\"TEXT\">https://www.rust-lang.org/</field></shadow></value></block></next></block></xml>",
         "size": 120,
         "sounds": [],
         "variables": {},
         "visible": true,
-        "x": 0,
+        "x": -60,
         "y": 60
       },
       {
@@ -207,12 +219,39 @@
         "lists": {},
         "name": "Slint",
         "rotationStyle": "dont-rotate",
-        "scripts_xml": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><block type=\"scratch_event_when_flag_clicked\" id=\"sl_hat\" x=\"40\" y=\"40\"><next><block type=\"scratch_looks_say\" id=\"sl_say\"><field name=\"MESSAGE\">slint.dev</field></block></next></block><block type=\"scratch_event_when_this_sprite_clicked\" id=\"sl_click\" x=\"40\" y=\"180\"><next><block type=\"scratch_io_open_url\" id=\"sl_open\"><field name=\"URL\">https://slint.dev/</field></block></next></block></xml>",
+        "scripts_xml": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><block type=\"scratch_event_when_flag_clicked\" id=\"sl_hat\" x=\"40\" y=\"40\"><next><block type=\"scratch_looks_say\" id=\"sl_say\"><field name=\"MESSAGE\">slint.dev</field></block></next></block><block type=\"scratch_event_when_this_sprite_clicked\" id=\"sl_click\" x=\"40\" y=\"180\"><next><block type=\"scratch_io_open_url\" id=\"sl_open\"><value name=\"URL\"><shadow type=\"text\"><field name=\"TEXT\">https://slint.dev/</field></shadow></value></block></next></block></xml>",
         "size": 120,
         "sounds": [],
         "variables": {},
         "visible": true,
-        "x": 160,
+        "x": 60,
+        "y": 60
+      },
+      {
+        "costumeIndex": 0,
+        "costumes": [
+          {
+            "assetId": "asset_robot01",
+            "centerX": 50,
+            "centerY": 50,
+            "height": 100,
+            "id": "costume_robot01",
+            "name": "Robot",
+            "width": 100
+          }
+        ],
+        "direction": 90,
+        "id": "sprite_mail",
+        "layer": 4,
+        "lists": {},
+        "name": "Mail",
+        "rotationStyle": "dont-rotate",
+        "scripts_xml": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><block type=\"scratch_event_when_flag_clicked\" id=\"ml_hat\" x=\"40\" y=\"40\"><next><block type=\"scratch_looks_say\" id=\"ml_say\"><field name=\"MESSAGE\">Open Mail App</field></block></next></block><block type=\"scratch_event_when_this_sprite_clicked\" id=\"ml_click\" x=\"40\" y=\"180\"><next><block type=\"scratch_io_open_url\" id=\"ml_open\"><value name=\"URL\"><shadow type=\"text\"><field name=\"TEXT\">mailto:hello@example.com?subject=Hi%20from%20WarpForge</field></shadow></value></block></next></block></xml>",
+        "size": 120,
+        "sounds": [],
+        "variables": {},
+        "visible": true,
+        "x": 180,
         "y": 60
       }
     ]
