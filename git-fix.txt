@@ -1,0 +1,12 @@
+# 1. Soft-reset to last pushed commit (keeps all your file changes staged)
+git reset --soft f87fff3
+
+# 2. Untrack the junk that snuck in (files stay on disk)
+git rm -r --cached --ignore-unmatch target node_modules dist apps/studio/node_modules apps/studio/dist apps/studio/src-tauri/target
+
+# 3. Untrack the .DS_Store files
+git rm --cached apps/.DS_Store apps/studio/.DS_Store
+
+# 4. Expand .gitignore (Rust + Node + Tauri + macOS)
+# 5. Re-commit as one commit
+# 6. Push
