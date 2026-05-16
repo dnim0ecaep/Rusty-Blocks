@@ -352,6 +352,39 @@
   overflow: auto;
 }
 
+.right-inspector-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.right-inspector-header h3 {
+  margin: 0;
+}
+
+.panel-close-btn {
+  background: none;
+  border: none;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  line-height: 1;
+  color: inherit;
+  transition: background-color 0.2s;
+}
+
+.panel-close-btn:hover {
+  background-color: #f0f4f8;
+}
+
+.ai-panel-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
 .ai-side-panel {
   flex: 0 0 340px;
   width: 340px;
@@ -1328,6 +1361,33 @@
 
 .bottom-tabs button.active {
   background: linear-gradient(135deg, #ffe7de, #ffd2bf);
+}
+
+.bottom-panel-close {
+  margin-left: auto;
+}
+
+.bottom-panel-clear-logs {
+  margin-left: auto;
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  border: 1px solid #d8e1ec;
+  background: #fff;
+  cursor: pointer;
+}
+
+.bottom-panel-clear-logs:hover:not(:disabled) {
+  background: #f0f4f8;
+}
+
+.bottom-panel-clear-logs:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.bottom-panel-clear-logs + .bottom-panel-close {
+  margin-left: 4px;
 }
 
 .bottom-content {

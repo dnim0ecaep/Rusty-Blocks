@@ -6,6 +6,7 @@ use uuid::Uuid;
 use wf_ai::contracts::{
     AiMode, AiResponse, ExplanationProvider, ImageAiProvider, RecommendationProvider, TextAiProvider,
 };
+use wf_ai::providers::anthropic::{AnthropicAuth, AnthropicProvider};
 use wf_ai::providers::comfyui::ComfyUiProvider;
 use wf_ai::providers::ollama::OllamaProvider;
 use wf_ai::providers::openai::OpenAiProvider;
@@ -24,6 +25,16 @@ pub struct AiRunRequest {
     pub model: Option<String>,
     #[serde(rename = "apiKey")]
     pub api_key: Option<String>,
+    /// `"api_key"` (default) or `"subscription"`. Only consumed by the
+    /// Anthropic provider — selects between `x-api-key` auth and the
+    /// `Authorization: Bearer` + OAuth-beta header pair.
+    #[serde(rename = "authMode")]
+    pub auth_mode: Option<String>,
+    /// Subscription OAuth access token (when `auth_mode == "subscription"`).
+    /// Sent as a Bearer credential. Kept separate from `api_key` so the
+    /// JS side can preserve both fields independently.
+    #[serde(rename = "subscriptionToken")]
+    pub subscription_token: Option<String>,
 }
 
 fn to_schema_mode(mode: &AiMode) -> SchemaAiMode {
@@ -187,6 +198,49 @@ async fn dispatch_ai(request: AiRunRequest) -> Result<AiResponse, String> {
                 _ => Err("unsupported mode for openai provider".into()),
             }
         }
+        (AiMode::Text | AiMode::Recommendation | AiMode::Explanation, "anthropic") => {
+            let model = request.model
+                .unwrap_or_else(|| std::env::var("WARPFORGE_ANTHROPIC_MODEL").unwrap_or_else(|_| "claude-opus-4-7".into()));
+            let base_url = request.provider_url
+                .unwrap_or_else(|| std::env::var("WARPFORGE_ANTHROPIC_URL").unwrap_or_else(|_| "https://api.anthropic.com".into()));
+
+            // Default to API-key auth so the existing behaviour is
+            // unchanged for callers that don't pass `authMode`.
+            let auth_mode = request.auth_mode.as_deref().unwrap_or("api_key");
+            let auth = match auth_mode {
+                "subscription" => {
+                    let token = request.subscription_token
+                        .ok_or_else(|| "subscription token not provided for anthropic provider".to_string())?;
+                    if token.is_empty() {
+                        return Err("subscription token is empty — sign in first".into());
+                    }
+                    AnthropicAuth::Subscription(token)
+                }
+                "api_key" | "" => {
+                    let api_key = request.api_key
+                        .or_else(|| std::env::var("ANTHROPIC_API_KEY").ok())
+                        .ok_or_else(|| "ANTHROPIC_API_KEY not set for anthropic provider".to_string())?;
+                    AnthropicAuth::ApiKey(api_key)
+                }
+                other => return Err(format!("unsupported auth_mode '{other}' for anthropic provider")),
+            };
+            let client = AnthropicProvider::with_auth(auth, model, base_url);
+
+            let out = match mode {
+                AiMode::Text => client.generate_text(&request.prompt, context).await,
+                AiMode::Recommendation => client.recommend(&request.prompt, context).await,
+                AiMode::Explanation => client.explain(&request.prompt, context).await,
+                _ => unreachable!("guarded by outer match arm"),
+            }
+            .map_err(|err| format!("anthropic request failed: {err}"))?;
+
+            Ok(AiResponse {
+                mode,
+                provider: "anthropic".into(),
+                output: json!({ "text": out.text }),
+                created_at: Utc::now(),
+            })
+        }
         _ => Err(format!(
             "provider '{}' is not supported for mode '{}'.",
             provider, request.mode
@@ -208,6 +262,8 @@ mod tests {
             provider_url: None,
             model: None,
             api_key: None,
+            auth_mode: None,
+            subscription_token: None,
         };
 
         let result = dispatch_ai(request).await;
@@ -224,10 +280,29 @@ mod tests {
             provider_url: None,
             model: None,
             api_key: None,
+            auth_mode: None,
+            subscription_token: None,
         };
 
         let result = dispatch_ai(request).await;
         assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn anthropic_subscription_requires_token() {
+        let request = AiRunRequest {
+            mode: "text".into(),
+            prompt: "hello".into(),
+            provider: Some("anthropic".into()),
+            context: None,
+            provider_url: None,
+            model: Some("claude-opus-4-7".into()),
+            api_key: None,
+            auth_mode: Some("subscription".into()),
+            subscription_token: None,
+        };
+        let err = dispatch_ai(request).await.expect_err("expected missing-token error");
+        assert!(err.contains("subscription token"), "got: {err}");
     }
 
     #[tokio::test]

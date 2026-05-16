@@ -23,6 +23,9 @@ export const SOUND_LIBRARY_SAMPLE_RATE = SAMPLE_RATE;
 export interface SoundLibraryEntry {
   id: string;
   name: string;
+  /** Categorization tags — drive the SoundLibraryGallery chip filter
+   *  the same way `tagsFor` does for sprites/backdrops. */
+  tags: string[];
   /** Mono PCM samples in [-1, 1] at SOUND_LIBRARY_SAMPLE_RATE. */
   synthesize(): Float32Array;
 }
@@ -226,23 +229,31 @@ function tone(freq: number, duration: number, gain = 0.4): Float32Array {
 // ── catalog ─────────────────────────────────────────────────────────
 
 export const SOUND_LIBRARY: SoundLibraryEntry[] = [
-  { id: "lib_snd_click", name: "Click", synthesize: synthClick },
-  { id: "lib_snd_pop", name: "Pop", synthesize: synthPop },
-  { id: "lib_snd_beep", name: "Beep", synthesize: synthBeep },
-  { id: "lib_snd_boop", name: "Boop", synthesize: synthBoop },
-  { id: "lib_snd_chime", name: "Chime", synthesize: synthChime },
-  { id: "lib_snd_bell", name: "Bell", synthesize: synthBell },
-  { id: "lib_snd_whistle", name: "Whistle", synthesize: synthWhistle },
-  { id: "lib_snd_buzzer", name: "Buzzer", synthesize: synthBuzzer },
-  { id: "lib_snd_drum", name: "Drum", synthesize: synthDrum },
-  { id: "lib_snd_snare", name: "Snare", synthesize: synthSnare },
-  { id: "lib_snd_magic", name: "Magic", synthesize: synthMagic },
-  { id: "lib_snd_whoosh", name: "Whoosh", synthesize: synthWhoosh },
-  { id: "lib_snd_meow", name: "Meow", synthesize: synthMeow },
+  { id: "lib_snd_click", name: "Click", tags: ["percussion", "ui"], synthesize: synthClick },
+  { id: "lib_snd_pop", name: "Pop", tags: ["percussion", "ui"], synthesize: synthPop },
+  { id: "lib_snd_beep", name: "Beep", tags: ["tone", "ui"], synthesize: synthBeep },
+  { id: "lib_snd_boop", name: "Boop", tags: ["tone", "ui"], synthesize: synthBoop },
+  { id: "lib_snd_chime", name: "Chime", tags: ["tone", "musical"], synthesize: synthChime },
+  { id: "lib_snd_bell", name: "Bell", tags: ["tone", "musical"], synthesize: synthBell },
+  { id: "lib_snd_whistle", name: "Whistle", tags: ["tone"], synthesize: synthWhistle },
+  { id: "lib_snd_buzzer", name: "Buzzer", tags: ["effect"], synthesize: synthBuzzer },
+  { id: "lib_snd_drum", name: "Drum", tags: ["percussion", "musical"], synthesize: synthDrum },
+  { id: "lib_snd_snare", name: "Snare", tags: ["percussion", "musical"], synthesize: synthSnare },
+  { id: "lib_snd_magic", name: "Magic", tags: ["effect"], synthesize: synthMagic },
+  { id: "lib_snd_whoosh", name: "Whoosh", tags: ["effect"], synthesize: synthWhoosh },
+  { id: "lib_snd_meow", name: "Meow", tags: ["animal"], synthesize: synthMeow },
 ];
 
 /** Synthesize and encode a library entry as a `data:audio/wav;base64,…` URL. */
 export function entryToWavDataUrl(entry: SoundLibraryEntry): string {
   const samples = entry.synthesize();
   return arrayBufferToDataUrl(encodeWav(samples, SAMPLE_RATE));
+}
+
+/** Aggregate the union of tags across the catalog so the gallery can
+ *  render filter chips without enumerating them in every call site. */
+export function tagsForSounds(): string[] {
+  const seen = new Set<string>();
+  for (const e of SOUND_LIBRARY) for (const t of e.tags) seen.add(t);
+  return [...seen].sort();
 }

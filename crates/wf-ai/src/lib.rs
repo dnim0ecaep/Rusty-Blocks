@@ -1,5 +1,6 @@
 pub mod contracts;
 pub mod modes;
+pub mod oauth;
 pub mod providers;
 pub mod storage;
 

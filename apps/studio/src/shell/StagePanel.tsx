@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 
 import { CostumeEditor } from "./CostumeEditor";
-import { LibraryDialog } from "./LibraryDialog";
+import { LibraryGallery, type GalleryPick } from "./LibraryGallery";
 import { SoundEditor } from "./SoundEditor";
-import { SoundLibraryDialog } from "./SoundLibraryDialog";
+import {
+  SoundLibraryGallery,
+  type SoundGalleryPick,
+} from "./SoundLibraryGallery";
 import { VectorCostumeEditor, type VectorShape } from "./VectorCostumeEditor";
-import type { LibraryEntry } from "../data/builtInLibrary";
-import type { SoundLibraryEntry } from "../data/builtInSounds";
 import {
   getPending as getPendingAsk,
   submit as submitAskAnswer,
@@ -461,6 +462,10 @@ export function StagePanel() {
           </button>
           <SpriteNamesToggleButton />
           <PlayerModeButton />
+          <ClosePanelButton
+            onClose={() => useUiStore.getState().toggleStage()}
+            title="Close stage panel"
+          />
         </div>
       </header>
 
@@ -683,6 +688,25 @@ function SpriteNamesToggleButton() {
       }
     >
       {showSpriteNames ? "Aa" : "A̶a̶"}
+    </button>
+  );
+}
+
+function ClosePanelButton({
+  onClose,
+  title,
+}: {
+  onClose: () => void;
+  title: string;
+}) {
+  return (
+    <button
+      type="button"
+      className="stage-panel-btn panel-close-btn"
+      onClick={onClose}
+      title={title}
+    >
+      ✕
     </button>
   );
 }
@@ -972,7 +996,6 @@ export function CostumePicker({ sprite }: { sprite: Sprite }) {
   const setProject = useProjectStore((s) => s.setProject);
   const updateSprite = useStageStore((s) => s.updateSprite);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [showLibrary, setShowLibrary] = useState(false);
   // Either "new" (paint fresh costume) or the index of an existing one
   // to edit. Closing the editor clears this back to null.
   const [editorTarget, setEditorTarget] = useState<"new" | number | null>(null);
@@ -981,24 +1004,34 @@ export function CostumePicker({ sprite }: { sprite: Sprite }) {
   // without confusing the two state machines.
   const [vectorTarget, setVectorTarget] = useState<"new" | number | null>(null);
 
-  const importLibraryCostume = (entry: LibraryEntry, dataUrl: string) => {
+  const importLibraryCostume = async (pick: GalleryPick) => {
     const assetId = makeId("asset");
+    // Built-in entries always use the canonical 100×100 viewBox so we
+    // can hard-code the center. User imports could be any size, so we
+    // probe the data URL for natural dimensions and center on that.
+    const { width, height } =
+      pick.source === "builtin"
+        ? { width: 100, height: 100 }
+        : await probeImageSize(pick.dataUrl);
     appendAsset({
       id: assetId,
       kind: "costume",
-      path: dataUrl,
-      metadata: { source: "builtin", builtin_id: entry.id },
+      path: pick.dataUrl,
+      metadata:
+        pick.source === "builtin"
+          ? { source: "builtin", builtin_id: pick.id }
+          : { source: "user_library", user_library_id: pick.id },
       created_at: new Date().toISOString(),
       version: 1,
     });
     const costume = {
       id: makeId("costume"),
-      name: entry.name,
+      name: pick.name,
       assetId,
-      centerX: 50,
-      centerY: 50,
-      width: 100,
-      height: 100,
+      centerX: Math.floor((width || 100) / 2),
+      centerY: Math.floor((height || 100) / 2),
+      width: width || 100,
+      height: height || 100,
     };
     updateSprite(sprite.id, {
       costumes: [...sprite.costumes, costume],
@@ -1048,7 +1081,17 @@ export function CostumePicker({ sprite }: { sprite: Sprite }) {
   };
 
   return (
-    <section className="sprite-costume-picker" style={{ marginTop: 8 }}>
+    <section
+      className="sprite-costume-picker"
+      style={{
+        marginTop: 8,
+        display: "flex",
+        flexDirection: "column",
+        flex: 1,
+        minHeight: 0,
+        gap: 8,
+      }}
+    >
       <header
         style={{
           display: "flex",
@@ -1078,15 +1121,6 @@ export function CostumePicker({ sprite }: { sprite: Sprite }) {
         <button
           type="button"
           className="sprite-list-btn"
-          onClick={() => setShowLibrary(true)}
-          title="Pick a costume from the built-in library"
-          style={{ marginRight: 4 }}
-        >
-          + Library
-        </button>
-        <button
-          type="button"
-          className="sprite-list-btn"
           onClick={() => fileInputRef.current?.click()}
         >
           + Import
@@ -1104,7 +1138,7 @@ export function CostumePicker({ sprite }: { sprite: Sprite }) {
         />
       </header>
       {sprite.costumes.length > 0 ? (
-        <ul style={{ listStyle: "none", padding: 0, margin: "4px 0 0" }}>
+        <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
           {sprite.costumes.map((c, i) => (
             <li
               key={c.id}
@@ -1184,13 +1218,7 @@ export function CostumePicker({ sprite }: { sprite: Sprite }) {
           ))}
         </ul>
       ) : null}
-      {showLibrary ? (
-        <LibraryDialog
-          kind="sprite"
-          onClose={() => setShowLibrary(false)}
-          onPick={importLibraryCostume}
-        />
-      ) : null}
+      <LibraryGallery kind="sprite" onPick={importLibraryCostume} />
       {editorTarget !== null ? (
         <CostumeEditor
           title={
@@ -1379,7 +1407,6 @@ function replaceAssetPath(assetId: string, newPath: string): void {
 export function SoundPicker({ sprite }: { sprite: Sprite }) {
   const updateSprite = useStageStore((s) => s.updateSprite);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [showLibrary, setShowLibrary] = useState(false);
   const [editingSoundId, setEditingSoundId] = useState<string | null>(null);
 
   const onFiles = async (files: FileList | null) => {
@@ -1411,22 +1438,27 @@ export function SoundPicker({ sprite }: { sprite: Sprite }) {
     updateSprite(sprite.id, { sounds: [...sprite.sounds, ...newSounds] });
   };
 
-  // Add a library entry as a new sound — same import pipeline as a file
-  // upload, but the bytes come from the local synthesizer.
-  const importLibrarySound = (entry: SoundLibraryEntry, dataUrl: string) => {
+  // Add a gallery pick (built-in synth or user-library audio file) as a
+  // new sound on this sprite. Built-ins arrive as a freshly synthesized
+  // WAV data URL; user entries arrive with their original audio data
+  // URL straight from the persistent store.
+  const importLibrarySound = (pick: SoundGalleryPick) => {
     const assetId = makeId("asset");
     appendAsset({
       id: assetId,
       kind: "sound",
-      path: dataUrl,
-      metadata: { source: "builtin", builtin_id: entry.id, mime: "audio/wav" },
+      path: pick.dataUrl,
+      metadata:
+        pick.source === "builtin"
+          ? { source: "builtin", builtin_id: pick.id, mime: "audio/wav" }
+          : { source: "user_library", user_library_id: pick.id },
       created_at: new Date().toISOString(),
       version: 1,
     });
     updateSprite(sprite.id, {
       sounds: [
         ...sprite.sounds,
-        { id: makeId("sound"), name: entry.name, assetId },
+        { id: makeId("sound"), name: pick.name, assetId },
       ],
     });
   };
@@ -1436,7 +1468,17 @@ export function SoundPicker({ sprite }: { sprite: Sprite }) {
     : null;
 
   return (
-    <section className="sprite-sound-picker" style={{ marginTop: 8 }}>
+    <section
+      className="sprite-sound-picker"
+      style={{
+        marginTop: 8,
+        display: "flex",
+        flexDirection: "column",
+        flex: 1,
+        minHeight: 0,
+        gap: 8,
+      }}
+    >
       <header
         style={{
           display: "flex",
@@ -1450,16 +1492,8 @@ export function SoundPicker({ sprite }: { sprite: Sprite }) {
           <button
             type="button"
             className="sprite-list-btn"
-            onClick={() => setShowLibrary(true)}
-            title="Pick a sound from the built-in library"
-          >
-            + Library
-          </button>
-          <button
-            type="button"
-            className="sprite-list-btn"
             onClick={() => fileInputRef.current?.click()}
-            title="Import an audio file"
+            title="Import an audio file as a sound on this sprite"
           >
             + Import
           </button>
@@ -1477,7 +1511,7 @@ export function SoundPicker({ sprite }: { sprite: Sprite }) {
         />
       </header>
       {sprite.sounds.length > 0 ? (
-        <ul style={{ listStyle: "none", padding: 0, margin: "4px 0 0" }}>
+        <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
           {sprite.sounds.map((snd, i) => (
             <li
               key={snd.id}
@@ -1554,12 +1588,7 @@ export function SoundPicker({ sprite }: { sprite: Sprite }) {
         </ul>
       ) : null}
 
-      {showLibrary ? (
-        <SoundLibraryDialog
-          onClose={() => setShowLibrary(false)}
-          onPick={importLibrarySound}
-        />
-      ) : null}
+      <SoundLibraryGallery onPick={importLibrarySound} />
       {editingSound ? (
         <SoundEditor
           sound={editingSound}
@@ -1589,30 +1618,37 @@ export function BackdropPicker() {
   const setBackdropIndex = useStageStore((s) => s.setBackdropIndex);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [solidColor, setSolidColor] = useState<string>("#9ec5e6");
-  const [showLibrary, setShowLibrary] = useState(false);
   const [editorTarget, setEditorTarget] = useState<"new" | number | null>(null);
 
-  // Add a library entry as a backdrop. Same import pipeline as a file
-  // upload — write an asset record, then push to backdrops list and
-  // make it active if it's the first one.
-  const importLibraryEntry = (entry: LibraryEntry, dataUrl: string) => {
+  // Add a gallery pick (built-in or user library) as a backdrop. Same
+  // import pipeline as a file upload — write an asset record, then push
+  // to the backdrops list. Built-in entries use the canonical stage size;
+  // user imports probe their natural dimensions.
+  const importLibraryEntry = async (pick: GalleryPick) => {
     const assetId = makeId("asset");
+    const { width, height } =
+      pick.source === "builtin"
+        ? { width: STAGE_WIDTH, height: STAGE_HEIGHT }
+        : await probeImageSize(pick.dataUrl);
     appendAsset({
       id: assetId,
       kind: "costume",
-      path: dataUrl,
-      metadata: { role: "backdrop", source: "builtin", builtin_id: entry.id },
+      path: pick.dataUrl,
+      metadata:
+        pick.source === "builtin"
+          ? { role: "backdrop", source: "builtin", builtin_id: pick.id }
+          : { role: "backdrop", source: "user_library", user_library_id: pick.id },
       created_at: new Date().toISOString(),
       version: 1,
     });
     addBackdrop({
       id: makeId("backdrop"),
-      name: entry.name,
+      name: pick.name,
       assetId,
-      centerX: STAGE_WIDTH / 2,
-      centerY: STAGE_HEIGHT / 2,
-      width: STAGE_WIDTH,
-      height: STAGE_HEIGHT,
+      centerX: Math.floor((width || STAGE_WIDTH) / 2),
+      centerY: Math.floor((height || STAGE_HEIGHT) / 2),
+      width: width || STAGE_WIDTH,
+      height: height || STAGE_HEIGHT,
     });
   };
 
@@ -1677,7 +1713,17 @@ export function BackdropPicker() {
   };
 
   return (
-    <section className="stage-backdrop-picker" style={{ marginTop: 12 }}>
+    <section
+      className="stage-backdrop-picker"
+      style={{
+        marginTop: 12,
+        display: "flex",
+        flexDirection: "column",
+        flex: 1,
+        minHeight: 0,
+        gap: 8,
+      }}
+    >
       <header
         style={{
           display: "flex",
@@ -1714,14 +1760,6 @@ export function BackdropPicker() {
           <button
             type="button"
             className="sprite-list-btn"
-            onClick={() => setShowLibrary(true)}
-            title="Pick a backdrop from the built-in library"
-          >
-            + Library
-          </button>
-          <button
-            type="button"
-            className="sprite-list-btn"
             onClick={() => fileInputRef.current?.click()}
             title="Import an image (PNG / JPEG / SVG) as a backdrop"
           >
@@ -1741,7 +1779,7 @@ export function BackdropPicker() {
         </div>
       </header>
       {backdrops.length > 0 ? (
-        <ul style={{ listStyle: "none", padding: 0, margin: "4px 0 0" }}>
+        <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
           {backdrops.map((b, i) => (
             <li
               key={b.id}
@@ -1802,13 +1840,7 @@ export function BackdropPicker() {
           ))}
         </ul>
       ) : null}
-      {showLibrary ? (
-        <LibraryDialog
-          kind="backdrop"
-          onClose={() => setShowLibrary(false)}
-          onPick={importLibraryEntry}
-        />
-      ) : null}
+      <LibraryGallery kind="backdrop" onPick={importLibraryEntry} />
       {editorTarget !== null ? (
         <CostumeEditor
           title={

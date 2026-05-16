@@ -64,7 +64,15 @@ const COMMON_RULES = `RULES:
 - Spread multiple top-level block stacks out (use y increments of ~200)
 - Only use block types from the list above — never invent new ones
 - Honor every field constraint exactly: required fields, allowed enum values, integer ranges, route shapes (e.g. ROUTE must start with "/"), reverse-DNS PACKAGE_ID
-- Use <field> tags only on the block they belong to; never write a field tag with empty content for a required field`;
+- Use <field> tags only on the block they belong to; never write a field tag with empty content for a required field
+
+DO NOT INVENT BLOCKS. The following are NOT real blocks — do not output them under any spelling:
+- wf_variable_get, wf_get_variable, wf_value_of  → there is no value-getter block. Reference variables/inputs by name in field values (e.g. <field name="VALUE">my_var</field>); the runtime resolves them.
+- wf_ui_input_value, wf_get_input_value, wf_ui_get_text → no input-value block. Use the input's COMPONENT_ID in downstream field references (e.g. wf_on_change with TARGET="email_in").
+- wf_ui_list_refresh, wf_refresh_list, wf_ui_list_reload → no refresh block. Lists re-render automatically when their backing collection changes via wf_add_item / wf_set_variable.
+- wf_ui_get_selected_item_value, wf_ui_selected_index, wf_ui_list_selected → no selection getter. Use wf_on_change with the list/select TARGET, and reference the bound variable.
+
+When you need behavior the listed blocks can't express, prefer omitting the wire-up and adding a wf_ui_text block explaining the gap, instead of inventing a block name.`;
 
 const SYSTEM_PROMPT_CREATE = `You are a WarpForge block assembler. Your ONLY job is to output valid Blockly XML that assembles blocks to fulfill the user's request.
 
@@ -107,7 +115,143 @@ function findUnknownBlockTypes(dom: Element): string[] {
   return [...unknown];
 }
 
-function loadXmlIntoWorkspace(xml: string, replace: boolean): number {
+/**
+ * Cache of "does this block type have a previousStatement connector?".
+ * Built lazily by instantiating each registered block on a throwaway
+ * headless workspace and reading its `previousConnection`. We use it to
+ * detect the AI nesting non-stackable blocks (expressions, reporters,
+ * top-level project meta) under a `<next>` wrapper — Blockly crashes
+ * those with "Next block does not have previous statement".
+ */
+let previousConnectionCache: Map<string, boolean> | null = null;
+
+function getPreviousConnectionMap(): Map<string, boolean> {
+  if (previousConnectionCache) return previousConnectionCache;
+  const cache = new Map<string, boolean>();
+  let probe: Blockly.Workspace | null = null;
+  try {
+    probe = new Blockly.Workspace();
+  } catch {
+    // Probe construction failed (jsdom env, etc.) — leave the cache
+    // empty; the caller treats "unknown" as "trust the AI" and won't
+    // unwrap. We still catch the load error downstream.
+    previousConnectionCache = cache;
+    return cache;
+  }
+  for (const type of Object.keys(Blockly.Blocks)) {
+    try {
+      const block = probe.newBlock(type);
+      cache.set(type, block.previousConnection != null);
+      block.dispose(false);
+    } catch {
+      // Some blocks (e.g. those depending on shadow defaults) can't be
+      // instantiated headlessly. Leave them undefined.
+    }
+  }
+  try { probe.dispose(); } catch { /* ignore */ }
+  previousConnectionCache = cache;
+  return cache;
+}
+
+/**
+ * Patch up the AI's XML before handing it to Blockly. Catches three
+ * common Claude-generated malformations that otherwise crash the load:
+ *   - Duplicate `<next>` children under one `<block>` (Blockly allows
+ *     at most one). We keep the first.
+ *   - Duplicate `id` attributes across `<block>` elements. We rewrite
+ *     subsequent collisions to fresh ids so each block lands cleanly.
+ *   - Blocks nested under `<next>` whose type has no
+ *     `previousStatement` connector ("Next block does not have previous
+ *     statement"). We unwrap them to top-level with an offset.
+ *
+ * Returns the count of repairs applied so the caller can log it.
+ */
+function sanitizeVibeDom(dom: Element): { dom: Element; repairs: number } {
+  let repairs = 0;
+  const blocks = dom.querySelectorAll("block");
+
+  // 1. Collapse multiple <next> children under any block element.
+  blocks.forEach((block) => {
+    const nexts: Element[] = [];
+    for (const child of Array.from(block.children)) {
+      if (child.tagName.toLowerCase() === "next") nexts.push(child);
+    }
+    if (nexts.length > 1) {
+      for (let i = 1; i < nexts.length; i++) {
+        nexts[i].remove();
+        repairs++;
+      }
+    }
+  });
+
+  // 2. Deduplicate ids — second-and-later collisions get a fresh id.
+  const seen = new Set<string>();
+  blocks.forEach((block) => {
+    const id = block.getAttribute("id");
+    if (!id) return;
+    if (seen.has(id)) {
+      block.setAttribute("id", `${id}_dup${repairs}`);
+      repairs++;
+    } else {
+      seen.add(id);
+    }
+  });
+
+  // 3. Unwrap <next> children whose block type can't be statement-
+  //    stacked. We move them to top-level with a fresh x/y so they
+  //    still appear on the workspace (just disconnected) instead of
+  //    crashing the load with "Next block does not have previous
+  //    statement".
+  const prevMap = getPreviousConnectionMap();
+  const root = dom; // <xml> element
+  // y starting point spread out so unwrapped orphans don't pile up.
+  let unwrapY = 600;
+  // Walk all <block> elements (re-querying each pass because we mutate).
+  let pass = 0;
+  while (pass < 50) {
+    pass++;
+    const candidates = Array.from(dom.querySelectorAll("block")).filter((b) => {
+      const parent = b.parentElement;
+      if (!parent || parent.tagName.toLowerCase() !== "next") return false;
+      const type = b.getAttribute("type");
+      if (!type) return false;
+      const hasPrev = prevMap.get(type);
+      // Unwrap only when we have evidence the type can't stack. Unknown
+      // types stay put — we'd rather load and let Blockly's own check
+      // run than aggressively edit AI output we can't reason about.
+      return hasPrev === false;
+    });
+    if (candidates.length === 0) break;
+    for (const block of candidates) {
+      const wrapper = block.parentElement!;
+      wrapper.removeChild(block);
+      block.setAttribute("x", "20");
+      block.setAttribute("y", String(unwrapY));
+      unwrapY += 200;
+      root.appendChild(block);
+      // Empty <next> wrapper left behind? Drop it.
+      if (
+        !Array.from(wrapper.children).some(
+          (c) =>
+            c.tagName.toLowerCase() === "block" ||
+            c.tagName.toLowerCase() === "shadow",
+        )
+      ) {
+        wrapper.remove();
+      }
+      repairs++;
+    }
+  }
+
+  return { dom, repairs };
+}
+
+interface LoadResult {
+  inserted: number;
+  stripped: string[];
+}
+
+function loadXmlIntoWorkspace(xml: string, replace: boolean): LoadResult {
   const ws = getVibeWorkspace();
   if (!ws) {
     throw new Error(
@@ -122,26 +266,77 @@ function loadXmlIntoWorkspace(xml: string, replace: boolean): number {
     throw new Error(`The AI returned malformed XML: ${String(err)}`);
   }
 
-  const unknown = findUnknownBlockTypes(dom);
-  if (unknown.length > 0) {
-    throw new Error(
-      `The AI used unknown block types: ${unknown.join(", ")}. ` +
-        `Try rephrasing your request — only the block types listed in the prompt are valid.`
-    );
+  // Remove any block elements whose type isn't registered. Earlier in
+  // the pipeline the fix-up loop tries to coax the AI into substituting
+  // valid blocks; if a few sneak through, drop them rather than abort
+  // the whole load. We return the list of stripped types so the caller
+  // can surface a "your request used N unsupported operations" notice
+  // instead of a hard error.
+  const stripped = stripUnknownBlocks(dom);
+
+  const { repairs } = sanitizeVibeDom(dom);
+  if (repairs > 0) {
+    console.warn(`[vibe] Repaired ${repairs} malformed XML node(s) before loading.`);
   }
 
   try {
     if (replace) {
       ws.clear();
       Blockly.Xml.domToWorkspace(dom, ws);
-      return ws.getAllBlocks(false).length;
+      return { inserted: ws.getAllBlocks(false).length, stripped };
     }
     const ids = Blockly.Xml.appendDomToWorkspace(dom, ws);
-    return ids.length;
+    return { inserted: ids.length, stripped };
   } catch (err) {
     console.error("Failed to load vibe XML into workspace:", err);
-    throw new Error(`Blockly XML load failed: ${String(err)}`);
+    const detail = String(err);
+    // Blockly's "Next statement is already connected" message survives
+    // sanitization only when the malformation is structural (e.g. two
+    // blocks both pointing to the same parent via <next>). Tell the user
+    // what to do instead of dumping the raw Blockly internals on them.
+    let hint = "";
+    if (detail.includes("Next statement is already connected")) {
+      hint =
+        "\n\nThe AI produced a malformed block chain (two blocks trying to occupy the same `next` slot). Try the Fix-Up button or regenerate — Claude sometimes wires this incorrectly on long chains.";
+    } else if (detail.includes("Next block does not have previous statement")) {
+      hint =
+        "\n\nThe AI nested a non-stackable block (an expression or top-level meta block) under `<next>`. Regenerate — the prompt's rules are clearer about which blocks can be chained.";
+    }
+    throw new Error(`Blockly XML load failed: ${detail}${hint}`);
   }
+}
+
+/**
+ * Remove every `<block type="...">` / `<shadow type="...">` whose type
+ * isn't registered. Returns the (deduplicated) list of types stripped
+ * so the caller can mention them to the user. We also unwrap any
+ * `<next>` whose only child was a stripped block, so the chain stays
+ * well-formed for Blockly.
+ */
+function stripUnknownBlocks(dom: Element): string[] {
+  const stripped = new Set<string>();
+  const allBlocks = Array.from(dom.querySelectorAll("block, shadow"));
+  for (const el of allBlocks) {
+    const type = el.getAttribute("type");
+    if (type && !Blockly.Blocks[type]) {
+      stripped.add(type);
+      const parent = el.parentElement;
+      el.remove();
+      // If the parent was a <next>/<statement>/<value> that now has no
+      // <block> child, drop it too — leaving an empty <next/> can cause
+      // Blockly to attach the following block weirdly.
+      if (parent) {
+        const tag = parent.tagName.toLowerCase();
+        const hasBlockChild = Array.from(parent.children).some(
+          (c) => c.tagName.toLowerCase() === "block" || c.tagName.toLowerCase() === "shadow"
+        );
+        if (!hasBlockChild && (tag === "next" || tag === "statement" || tag === "value")) {
+          parent.remove();
+        }
+      }
+    }
+  }
+  return [...stripped];
 }
 
 interface Props {
@@ -186,9 +381,21 @@ async function runOneRound(
   }
   const xml = extractVibeXml(textContent);
   if (!xml) {
+    // Distinguish "AI never produced XML" from "AI started producing XML
+    // but the response was cut off". The latter is by far the most
+    // common failure mode (token cap on the provider side) and the fix
+    // is different: increase max_tokens / shorten the request, not
+    // rephrase.
+    const trimmed = textContent.trim();
+    const looksTruncated =
+      trimmed.includes("<xml") && !trimmed.includes("</xml>");
+    const headline = looksTruncated
+      ? "The AI's response was cut off before it finished the XML (likely hit the provider's max-tokens limit). " +
+        "Try a shorter request, or switch to a provider/model with a higher output limit."
+      : "The AI didn't return valid Blockly XML. Try rephrasing your request.";
     return {
       error:
-        "The AI didn't return valid Blockly XML. Try rephrasing your request.\n\n" +
+        `${headline}\n\n` +
         `Response preview: ${textContent.substring(0, 300)}${
           textContent.length > 300 ? "..." : ""
         }`,
@@ -372,7 +579,7 @@ export function VibeDialog({ onClose }: Props) {
 
       // ── 6. Load into workspace ──────────────────────────────────
       setProgress("Loading blocks…");
-      const inserted = loadXmlIntoWorkspace(xml, isModify);
+      const { inserted, stripped } = loadXmlIntoWorkspace(xml, isModify);
       if (inserted === 0) {
         setStatus("error");
         setErrorMsg(
@@ -381,14 +588,20 @@ export function VibeDialog({ onClose }: Props) {
         return;
       }
 
-      // If we ran out of fix-up budget but still loaded, surface the
-      // residual review notes. Success path: show success.
-      if (lastIssuesText) {
+      // Combine fix-up residual issues with any unknown blocks that
+      // had to be dropped at load time — show all of it as a single
+      // post-success note so the user knows exactly what's missing.
+      const strippedNote =
+        stripped.length > 0
+          ? `Dropped unsupported block types: ${stripped.join(", ")}. ` +
+            "The studio doesn't have these blocks — wire up the equivalent behavior manually if you need it."
+          : "";
+      const combinedNote = [strippedNote, lastIssuesText].filter(Boolean).join("\n\n");
+
+      if (combinedNote) {
         setStatus("success");
-        setErrorMsg(""); // success state but with a hint
-        setProgress(
-          `Loaded with notes from review:\n${lastIssuesText}\n\nEdit the workspace or run Vibe again to refine.`
-        );
+        setErrorMsg("");
+        setProgress(`Loaded with notes:\n${combinedNote}`);
       } else {
         setStatus("success");
         setProgress("");

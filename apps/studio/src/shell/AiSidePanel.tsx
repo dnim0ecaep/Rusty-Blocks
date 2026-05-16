@@ -3,10 +3,12 @@ import { FormEvent, useMemo, useState } from "react";
 import { quickActions } from "../ai/quickActions";
 import { renderAiResult } from "../ai/resultRenderers";
 import { useAiStore } from "../store/aiStore";
+import { useUiStore } from "../store/uiStore";
 import type { AiMode } from "../types/ai";
 
 export function AiSidePanel() {
   const { messages, provider, busy, setProvider, runPrompt, toggleSettings } = useAiStore();
+  const toggleAiPanel = useUiStore((state) => state.toggleAiPanel);
   const [mode, setMode] = useState<AiMode>("text");
   const [prompt, setPrompt] = useState("");
 
@@ -31,9 +33,19 @@ export function AiSidePanel() {
     <aside className="ai-side-panel">
       <header className="ai-panel-header">
         <h3>AI Copilot</h3>
-        <button type="button" onClick={toggleSettings} className="config-button" title="Configure AI Settings">
-          ⚙️
-        </button>
+        <div className="ai-panel-header-actions">
+          <button type="button" onClick={toggleSettings} className="config-button" title="Configure AI Settings">
+            ⚙️
+          </button>
+          <button
+            type="button"
+            onClick={toggleAiPanel}
+            className="panel-close-btn"
+            title="Close AI Copilot panel"
+          >
+            ✕
+          </button>
+        </div>
       </header>
       <div className="ai-provider-info">
         <label>
@@ -42,6 +54,7 @@ export function AiSidePanel() {
             <option value="ollama">Ollama (local)</option>
             <option value="comfyui">ComfyUI (image)</option>
             <option value="openai">OpenAI (cloud)</option>
+            <option value="anthropic">Anthropic (Claude)</option>
           </select>
         </label>
       </div>

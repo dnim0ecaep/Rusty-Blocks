@@ -1,4 +1,5 @@
 pub mod ai;
+pub mod anthropic_oauth;
 pub mod assets;
 pub mod export;
 pub mod modules;

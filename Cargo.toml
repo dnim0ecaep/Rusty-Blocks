@@ -37,6 +37,9 @@ indexmap = { version = "2", features = ["serde"] }
 parking_lot = "0.12"
 uuid = { version = "1", features = ["serde", "v4"] }
 walkdir = "2"
+base64 = "0.22"
+sha2 = "0.10"
+rand = "0.8"
 syn = { version = "2", features = ["full", "extra-traits", "visit"] }
 proc-macro2 = "1"
 quote = "1"

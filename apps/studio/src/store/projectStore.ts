@@ -42,6 +42,7 @@ interface ProjectStore {
   importRustFile(path: string): Promise<void>;
   setProject(project: ProjectFile): void;
   addLog(message: string): void;
+  clearLogs(): void;
 }
 
 export const useProjectStore = create<ProjectStore>((set, get) => ({
@@ -340,5 +341,9 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
         draft.logs.push(`[${new Date().toISOString()}] ${message}`);
       })
     );
+  },
+
+  clearLogs() {
+    set({ logs: [] });
   }
 }));

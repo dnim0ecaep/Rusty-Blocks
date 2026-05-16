@@ -1,6 +1,12 @@
 import { create } from "zustand";
 
-import { aiRunMode } from "../api/tauriClient";
+import {
+  aiRunMode,
+  anthropicOauthComplete,
+  anthropicOauthRefresh,
+  anthropicOauthStart,
+  type AnthropicOAuthTokens,
+} from "../api/tauriClient";
 import type { AiMode, AiMessage } from "../types/ai";
 
 export interface AiConfig {
@@ -15,6 +21,30 @@ export interface AiConfig {
     url: string;
     model: string;
     apiKey: string;
+  };
+  anthropic: {
+    url: string;
+    model: string;
+    apiKey: string;
+    /**
+     * Which credential to authenticate `/v1/messages` with. `api_key`
+     * uses the pay-per-token console.anthropic.com key; `subscription`
+     * uses an OAuth access token tied to a Claude.ai Pro/Max
+     * subscription (signed in via the Anthropic OAuth flow).
+     */
+    authMode: "api_key" | "subscription";
+    /**
+     * Persisted OAuth state when `authMode === "subscription"`. Null
+     * when not signed in. We keep the refresh token so the next
+     * session can refresh silently without sending the user back
+     * through the browser.
+     */
+    subscription: {
+      accessToken: string;
+      refreshToken: string | null;
+      expiresAt: string;
+      accountEmail: string | null;
+    } | null;
   };
   developerInstructions: string;
 }
@@ -32,6 +62,13 @@ const DEFAULT_CONFIG: AiConfig = {
     model: "gpt-4o-mini",
     apiKey: ""
   },
+  anthropic: {
+    url: "https://api.anthropic.com",
+    model: "claude-opus-4-7",
+    apiKey: "",
+    authMode: "api_key",
+    subscription: null
+  },
   developerInstructions: ""
 };
 
@@ -41,7 +78,15 @@ function loadConfigFromStorage(): AiConfig {
   try {
     const stored = localStorage.getItem(CONFIG_STORAGE_KEY);
     if (stored) {
-      return { ...DEFAULT_CONFIG, ...JSON.parse(stored) };
+      const parsed = JSON.parse(stored) as Partial<AiConfig>;
+      // Merge defaults at the per-provider level so older stored
+      // configs (predating the anthropic + authMode fields) still pick
+      // up the new defaults instead of becoming `undefined`.
+      return {
+        ...DEFAULT_CONFIG,
+        ...parsed,
+        anthropic: { ...DEFAULT_CONFIG.anthropic, ...(parsed.anthropic ?? {}) }
+      };
     }
   } catch (error) {
     console.warn("Failed to load AI config from localStorage:", error);
@@ -49,13 +94,18 @@ function loadConfigFromStorage(): AiConfig {
   return DEFAULT_CONFIG;
 }
 
-type ProviderKey = "ollama" | "comfyui" | "openai";
+type ProviderKey = "ollama" | "comfyui" | "openai" | "anthropic";
 
 function providerSettings(
   config: AiConfig,
   provider: string
 ): AiConfig[ProviderKey] | Record<string, never> {
-  if (provider === "ollama" || provider === "comfyui" || provider === "openai") {
+  if (
+    provider === "ollama" ||
+    provider === "comfyui" ||
+    provider === "openai" ||
+    provider === "anthropic"
+  ) {
     return config[provider];
   }
   return {};
@@ -77,6 +127,11 @@ interface AiStore {
   showSettings: boolean;
   connectionStatus: Record<string, "idle" | "testing" | "success" | "error">;
   connectionError: Record<string, string>;
+  /** Pending Anthropic OAuth session, if a sign-in flow is in progress. */
+  anthropicOauth: {
+    sessionId: string;
+    authorizeUrl: string;
+  } | null;
   setProvider(provider: string): void;
   toggleSettings(): void;
   updateConfig(updates: Partial<AiConfig>): void;
@@ -86,12 +141,56 @@ interface AiStore {
     context?: Record<string, unknown>
   ): Promise<RunPromptResult>;
   testConnection(provider: string): Promise<void>;
+  /** Kick off the Anthropic OAuth flow — opens the browser and returns
+   *  the URL/session so the dialog can render a paste field. */
+  startAnthropicSignIn(): Promise<{ authorizeUrl: string }>;
+  /** Exchange a pasted `code#state` for tokens and persist them. */
+  completeAnthropicSignIn(pastedCode: string): Promise<void>;
+  /** Drop the saved subscription tokens (and pending session if any). */
+  signOutAnthropic(): void;
 }
 
 export interface RunPromptResult {
   ok: boolean;
   output?: unknown;
   error?: string;
+}
+
+/**
+ * Resolve the credentials to send for the Anthropic provider, refreshing
+ * the OAuth access token if it's near expiry. Returns the extra fields
+ * the Tauri `ai_run_mode` request wants, or throws when the user hasn't
+ * supplied/signed-in to anything.
+ */
+async function resolveAnthropicCreds(
+  config: AiConfig,
+  applyRefresh: (next: AnthropicOAuthTokens) => void,
+): Promise<{ authMode: "api_key" | "subscription"; apiKey?: string; subscriptionToken?: string }> {
+  const ant = config.anthropic;
+  if (ant.authMode === "subscription") {
+    let sub = ant.subscription;
+    if (!sub) {
+      throw new Error("Anthropic subscription auth selected but not signed in. Open AI Settings to sign in.");
+    }
+    // Refresh ~60 s ahead of expiry so a long-running request doesn't
+    // race the token's lifetime.
+    const expiresAtMs = Date.parse(sub.expiresAt);
+    if (Number.isFinite(expiresAtMs) && expiresAtMs - Date.now() < 60_000) {
+      if (!sub.refreshToken) {
+        throw new Error("Anthropic access token expired and no refresh token is stored. Sign in again.");
+      }
+      const refreshed = await anthropicOauthRefresh(sub.refreshToken);
+      applyRefresh(refreshed);
+      sub = {
+        accessToken: refreshed.access_token,
+        refreshToken: refreshed.refresh_token ?? sub.refreshToken,
+        expiresAt: refreshed.expires_at,
+        accountEmail: refreshed.account_email ?? sub.accountEmail,
+      };
+    }
+    return { authMode: "subscription", subscriptionToken: sub.accessToken };
+  }
+  return { authMode: "api_key", apiKey: ant.apiKey };
 }
 
 export const useAiStore = create<AiStore>((set, get) => ({
@@ -102,6 +201,7 @@ export const useAiStore = create<AiStore>((set, get) => ({
   showSettings: false,
   connectionStatus: {},
   connectionError: {},
+  anthropicOauth: null,
 
   setProvider(provider) {
     set({ provider });
@@ -128,16 +228,41 @@ export const useAiStore = create<AiStore>((set, get) => ({
     try {
       const { config } = get();
       const providerConfig = providerSettings(config, provider);
-      
+
       // Use appropriate mode for each provider
       const mode = provider === "comfyui" ? "image" : "text";
-      const prompt = mode === "image" 
-        ? "test pattern" 
+      const prompt = mode === "image"
+        ? "test pattern"
         : "Reply with just the word 'OK' to confirm connection.";
-      
+
       console.log(`Testing connection to ${provider}...`);
-      
-      // Send a simple test prompt
+
+      // Anthropic gets the (possibly subscription-OAuth) credential
+      // bundle resolved via the shared helper. Other providers stick to
+      // the plain apiKey field.
+      const anthropicCreds =
+        provider === "anthropic"
+          ? await resolveAnthropicCreds(config, (next) =>
+              get().updateConfig({
+                anthropic: {
+                  ...config.anthropic,
+                  subscription: {
+                    accessToken: next.access_token,
+                    refreshToken:
+                      next.refresh_token ??
+                      config.anthropic.subscription?.refreshToken ??
+                      null,
+                    expiresAt: next.expires_at,
+                    accountEmail:
+                      next.account_email ??
+                      config.anthropic.subscription?.accountEmail ??
+                      null,
+                  },
+                },
+              }),
+            )
+          : null;
+
       const response = await aiRunMode({
         mode,
         prompt,
@@ -145,7 +270,11 @@ export const useAiStore = create<AiStore>((set, get) => ({
         context: { test: true },
         providerUrl: 'url' in providerConfig ? providerConfig.url : undefined,
         model: 'model' in providerConfig ? providerConfig.model : undefined,
-        apiKey: 'apiKey' in providerConfig ? providerConfig.apiKey : undefined,
+        apiKey: anthropicCreds
+          ? anthropicCreds.apiKey
+          : 'apiKey' in providerConfig ? providerConfig.apiKey : undefined,
+        authMode: anthropicCreds?.authMode,
+        subscriptionToken: anthropicCreds?.subscriptionToken,
       });
 
       console.log(`Response from ${provider}:`, response);
@@ -211,6 +340,29 @@ export const useAiStore = create<AiStore>((set, get) => ({
         ? `${instructions}\n\n${prompt}`
         : prompt;
 
+      const anthropicCreds =
+        provider === "anthropic"
+          ? await resolveAnthropicCreds(config, (next) =>
+              get().updateConfig({
+                anthropic: {
+                  ...config.anthropic,
+                  subscription: {
+                    accessToken: next.access_token,
+                    refreshToken:
+                      next.refresh_token ??
+                      config.anthropic.subscription?.refreshToken ??
+                      null,
+                    expiresAt: next.expires_at,
+                    accountEmail:
+                      next.account_email ??
+                      config.anthropic.subscription?.accountEmail ??
+                      null,
+                  },
+                },
+              }),
+            )
+          : null;
+
       const response = await aiRunMode({
         mode,
         prompt: finalPrompt,
@@ -218,7 +370,11 @@ export const useAiStore = create<AiStore>((set, get) => ({
         context,
         providerUrl: 'url' in providerConfig ? providerConfig.url : undefined,
         model: 'model' in providerConfig ? providerConfig.model : undefined,
-        apiKey: 'apiKey' in providerConfig ? providerConfig.apiKey : undefined,
+        apiKey: anthropicCreds
+          ? anthropicCreds.apiKey
+          : 'apiKey' in providerConfig ? providerConfig.apiKey : undefined,
+        authMode: anthropicCreds?.authMode,
+        subscriptionToken: anthropicCreds?.subscriptionToken,
       });
 
       const assistantMessage: AiMessage = {
@@ -246,5 +402,45 @@ export const useAiStore = create<AiStore>((set, get) => ({
     } finally {
       set({ busy: false });
     }
+  },
+
+  async startAnthropicSignIn() {
+    const { authorize_url, session_id } = await anthropicOauthStart();
+    set({ anthropicOauth: { sessionId: session_id, authorizeUrl: authorize_url } });
+    return { authorizeUrl: authorize_url };
+  },
+
+  async completeAnthropicSignIn(pastedCode) {
+    const pending = get().anthropicOauth;
+    if (!pending) {
+      throw new Error("No Anthropic sign-in in progress — click Sign In first.");
+    }
+    const tokens = await anthropicOauthComplete(pending.sessionId, pastedCode);
+    const { config } = get();
+    get().updateConfig({
+      anthropic: {
+        ...config.anthropic,
+        authMode: "subscription",
+        subscription: {
+          accessToken: tokens.access_token,
+          refreshToken: tokens.refresh_token ?? null,
+          expiresAt: tokens.expires_at,
+          accountEmail: tokens.account_email ?? null,
+        },
+      },
+    });
+    set({ anthropicOauth: null });
+  },
+
+  signOutAnthropic() {
+    const { config } = get();
+    get().updateConfig({
+      anthropic: {
+        ...config.anthropic,
+        subscription: null,
+        authMode: "api_key",
+      },
+    });
+    set({ anthropicOauth: null });
   }
 }));

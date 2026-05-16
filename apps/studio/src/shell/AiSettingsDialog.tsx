@@ -2,9 +2,70 @@ import { FormEvent, useState } from "react";
 import { useAiStore, type AiConfig } from "../store/aiStore";
 
 export function AiSettingsDialog() {
-  const { config, showSettings, toggleSettings, updateConfig, testConnection, connectionStatus, connectionError } = useAiStore();
+  const {
+    config,
+    showSettings,
+    toggleSettings,
+    updateConfig,
+    testConnection,
+    connectionStatus,
+    connectionError,
+    anthropicOauth,
+    startAnthropicSignIn,
+    completeAnthropicSignIn,
+    signOutAnthropic,
+  } = useAiStore();
   const [localConfig, setLocalConfig] = useState<AiConfig>(config);
   const [showApiKey, setShowApiKey] = useState(false);
+  const [showAnthropicKey, setShowAnthropicKey] = useState(false);
+  const [pastedCode, setPastedCode] = useState("");
+  const [oauthError, setOauthError] = useState<string | null>(null);
+  const [oauthBusy, setOauthBusy] = useState(false);
+
+  const handleStartSignIn = async () => {
+    setOauthError(null);
+    setPastedCode("");
+    try {
+      await startAnthropicSignIn();
+    } catch (err) {
+      setOauthError(String(err));
+    }
+  };
+
+  const handleCompleteSignIn = async () => {
+    if (!pastedCode.trim()) {
+      setOauthError("Paste the code from the Claude.ai callback page.");
+      return;
+    }
+    setOauthBusy(true);
+    setOauthError(null);
+    try {
+      await completeAnthropicSignIn(pastedCode.trim());
+      setPastedCode("");
+      // The store has flipped authMode to "subscription"; pull that
+      // into the local form state so the radio reflects the new value.
+      setLocalConfig((prev) => ({
+        ...prev,
+        anthropic: {
+          ...prev.anthropic,
+          authMode: "subscription",
+          subscription: useAiStore.getState().config.anthropic.subscription,
+        },
+      }));
+    } catch (err) {
+      setOauthError(String(err));
+    } finally {
+      setOauthBusy(false);
+    }
+  };
+
+  const handleSignOut = () => {
+    signOutAnthropic();
+    setLocalConfig((prev) => ({
+      ...prev,
+      anthropic: { ...prev.anthropic, authMode: "api_key", subscription: null },
+    }));
+  };
 
   if (!showSettings) {
     return null;
@@ -241,6 +302,203 @@ export function AiSettingsDialog() {
                 placeholder="https://api.openai.com"
               />
               <small className="hint">Works with any OpenAI-compatible API (e.g. LM Studio, Groq, Together, local proxies)</small>
+            </label>
+          </section>
+
+          {/* Anthropic Settings */}
+          <section className="provider-section">
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <h3>Anthropic (Claude)</h3>
+              <button
+                type="button"
+                onClick={() => handleTestConnection("anthropic")}
+                disabled={connectionStatus.anthropic === "testing"}
+                style={{ fontSize: "0.9em", padding: "0.3em 0.8em" }}
+              >
+                {getStatusIcon("anthropic")} Test Connection
+              </button>
+            </div>
+            {connectionStatus.anthropic && (
+              <div style={{ marginBottom: "0.5em", fontSize: "0.9em", color: connectionStatus.anthropic === "error" ? "#d32f2f" : "#2e7d32" }}>
+                {getStatusText("anthropic")}
+              </div>
+            )}
+
+            <fieldset style={{ border: "1px solid #cdd6e2", borderRadius: 4, padding: "0.5em 0.8em", marginBottom: "0.6em" }}>
+              <legend style={{ fontSize: "0.85em", padding: "0 0.4em" }}>Authentication</legend>
+              <label style={{ display: "flex", alignItems: "center", gap: "0.4em", fontWeight: "normal" }}>
+                <input
+                  type="radio"
+                  name="anthropic-auth"
+                  value="api_key"
+                  checked={localConfig.anthropic.authMode === "api_key"}
+                  onChange={() =>
+                    setLocalConfig({
+                      ...localConfig,
+                      anthropic: { ...localConfig.anthropic, authMode: "api_key" }
+                    })
+                  }
+                />
+                API Key (pay-per-token, console.anthropic.com)
+              </label>
+              <label style={{ display: "flex", alignItems: "center", gap: "0.4em", fontWeight: "normal" }}>
+                <input
+                  type="radio"
+                  name="anthropic-auth"
+                  value="subscription"
+                  checked={localConfig.anthropic.authMode === "subscription"}
+                  onChange={() =>
+                    setLocalConfig({
+                      ...localConfig,
+                      anthropic: { ...localConfig.anthropic, authMode: "subscription" }
+                    })
+                  }
+                />
+                Claude.ai Subscription (Pro / Max)
+              </label>
+            </fieldset>
+
+            {localConfig.anthropic.authMode === "api_key" ? (
+              <label>
+                API Key
+                <div style={{ display: "flex", gap: "0.4em" }}>
+                  <input
+                    type={showAnthropicKey ? "text" : "password"}
+                    value={localConfig.anthropic.apiKey}
+                    onChange={(e) =>
+                      setLocalConfig({
+                        ...localConfig,
+                        anthropic: { ...localConfig.anthropic, apiKey: e.target.value }
+                      })
+                    }
+                    placeholder="sk-ant-..."
+                    style={{ flex: 1 }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowAnthropicKey((v) => !v)}
+                    style={{ flexShrink: 0 }}
+                    aria-label={showAnthropicKey ? "Hide API key" : "Show API key"}
+                  >
+                    {showAnthropicKey ? "Hide" : "Show"}
+                  </button>
+                </div>
+                <small className="hint">Required for the Anthropic provider. Get one at console.anthropic.com.</small>
+              </label>
+            ) : (
+              <div style={{ marginBottom: "0.6em" }}>
+                {config.anthropic.subscription ? (
+                  <div
+                    style={{
+                      border: "1px solid #cdd6e2",
+                      borderRadius: 4,
+                      padding: "0.5em 0.8em",
+                      background: "#f4f8ff",
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      gap: "0.6em",
+                    }}
+                  >
+                    <div style={{ fontSize: "0.9em" }}>
+                      Signed in
+                      {config.anthropic.subscription.accountEmail ? (
+                        <>
+                          {" as "}
+                          <strong>{config.anthropic.subscription.accountEmail}</strong>
+                        </>
+                      ) : null}
+                      <div style={{ fontSize: "0.8em", color: "#5b6371" }}>
+                        Access token expires{" "}
+                        {new Date(config.anthropic.subscription.expiresAt).toLocaleString()}
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleSignOut}
+                      style={{ fontSize: "0.85em" }}
+                    >
+                      Sign out
+                    </button>
+                  </div>
+                ) : (
+                  <div>
+                    <p style={{ fontSize: "0.9em", marginTop: 0 }}>
+                      Sign in with your Claude.ai account to bill the AI Copilot against your Pro / Max subscription.
+                    </p>
+                    {!anthropicOauth ? (
+                      <button type="button" onClick={handleStartSignIn}>
+                        Sign in with Claude.ai
+                      </button>
+                    ) : (
+                      <div style={{ display: "flex", flexDirection: "column", gap: "0.4em" }}>
+                        <small className="hint">
+                          A browser window should have opened to Claude.ai. After authorizing, paste the code from the callback page (it looks like <code>abc...#xyz</code>) below.
+                        </small>
+                        <small className="hint">
+                          If nothing opened, copy this URL into your browser:{" "}
+                          <a href={anthropicOauth.authorizeUrl} target="_blank" rel="noreferrer">
+                            open authorize URL
+                          </a>
+                        </small>
+                        <div style={{ display: "flex", gap: "0.4em" }}>
+                          <input
+                            type="text"
+                            value={pastedCode}
+                            onChange={(e) => setPastedCode(e.target.value)}
+                            placeholder="Paste code#state here"
+                            style={{ flex: 1 }}
+                          />
+                          <button
+                            type="button"
+                            onClick={handleCompleteSignIn}
+                            disabled={oauthBusy}
+                          >
+                            {oauthBusy ? "Verifying…" : "Verify"}
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                    {oauthError ? (
+                      <div style={{ color: "#d32f2f", fontSize: "0.85em", marginTop: "0.4em" }}>
+                        {oauthError}
+                      </div>
+                    ) : null}
+                  </div>
+                )}
+              </div>
+            )}
+
+            <label>
+              Model
+              <input
+                type="text"
+                value={localConfig.anthropic.model}
+                onChange={(e) =>
+                  setLocalConfig({
+                    ...localConfig,
+                    anthropic: { ...localConfig.anthropic, model: e.target.value }
+                  })
+                }
+                placeholder="claude-opus-4-7"
+                required
+              />
+              <small className="hint">Common models: claude-opus-4-7, claude-sonnet-4-6, claude-haiku-4-5-20251001</small>
+            </label>
+            <label>
+              Custom Endpoint (optional)
+              <input
+                type="url"
+                value={localConfig.anthropic.url}
+                onChange={(e) =>
+                  setLocalConfig({
+                    ...localConfig,
+                    anthropic: { ...localConfig.anthropic, url: e.target.value }
+                  })
+                }
+                placeholder="https://api.anthropic.com"
+              />
+              <small className="hint">Override only if proxying through a gateway.</small>
             </label>
           </section>
         </div>

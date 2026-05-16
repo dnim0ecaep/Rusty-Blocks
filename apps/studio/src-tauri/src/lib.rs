@@ -2,6 +2,9 @@ mod commands;
 mod state;
 
 use commands::ai::ai_run_mode;
+use commands::anthropic_oauth::{
+    anthropic_oauth_complete, anthropic_oauth_refresh, anthropic_oauth_start,
+};
 use commands::assets::{asset_import, asset_list};
 use commands::export::{export_bundle, export_source};
 use commands::pipeline::{pipeline_generate, pipeline_parse, pipeline_validate};
@@ -25,6 +28,9 @@ pub fn run() {
             pipeline_validate,
             pipeline_generate,
             ai_run_mode,
+            anthropic_oauth_start,
+            anthropic_oauth_complete,
+            anthropic_oauth_refresh,
             asset_import,
             asset_list,
             export_source,

@@ -40,8 +40,47 @@ export async function aiRunMode(request: AiRunRequest & {
   providerUrl?: string;
   model?: string;
   apiKey?: string;
+  authMode?: "api_key" | "subscription";
+  subscriptionToken?: string;
 }): Promise<AiRunOutput> {
   return invoke("ai_run_mode", { request });
+}
+
+export interface AnthropicOAuthStartOutput {
+  authorize_url: string;
+  session_id: string;
+}
+
+export interface AnthropicOAuthTokens {
+  access_token: string;
+  refresh_token: string | null;
+  expires_at: string;
+  account_email: string | null;
+  token_type: string | null;
+  scope: string | null;
+}
+
+/** Open the user's browser to the Claude.ai authorize URL and start a
+ *  PKCE session. The returned `session_id` must be passed back to
+ *  `anthropicOauthComplete` along with the pasted code. */
+export async function anthropicOauthStart(): Promise<AnthropicOAuthStartOutput> {
+  return invoke("anthropic_oauth_start");
+}
+
+/** Exchange the pasted `code#state` for an access/refresh token pair. */
+export async function anthropicOauthComplete(
+  sessionId: string,
+  code: string,
+): Promise<AnthropicOAuthTokens> {
+  return invoke("anthropic_oauth_complete", { input: { session_id: sessionId, code } });
+}
+
+/** Refresh an expiring access token without sending the user back through
+ *  the browser flow. */
+export async function anthropicOauthRefresh(
+  refreshToken: string,
+): Promise<AnthropicOAuthTokens> {
+  return invoke("anthropic_oauth_refresh", { input: { refresh_token: refreshToken } });
 }
 
 export async function assetImport(

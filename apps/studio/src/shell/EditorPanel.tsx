@@ -75,11 +75,27 @@ export function EditorPanel() {
           <CenterWorkspace />
         ) : editorTab === "costumes" ? (
           isStage ? (
-            <div style={{ padding: 12, overflow: "auto" }}>
+            <div
+              style={{
+                padding: 12,
+                flex: 1,
+                minHeight: 0,
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
               <BackdropPicker />
             </div>
           ) : selectedSprite ? (
-            <div style={{ padding: 12, overflow: "auto" }}>
+            <div
+              style={{
+                padding: 12,
+                flex: 1,
+                minHeight: 0,
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
               <CostumePicker sprite={selectedSprite} />
             </div>
           ) : null
@@ -89,7 +105,15 @@ export function EditorPanel() {
               Stage sounds aren't editable yet — pick a sprite to add sounds to it.
             </div>
           ) : selectedSprite ? (
-            <div style={{ padding: 12, overflow: "auto" }}>
+            <div
+              style={{
+                padding: 12,
+                flex: 1,
+                minHeight: 0,
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
               <SoundPicker sprite={selectedSprite} />
             </div>
           ) : null

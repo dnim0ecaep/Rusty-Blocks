@@ -3,6 +3,7 @@ import { DiagnosticsPanel } from "../panels/DiagnosticsPanel";
 import { FileTreePanel } from "../panels/FileTreePanel";
 import { IrViewPanel } from "../panels/IrViewPanel";
 import { LogsPanel } from "../panels/LogsPanel";
+import { useProjectStore } from "../store/projectStore";
 import { useUiStore } from "../store/uiStore";
 
 const tabs: Array<{ id: "code" | "diagnostics" | "logs" | "files" | "ir"; label: string }> = [
@@ -16,6 +17,9 @@ const tabs: Array<{ id: "code" | "diagnostics" | "logs" | "files" | "ir"; label:
 export function BottomPanel() {
   const activeBottomTab = useUiStore((state) => state.activeBottomTab);
   const setBottomTab = useUiStore((state) => state.setBottomTab);
+  const toggleBottomPanel = useUiStore((state) => state.toggleBottomPanel);
+  const clearLogs = useProjectStore((state) => state.clearLogs);
+  const hasLogs = useProjectStore((state) => state.logs.length > 0);
 
   return (
     <section className="bottom-panel">
@@ -30,6 +34,25 @@ export function BottomPanel() {
             {tab.label}
           </button>
         ))}
+        {activeBottomTab === "logs" ? (
+          <button
+            type="button"
+            className="bottom-panel-clear-logs"
+            onClick={clearLogs}
+            disabled={!hasLogs}
+            title="Clear logs"
+          >
+            Clear
+          </button>
+        ) : null}
+        <button
+          type="button"
+          className="panel-close-btn bottom-panel-close"
+          onClick={toggleBottomPanel}
+          title="Close bottom panel"
+        >
+          ✕
+        </button>
       </nav>
       <div className="bottom-content">
         {activeBottomTab === "code" ? <CodePreviewPanel /> : null}

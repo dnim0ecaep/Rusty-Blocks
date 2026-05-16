@@ -8,6 +8,7 @@ export function RightInspector() {
   const setProject = useProjectStore((state) => state.setProject);
   const diagnostics = useProjectStore((state) => state.diagnostics);
   const selectedBlockId = useUiStore((state) => state.selectedBlockId);
+  const toggleInspector = useUiStore((state) => state.toggleInspector);
 
   const selectedNode = project?.normalized_graph.nodes.find((node) => node.id === selectedBlockId);
 
@@ -28,7 +29,17 @@ export function RightInspector() {
 
   return (
     <aside className="right-inspector">
-      <h3>Inspector</h3>
+      <header className="right-inspector-header">
+        <h3>Inspector</h3>
+        <button
+          type="button"
+          className="panel-close-btn"
+          onClick={toggleInspector}
+          title="Close inspector panel"
+        >
+          ✕
+        </button>
+      </header>
       {project ? (
         <>
           <label>
