@@ -29,7 +29,7 @@
 
 ## What it is
 
-WarpForge Studio is a **visual app builder** where you assemble blocks in a Blockly workspace and the studio compiles them into a native binary. Two kinds of apps live side-by-side in the same project:
+Rusty Blocks is a **visual app builder** where you assemble blocks in a Blockly workspace and the studio compiles them into a native binary. Two kinds of apps live side-by-side in the same project:
 
 - **Form-style apps** — windows, screens, buttons, inputs, lists. Persistence, events, network, file I/O. Output is a Slint desktop binary compiled with `cargo build --release`.
 - **Sprite-stage apps** — Scratch-style sprite world with costumes, click handlers, broadcasts, clones, ask prompts, dynamic-text overlays, and live list monitors. Same Slint output target with sprite scenes embedded.
