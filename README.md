@@ -269,10 +269,4 @@ Worked example (`scratch_motion_teleport_random`) is in [`docs/manual.md` §12](
 
 ---
 
-## License
-
-License: **TBD** — add a `LICENSE` file at the repository root and update this section.
-
----
-
 <sub>WarpForge Studio · repo: <code>dnim0ecaep/Rusty-Blocks</code></sub>
