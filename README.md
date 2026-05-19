@@ -104,6 +104,24 @@ Each stage is a separate Rust crate with its own test surface. The IR is the can
 git clone https://github.com/dnim0ecaep/Rusty-Blocks.git
 cd Rusty-Blocks
 
+# 1b Install Dependencies
+# Rust
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+# Node.js
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.4/install.sh | bash
+\. "$HOME/.nvm/nvm.sh"
+nvm install 24
+npm install -g pnpm
+
+# Other dependencies
+sudo apt update && sudo apt install -y \
+  libwebkit2gtk-4.1-dev \
+  libgtk-3-dev \
+  libayatana-appindicator3-dev \
+  librsvg2-dev \
+  libsoup-3.0-dev \
+  build-essential curl wget file pkg-config
+
 # 2. Install JS deps
 pnpm install
 
